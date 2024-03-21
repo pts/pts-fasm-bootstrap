@@ -6,8 +6,6 @@
 ;
 ; Compile with: nasm-0.98.39 -O999999999 -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fnasm
 ;
-	cpu 386
-	bits 32
 
 ; flat assembler source
 ; Copyright (c) 1999-2002, Tomasz Grysztar
@@ -17,6 +15,7 @@
 
 	org	program_base
 	use32
+	cpu 386
 
 ;	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
@@ -67,16 +66,20 @@ start:
 	mov	byte [edi+ebx],0
 	loop	convert_table
 
+	push eax
+	push eax  ; alloca(8) for the gettimeofday buffer.
 	mov	eax,78  ; SYS_gettimeofday.
-	mov	ebx,gettimeofday_buffer
+	mov	ebx,esp
 	xor	ecx,ecx
 	int	0x80
-	mov	eax,dword [gettimeofday_buffer]
+	mov	eax,dword [esp]
 	mov	ecx,1000
 	mul	ecx
 	mov	ebx,eax
-	mov	eax,dword [gettimeofday_buffer+4]
+	mov	eax,dword [esp+4]
 	div	ecx
+	pop ecx
+	pop ecx  ; Free the gettimeofday buffer.
 	add	eax,ebx
 	mov	dword [start_time],eax
 
@@ -89,16 +92,20 @@ start:
 	call	display_number
 	mov	esi,_passes_suffix
 	call	display_string
+	push eax
+	push eax  ; alloca(8) for the gettimeofday buffer.
 	mov	eax,78  ; SYS_gettimeofday.
-	mov	ebx,gettimeofday_buffer
+	mov	ebx,esp
 	xor	ecx,ecx
 	int	0x80
-	mov	eax,dword [gettimeofday_buffer]
+	mov	eax,dword [esp]
 	mov	ecx,1000
 	mul	ecx
 	mov	ebx,eax
-	mov	eax,dword [gettimeofday_buffer+4]
+	mov	eax,dword [esp+4]
 	div	ecx
+	pop ecx
+	pop ecx  ; Free the gettimeofday buffer.
 	add	eax,ebx
 	sub	eax,dword [start_time]
 	jnc	time_ok
@@ -176,7 +183,7 @@ init_memory:
     allocate_memory:
 	mov	ebx,dword [additional_memory]
 	add	ebx,dword [available_memory]
-	mov	eax,45
+	mov	eax,45  ; SYS_brk.
 	int	0x80
 	mov	dword [memory_end],eax
 	sub	eax,dword [additional_memory]
@@ -194,7 +201,7 @@ init_memory:
 
 exit_program:
 	movzx	ebx,al
-	mov	eax,1
+	mov	eax,1  ; SYS_exit.
 	int	0x80
 
 open:
@@ -203,7 +210,7 @@ open:
 	push edi
 	push ebp
 	mov	ebx,edx
-	mov	eax,5
+	mov	eax,5  ; SYS_open.
 	mov	ecx,O_RDONLY
 	xor	edx,edx
 	int	0x80
@@ -225,7 +232,7 @@ create:
 	push edi
 	push ebp
 	mov	ebx,edx
-	mov	eax,5
+	mov	eax,5  ; SYS_open.
 	mov	ecx,O_CREAT+O_TRUNC+O_WRONLY
 	mov	edx,S_IRUSR+S_IWUSR+S_IRGRP
 	int	0x80
@@ -239,7 +246,7 @@ create:
 	clc
 	ret
 close:
-	mov	eax,6
+	mov	eax,6  ; SYS_close.
 	int	0x80
 	ret
 read:
@@ -248,7 +255,7 @@ read:
 	push esi
 	push edi
 	push ebp
-	mov	eax,3
+	mov	eax,3  ; SYS_read.
 	xchg	ecx,edx
 	int	0x80
 	pop ebp
@@ -267,7 +274,7 @@ write:
 	push esi
 	push edi
 	push ebp
-	mov	eax,4
+	mov	eax,4  ; SYS_write.
 	xchg	ecx,edx
 	int	0x80
 	pop ebp
@@ -282,7 +289,7 @@ lseek:
 	mov	ecx,edx
 	xor	edx,edx
 	mov	dl,al
-	mov	eax,19
+	mov	eax,19  ; SYS_lseek.
 	int	0x80
 	clc
 	ret
@@ -296,7 +303,7 @@ display_string:
 	repne	scasb
 	neg	ecx
 	sub	ecx,2
-	mov	eax,4
+	mov	eax,4  ; SYS_write.
 	mov	ebx,1
 	xchg	ecx,edx
 	int	0x80
@@ -304,7 +311,7 @@ display_string:
 	ret
 display_block:
 	push ebx
-	mov	eax,4
+	mov	eax,4  ; SYS_write.
 	mov	ebx,1
 	mov	edx,ecx
 	mov	ecx,esi
@@ -314,7 +321,7 @@ display_block:
 display_character:
 	push ebx
 	mov	[character],dl
-	mov	eax,4
+	mov	eax,4  ; SYS_write.
 	mov	ebx,1
 	mov	ecx,character
 	mov	edx,ebx
@@ -495,7 +502,7 @@ line_data_start db ':',0xA,0
 ; cannot simply be copied and put under another distribution licence
 ; (including the GNU Public Licence).
 
-%define VERSION_STRING '1.30'
+%define VERSION_STRING '1.30-bootstrap'
 
 VERSION_MAJOR equ 1
 VERSION_MINOR equ 30
@@ -12010,6 +12017,5 @@ nextbyte resb 1
 characters resb 100h
 converted resb 100h
 available_memory resb 4
-gettimeofday_buffer resb 8
 
 program_end:
