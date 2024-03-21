@@ -1,8 +1,8 @@
 ; by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024
 ;
-; This is the source of code fasm 1.30 in NASM syntax, for Linux i386 only.
+; This is a subset of the source code of fasm 1.30, ported to NASM syntax, for Linux i386 only.
 ;
-; Compile with: nasm-0.98.39 -O999999999 -w+orphan-labels -f bin -o fnasm fasm.asm && chmod +x fnasm
+; Compile with: nasm-0.98.39 -O999999999 -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fnasm
 ;
 ; !! It may not work (untested).
 ; !! Fix output file permissions in open(2).
@@ -141,29 +141,30 @@ information:
 ; Copyright (c) 1999-2002, Tomasz Grysztar
 ; All rights reserved.
 
-O_ACCMODE  equ 00003
-O_RDONLY   equ 00000
-O_WRONLY   equ 00001
-O_RDWR	   equ 00002
-O_CREAT    equ 00100
-O_EXCL	   equ 00200
-O_NOCTTY   equ 00400
-O_TRUNC    equ 01000
-O_APPEND   equ 02000
-O_NONBLOCK equ 04000
+; !! Fix this oct in fasm as well.
+O_ACCMODE  equ 00003o
+O_RDONLY   equ 00000o
+O_WRONLY   equ 00001o
+O_RDWR	   equ 00002o
+O_CREAT    equ 00100o
+O_EXCL	   equ 00200o
+O_NOCTTY   equ 00400o
+O_TRUNC    equ 01000o
+O_APPEND   equ 02000o
+O_NONBLOCK equ 04000o
 
-S_ISUID    equ 04000
-S_ISGID    equ 02000
-S_ISVTX    equ 01000
-S_IRUSR    equ 00400
-S_IWUSR    equ 00200
-S_IXUSR    equ 00100
-S_IRGRP    equ 00040
-S_IWGRP    equ 00020
-S_IXGRP    equ 00010
-S_IROTH    equ 00004
-S_IWOTH    equ 00002
-S_IXOTH    equ 00001
+S_ISUID    equ 04000o
+S_ISGID    equ 02000o
+S_ISVTX    equ 01000o
+S_IRUSR    equ 00400o
+S_IWUSR    equ 00200o
+S_IXUSR    equ 00100o
+S_IRGRP    equ 00040o
+S_IWGRP    equ 00020o
+S_IXGRP    equ 00010o
+S_IROTH    equ 00004o
+S_IWOTH    equ 00002o
+S_IXOTH    equ 00001o
 
 init_memory:
 	xor	ebx,ebx
