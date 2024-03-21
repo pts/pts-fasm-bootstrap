@@ -185,7 +185,8 @@ init_memory:
 	;mov	ebx,syscall_buffer
 	;mov	eax,116  ; SYS_sysinfo. We are interested only the sysinfo.freeram field ([syscall_buffer+14h]), but on modern Linux it's not bytes anymore (see mem_unit in sysinfo(2)), so it's meaningless below.
 	;int	0x80
-	mov dword [available_memory],0x100000  ; Hardcode allocating maximum 1 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30.
+	;mov dword [available_memory],0x100000  ; Hardcode allocating maximum 1 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30.
+	mov dword [available_memory],0x280000  ; Hardcode allocating maximum 2.5 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30. 2.5 MiB is enough to compile fasm 1.73.32.
     allocate_memory:
 	mov	ebx,dword [additional_memory]
 	add	ebx,dword [available_memory]

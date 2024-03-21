@@ -58,6 +58,7 @@ awk <fasm-src-1.73.32/Linux/fasm.asm >fasm-src-1.73.32/Linux/fasmb-1.20.asm '
       }
     }
     END{print"program_end:\r"}'
+cp -a fasm-src-1.73.32/Linux/fasmb-1.20.asm fasm-src-1.73.32/Linux/fasmb-bootstrap.asm
 
 # Compile version $2 using executable binary version $1, and then $2 by itself.
 # Input:  fasm-$1-re fasm-$2-src/
@@ -90,7 +91,8 @@ chmod 755 fbsasm
 cp -a fbsasm fasm-re-bootstrap
 
 compile bootstrap 1.20
-#ls -l fbsasm fasm-re-1.30
+#ls -l fbsasm fasm-re-1.20
+compile bootstrap 1.73.32
 rm -f fbsasm fasm-re-bootstrap
 compile 1.20 1.73.32
 
