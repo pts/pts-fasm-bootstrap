@@ -6,6 +6,7 @@ test "${0%/*}" = "$0" || cd "${0%/*}"
 comrade=../comrade
 regular=../regular
 
+#test -f "$comrade/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.asm and system.inc from fasm 1.37.
 test -f "$comrade/fasm130.zip"  # 2002-01-18 (file timestamps are wrong, they indicate 2001-01-18). !! Do it with something earlier.
 test -f "$comrade/fasm137.zip"  # 2002-06-12 fasm 1.37 is the first with a Linux source or binary. It's UPX-compressed and it doesn't work, because it tries to use sysinfo.freeram and interpret it as bytes (too few). 
 test -f "$comrade/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
@@ -63,6 +64,7 @@ mv tmp/SOURCE fasm-src-1.37
 rm -rf tmp
 mv fasm-src-1.37/Linux/fasm.asm fasm-src-1.37/Linux/fasm.asm.orig
 awk >fasm-src-1.37/Linux/fasm.asm <fasm-src-1.37/Linux/fasm.asm.orig '{gsub(/^include '\''..\\/, "include '\''../"); print}'
+# !! Fix octal constants in system.inc. That affects the `create:' function.
 mv fasm-src-1.37/Linux/system.inc fasm-src-1.37/Linux/system.inc.orig
 awk >fasm-src-1.37/Linux/system.inc <fasm-src-1.37/Linux/system.inc.orig '{if(/allocate_memory:/){print"\tmov dword [buffer+14h],0x200000  ; PATCH\r"}print}'  # Try to use at least 2 MiB of memory. 1 MiB is not enough.
 
@@ -114,10 +116,17 @@ compile() {
   fi
 }
 
-#cp -a ../../fasm-1.73.30/fasm fasm-re-bootstrap  # !! Use earlier fasm or do a binary patch.
-cp -a fasm-golden-1.30 fasm-re-bootstrap
+#cp -a ../../fasm-1.73.30/fasm fasm-re-bootstrap
+#cp -a fasm-golden-1.30 fasm-re-bootstrap
+
+# This is the bootstrap assembler, it can assemble fasm 1.30 (and probably earlier).
+nasm-0.98.39 -O1 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm
+chmod 755 fbsasm
+cp -a fbsasm fasm-re-bootstrap
 
 compile bootstrap 1.30
+#ls -l fbsasm fasm-re-1.30
+rm -f fbsasm fasm-re-bootstrap
 compile 1.30 1.43
 compile 1.43 1.73.32
 
