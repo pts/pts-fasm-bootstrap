@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-*
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -83,7 +83,9 @@ compile() {
 #cp -a fasm-golden-1.30 fasm-re-bootstrap
 
 # This is the bootstrap assembler, it can assemble fasm 1.30 (and probably earlier).
-nasm-0.98.39 -O1 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm
+nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+#nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
+#nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
 chmod 755 fbsasm
 cp -a fbsasm fasm-re-bootstrap
 
