@@ -39,6 +39,8 @@ source files from fasm 1.30 and fasm 1.37 (Linux-specific `fasm.asm` and
 `system.inc`), and manually converting it to NASM syntax (mostly doing some
 manual changes and then many regexp substitutions).
 
+## The bootstrap assembler
+
 The bootstrap assembler is a simple, non-optimizing assembler targeting i386
 (32-bit x86 only), and supports a subset of fasm 1.30 syntax, and supports
 only a subset of the i386 (32-bit x86) instructions. Its only goal is to
