@@ -78,7 +78,7 @@ start:
 	mov	eax,dword [buffer+4]
 	div	ecx
 	add	eax,ebx
-	mov	[start_time],eax
+	mov	dword [start_time],eax
 
 	call	preprocessor
 	call	parser
@@ -100,7 +100,7 @@ start:
 	mov	eax,dword [buffer+4]
 	div	ecx
 	add	eax,ebx
-	sub	eax,[start_time]
+	sub	eax,dword [start_time]
 	jnc	time_ok
 	add	eax,3600000
       time_ok:
@@ -121,7 +121,7 @@ start:
 	mov	esi,_seconds_suffix
 	call	display_string
       display_bytes_count:
-	mov	eax,[written_size]
+	mov	eax,dword [written_size]
 	call	display_number
 	mov	esi,_bytes_suffix
 	call	display_string
@@ -168,23 +168,23 @@ init_memory:
 	xor	ebx,ebx
 	mov	eax,45
 	int	0x80
-	mov	[additional_memory],eax
+	mov	dword [additional_memory],eax
 	mov	ebx,buffer
 	mov	eax,116
 	int	0x80
 	mov dword [buffer+14h],0x100000  ; PATCH
     allocate_memory:
-	mov	ebx,[additional_memory]
+	mov	ebx,dword [additional_memory]
 	add	ebx,dword [buffer+14h]
 	mov	eax,45
 	int	0x80
-	mov	[memory_end],eax
-	sub	eax,[additional_memory]
+	mov	dword [memory_end],eax
+	sub	eax,dword [additional_memory]
 	jz	not_enough_memory
 	shr	eax,3
-	add	eax,[additional_memory]
-	mov	[additional_memory_end],eax
-	mov	[memory_start],eax
+	add	eax,dword [additional_memory]
+	mov	dword [additional_memory_end],eax
+	mov	dword [memory_start],eax
 	ret
     not_enough_memory:
 	shr	dword [buffer+14h],1
@@ -367,7 +367,7 @@ fatal_error:
 	jmp	exit_program
 assembler_error:
 	call	flush_display_buffer
-	mov	ebx,[current_line]
+	mov	ebx,dword [current_line]
       find_error_home:
 	test	byte [ebx+7],80h
 	jz	error_home_ok
@@ -382,18 +382,18 @@ assembler_error:
 	call	display_number
 	mov	dl,']'
 	call	display_character
-	cmp	ebx,[current_line]
+	cmp	ebx,dword [current_line]
 	je	line_number_ok
 	mov	dl,20h
 	call	display_character
-	mov	esi,[current_line]
+	mov	esi,dword [current_line]
 	mov	esi,[esi]
 	movzx	ecx,byte [esi]
 	inc	esi
 	call	display_block
 	mov	esi,line_number_start
 	call	display_string
-	mov	esi,[current_line]
+	mov	esi,dword [current_line]
 	mov	eax,[esi+4]
 	and	eax,7FFFFFFFh
 	call	display_number
@@ -414,11 +414,11 @@ assembler_error:
 	xor	al,al
 	call	lseek
 	mov	ecx,[esp]
-	mov	edx,[memory_start]
+	mov	edx,dword [memory_start]
 	call	read
 	call	close
 	pop ecx
-	mov	esi,[memory_start]
+	mov	esi,dword [memory_start]
       get_line_data:
 	mov	al,[esi]
 	cmp	al,0Ah
@@ -433,7 +433,7 @@ assembler_error:
 	loop	get_line_data
       display_line_data:
 	mov	ecx,esi
-	mov	esi,[memory_start]
+	mov	esi,dword [memory_start]
 	sub	ecx,esi
 	call	display_block
 	mov	esi,lf
@@ -754,7 +754,7 @@ get_number:
 	jne	not_number
 	lodsb
 	movzx	ecx,al
-	mov	[number_start],esi
+	mov	dword [number_start],esi
 	mov	al,[esi]
 	sub	al,30h
 	jb	invalid_number
@@ -785,7 +785,7 @@ get_number:
 	xor	edx,edx
 	mov	ebx,1
       get_dec_digit:
-	cmp	esi,[number_start]
+	cmp	esi,dword [number_start]
 	jb	number_ok
 	movzx	eax,byte [esi]
 	sub	al,30h
@@ -814,7 +814,7 @@ get_number:
       bad_number:
 	pop eax
       invalid_number:
-	mov	esi,[number_start]
+	mov	esi,dword [number_start]
 	dec	esi
       not_number:
 	dec	esi
@@ -823,7 +823,7 @@ get_number:
       get_bin_number:
 	xor	bl,bl
       get_bin_digit:
-	cmp	esi,[number_start]
+	cmp	esi,dword [number_start]
 	jb	number_ok
 	movzx	eax,byte [esi]
 	sub	al,30h
@@ -852,7 +852,7 @@ get_number:
       get_hex_number:
 	xor	bl,bl
       get_hex_digit:
-	cmp	esi,[number_start]
+	cmp	esi,dword [number_start]
 	jb	number_ok
 	movzx	eax,byte [esi]
 	cmp	al,'x'
@@ -891,7 +891,7 @@ get_number:
       get_oct_number:
 	xor	bl,bl
       get_oct_digit:
-	cmp	esi,[number_start]
+	cmp	esi,dword [number_start]
 	jb	number_ok
 	movzx	eax,byte [esi]
 	sub	al,30h
@@ -920,7 +920,7 @@ get_number:
 	jmp	get_oct_digit
       hex_number_ok:
 	dec	esi
-	cmp	esi,[number_start]
+	cmp	esi,dword [number_start]
 	jne	bad_number
       number_ok:
 	pop esi
@@ -1014,13 +1014,13 @@ get_fp_value:
 	jz	not_fp_value
 	pop esi
 	lodsb
-	mov	[fp_sign],0
+	mov	byte [fp_sign],0
 	cmp	al,1Ah
 	je	fp_get
 	inc	esi
 	cmp	al,'+'
 	je	fp_get
-	mov	[fp_sign],1
+	mov	byte [fp_sign],1
       fp_get:
 	lodsb
 	movzx	ecx,al
@@ -1030,7 +1030,7 @@ get_fp_value:
 	mov	[edi+4],edx
 	mov	[edi+12],edx
 	call	fp_optimize
-	mov	[fp_format],0
+	mov	byte [fp_format],0
 	mov	al,[esi]
       fp_before_dot:
 	lodsb
@@ -1070,10 +1070,10 @@ get_fp_value:
 	lodsb
 	cmp	al,'E'
 	je	fp_exponent
-	inc	[fp_format]
-	cmp	[fp_format],80h
+	inc	byte [fp_format]
+	cmp	byte [fp_format],80h
 	jne	fp_counter_ok
-	mov	[fp_format],7Fh
+	mov	byte [fp_format],7Fh
       fp_counter_ok:
 	dec	esi
 	mov	edi,fp_value+16
@@ -1100,7 +1100,7 @@ get_fp_value:
 	loop	fp_after_dot
 	jmp	fp_done
       fp_exponent:
-	or	[fp_format],80h
+	or	byte [fp_format],80h
 	xor	edx,edx
 	xor	ebp,ebp
 	dec	ecx
@@ -1144,9 +1144,9 @@ get_fp_value:
 	loop	fp_negative_power
       fp_done:
 	mov	edi,fp_value
-	mov	al,[fp_format]
+	mov	al,byte [fp_format]
 	mov	[edi+10],al
-	mov	al,[fp_sign]
+	mov	al,byte [fp_sign]
 	mov	[edi+11],al
 	test	byte [edi+15],80h
 	jz	fp_ok
@@ -1455,14 +1455,14 @@ calculate_expression:
 	jz	label_undefined
 	test	byte [ebx+8],4
 	jz	label_defined
-	mov	al,[current_pass]
+	mov	al,byte [current_pass]
 	cmp	al,[ebx+9]
 	jne	label_undefined
       label_defined:
 	mov	al,[ebx+11]
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	label_type_ok
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	label_type_ok
 	xor	al,al
       label_type_ok:
@@ -1478,38 +1478,38 @@ calculate_expression:
 	mov	al,[ebx+10]
 	or	al,al
 	jz	calculate_expression
-	cmp	[forced_size],2
+	cmp	byte [forced_size],2
 	je	calculate_expression
-	cmp	[forced_size],1
+	cmp	byte [forced_size],1
 	jne	check_size
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	calculate_expression
-	mov	[operand_size],al
+	mov	byte [operand_size],al
 	jmp	calculate_expression
       check_size:
-	xchg	[operand_size],al
+	xchg	byte [operand_size],al
 	or	al,al
 	jz	calculate_expression
-	cmp	al,[operand_size]
+	cmp	al,byte [operand_size]
 	jne	operand_sizes_do_not_match
 	jmp	calculate_expression
       current_offset_label:
-	cmp	[reloc_labels],0
+	cmp	byte [reloc_labels],0
 	je	get_current_offset
 	mov	byte [edi+12],2
       get_current_offset:
-	mov	eax,[current_offset]
-	sub	eax,[org_start]
+	mov	eax,dword [current_offset]
+	sub	eax,dword [org_start]
 	cdq
 	stosd
 	mov	eax,edx
 	stosd
-	mov	eax,[org_sib]
+	mov	eax,dword [org_sib]
 	stosd
 	scasd
 	jmp	calculate_expression
       counter_label:
-	mov	eax,[counter]
+	mov	eax,dword [counter]
 	stosd
 	xor	eax,eax
 	stosd
@@ -1517,9 +1517,9 @@ calculate_expression:
 	scasd
 	jmp	calculate_expression
       label_undefined:
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	invalid_value
-	or	[next_pass_needed],-1
+	or	byte [next_pass_needed],-1
 	mov	byte [edi+12],0
 	xor	eax,eax
 	stosd
@@ -1528,7 +1528,7 @@ calculate_expression:
 	scasd
 	jmp	calculate_expression
       calculate_add:
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	jne	add_values
 	cmp	byte [edi+12],0
 	je	add_values
@@ -1589,7 +1589,7 @@ calculate_expression:
 	ret
       calculate_sub:
 	xor	ah,ah
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	jne	sub_values
 	mov	ah,[ebx+12]
 	mov	al,[edi+12]
@@ -1794,13 +1794,13 @@ calculate_expression:
 	or	[ebx+4],eax
 	jmp	calculate_expression
       calculate_xor:
-	cmp	[value_size],1
+	cmp	byte [value_size],1
 	je	xor_byte
-	cmp	[value_size],2
+	cmp	byte [value_size],2
 	je	xor_word
-	cmp	[value_size],4
+	cmp	byte [value_size],4
 	je	xor_dword
-	cmp	[value_size],6
+	cmp	byte [value_size],6
 	je	xor_pword
       xor_qword:
 	mov	eax,[edi]
@@ -1910,13 +1910,13 @@ calculate_expression:
 	jne	invalid_expression
 	cmp	byte [edi+12],0
 	jne	invalid_use_of_symbol
-	cmp	[value_size],1
+	cmp	byte [value_size],1
 	je	not_byte
-	cmp	[value_size],2
+	cmp	byte [value_size],2
 	je	not_word
-	cmp	[value_size],4
+	cmp	byte [value_size],4
 	je	not_dword
-	cmp	[value_size],6
+	cmp	byte [value_size],6
 	je	not_pword
       not_qword:
 	not	dword [edi]
@@ -1975,11 +1975,11 @@ calculate_expression:
 	je	rva_ok
 	or	al,al
 	jnz	invalid_use_of_symbol
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	invalid_use_of_symbol
       rva_ok:
 	mov	byte [edi+12],0
-	mov	eax,[header_data]
+	mov	eax,dword [header_data]
 	mov	eax,[eax+34h]
 	sub	[edi],eax
 	sbb	dword [edi+4],0
@@ -1991,7 +1991,7 @@ calculate_expression:
 	jne	divider_ok
 	cmp	dword [edi+4],0
 	jne	divider_ok
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	value_out_of_range
 	jmp	div_done
       divider_ok:
@@ -2062,7 +2062,7 @@ calculate_expression:
       convert_fp:
 	mov	word [edi+8],0
 	mov	byte [edi+12],0
-	mov	al,[value_size]
+	mov	al,byte [value_size]
 	cmp	al,4
 	je	convert_fp_dword
 	cmp	al,8
@@ -2152,9 +2152,9 @@ calculate_expression:
 	ret
 
 get_byte_value:
-	mov	[value_size],1
-	mov	[forced_size],2
-	mov	[current_offset],edi
+	mov	byte [value_size],1
+	mov	byte [forced_size],2
+	mov	dword [current_offset],edi
 	call	calculate_expression
 	cmp	word [edi+8],0
 	jne	invalid_value
@@ -2174,23 +2174,23 @@ get_byte_value:
       return_value:
 	ret
       range_exceeded:
-	cmp	[error_line],0
+	cmp	dword [error_line],0
 	jne	return_value
-	mov	eax,[current_line]
-	mov	[error_line],eax
-	mov	[error],value_out_of_range
+	mov	eax,dword [current_line]
+	mov	dword [error_line],eax
+	mov	dword [error],value_out_of_range
 	ret
 get_word_value:
-	mov	[value_size],2
-	mov	[forced_size],2
-	mov	[current_offset],edi
+	mov	byte [value_size],2
+	mov	byte [forced_size],2
+	mov	dword [current_offset],edi
 	call	calculate_expression
 	cmp	word [edi+8],0
 	jne	invalid_value
 	mov	al,[edi+12]
 	cmp	al,2
 	je	invalid_use_of_symbol
-	mov	[value_type],al
+	mov	byte [value_type],al
       check_word_value:
 	mov	eax,[edi]
 	cmp	dword [edi+4],0
@@ -2205,14 +2205,14 @@ get_word_value:
 	jae	range_exceeded
 	ret
 get_dword_value:
-	mov	[value_size],4
-	mov	[forced_size],2
-	mov	[current_offset],edi
+	mov	byte [value_size],4
+	mov	byte [forced_size],2
+	mov	dword [current_offset],edi
 	call	calculate_expression
 	cmp	word [edi+8],0
 	jne	invalid_value
 	mov	al,[edi+12]
-	mov	[value_type],al
+	mov	byte [value_type],al
       check_dword_value:
 	mov	eax,[edi]
 	cmp	dword [edi+4],0
@@ -2224,14 +2224,14 @@ get_dword_value:
       dword_positive:
 	ret
 get_pword_value:
-	mov	[value_size],6
-	mov	[forced_size],2
-	mov	[current_offset],edi
+	mov	byte [value_size],6
+	mov	byte [forced_size],2
+	mov	dword [current_offset],edi
 	call	calculate_expression
 	cmp	word [edi+8],0
 	jne	invalid_value
 	mov	al,[edi+12]
-	mov	[value_type],al
+	mov	byte [value_type],al
 	mov	eax,[edi]
 	mov	edx,[edi+4]
 	cmp	edx,10000h
@@ -2240,25 +2240,25 @@ get_pword_value:
 	jl	range_exceeded
 	ret
 get_qword_value:
-	mov	[value_size],8
-	mov	[forced_size],2
-	mov	[current_offset],edi
+	mov	byte [value_size],8
+	mov	byte [forced_size],2
+	mov	dword [current_offset],edi
 	call	calculate_expression
 	cmp	word [edi+8],0
 	jne	invalid_value
 	mov	al,[edi+12]
-	mov	[value_type],al
+	mov	byte [value_type],al
 	mov	eax,[edi]
 	mov	edx,[edi+4]
 	ret
 get_value:
-	mov	[operand_size],0
-	mov	[forced_size],0
+	mov	byte [operand_size],0
+	mov	byte [forced_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
 	jne	invalid_value
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	value_byte
 	cmp	al,2
@@ -2294,9 +2294,9 @@ get_value:
 	ret
 
 get_address:
-	mov	[segment_register],0
-	mov	[address_size],0
-	mov	[value_size],4
+	mov	byte [segment_register],0
+	mov	byte [address_size],0
+	mov	byte [value_size],4
 	push address_ok
 	mov	al,[esi]
 	and	al,11110000b
@@ -2304,7 +2304,7 @@ get_address:
 	jne	get_size_prefix
 	lodsb
 	sub	al,60h
-	mov	[segment_register],al
+	mov	byte [segment_register],al
 	mov	al,[esi]
 	and	al,11110000b
       get_size_prefix:
@@ -2314,24 +2314,24 @@ get_address:
 	sub	al,70h
 	cmp	al,4
 	ja	invalid_address_size
-	mov	[address_size],al
-	mov	[value_size],al
+	mov	byte [address_size],al
+	mov	byte [value_size],al
 	jmp	calculate_address
 get_address_value:
-	mov	[address_size],0
-	mov	[value_size],4
+	mov	byte [address_size],0
+	mov	byte [value_size],4
 	push address_ok
       calculate_address:
-	mov	[current_offset],edi
+	mov	dword [current_offset],edi
 	call	calculate_expression
 	mov	al,[edi+12]
-	mov	[value_type],al
+	mov	byte [value_type],al
 	cmp	al,1
 	je	invalid_use_of_symbol
 	or	al,al
 	jz	address_symbol_ok
 	mov	al,84h
-	xchg	[address_size],al
+	xchg	byte [address_size],al
 	or	al,al
 	jz	address_symbol_ok
 	cmp	al,4
@@ -2339,7 +2339,7 @@ get_address_value:
       address_symbol_ok:
 	xor	bx,bx
 	xor	cl,cl
-	mov	ch,[address_size]
+	mov	ch,byte [address_size]
 	cmp	word [edi+8],0
 	je	check_dword_value
 	mov	al,[edi+8]
@@ -2579,32 +2579,32 @@ get_logical_value:
       compare_values:
 	pop esi
 	call	get_value
-	mov	bl,[value_type]
+	mov	bl,byte [value_type]
 	push eax
 	push edx
 	push bx
 	lodsb
-	mov	[compare_type],al
+	mov	byte [compare_type],al
 	call	get_value
 	pop bx
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	jne	values_ok
-	cmp	bl,[value_type]
+	cmp	bl,byte [value_type]
 	jne	invalid_use_of_symbol
       values_ok:
 	pop ecx
 	pop ebx
-	cmp	[compare_type],'='
+	cmp	byte [compare_type],'='
 	je	check_equal
-	cmp	[compare_type],'>'
+	cmp	byte [compare_type],'>'
 	je	check_greater
-	cmp	[compare_type],'<'
+	cmp	byte [compare_type],'<'
 	je	check_less
-	cmp	[compare_type],'ò'
+	cmp	byte [compare_type],'ò'
 	je	check_not_less
-	cmp	[compare_type],'ó'
+	cmp	byte [compare_type],'ó'
 	je	check_not_greater
-	cmp	[compare_type],'ö'
+	cmp	byte [compare_type],'ö'
 	je	check_not_equal
 	jmp	invalid_expression
       check_equal:
@@ -2650,7 +2650,7 @@ get_logical_value:
       logical_number:
 	pop esi
 	call	get_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_expression
 	or	eax,edx
 	jnz	return_true
@@ -2680,23 +2680,23 @@ get_logical_value:
 ; All rights reserved.
 
 preprocessor:
-	mov	eax,[memory_start]
-	mov	[source_start],eax
+	mov	eax,dword [memory_start]
+	mov	dword [source_start],eax
 	push	dword [additional_memory]
-	mov	eax,[additional_memory]
-	mov	[macros_list],eax
-	mov	eax,[additional_memory_end]
-	mov	[labels_list],eax
-	mov	[display_buffer],0
-	mov	[macro_status],0
-	mov	edx,[input_file]
-	mov	edi,[memory_start]
+	mov	eax,dword [additional_memory]
+	mov	dword [macros_list],eax
+	mov	eax,dword [additional_memory_end]
+	mov	dword [labels_list],eax
+	mov	dword [display_buffer],0
+	mov	byte [macro_status],0
+	mov	edx,dword [input_file]
+	mov	edi,dword [memory_start]
 	call	preprocess_file
 	jc	main_file_not_found
-	cmp	[macro_status],0
+	cmp	byte [macro_status],0
 	jne	unexpected_end_of_file
 	pop	dword [additional_memory]
-	mov	[code_start],edi
+	mov	dword [code_start],edi
 	ret
 
 preprocess_file:
@@ -2712,7 +2712,7 @@ preprocess_file:
 	xor	edx,edx
 	call	lseek
 	pop ecx
-	mov	edx,[memory_end]
+	mov	edx,dword [memory_end]
 	dec	edx
 	mov	byte [edx],1Ah
 	sub	edx,ecx
@@ -2720,7 +2720,7 @@ preprocess_file:
 	mov	esi,edx
 	cmp	edx,edi
 	jbe	out_of_memory
-	mov	[memory_end],edx
+	mov	dword [memory_end],edx
 	call	read
 	call	close
 	pop edx
@@ -2728,7 +2728,7 @@ preprocess_file:
 	mov	ebx,esi
       preprocess_source:
 	inc	ecx
-	mov	[current_line],edi
+	mov	dword [current_line],edi
 	mov	eax,edx
 	stosd
 	mov	eax,ecx
@@ -2757,12 +2757,12 @@ preprocess_file:
 
 convert_line:
 	push ecx
-	cmp	[macro_status],0
+	cmp	byte [macro_status],0
 	jle	convert_line_data
 	mov	ax,3Bh
 	stosw
       convert_line_data:
-	cmp	edi,[memory_end]
+	cmp	edi,dword [memory_end]
 	jae	out_of_memory
 	lodsb
 	cmp	al,20h
@@ -2921,9 +2921,9 @@ preprocess_line:
 	push	dword [struc_name]
 	push ecx
 	push esi
-	mov	esi,[current_line]
+	mov	esi,dword [current_line]
 	add	esi,12
-	mov	al,[macro_status]
+	mov	al,byte [macro_status]
 	dec	al
 	jz	find_macro_block
 	dec	al
@@ -2952,10 +2952,10 @@ preprocess_line:
 	call	get_macro
 	jc	not_macro
 	mov	byte [edx-2],3Bh
-	mov	[struc_name],0
+	mov	dword [struc_name],0
 	jmp	use_macro
       not_macro:
-	mov	[struc_name],esi
+	mov	dword [struc_name],esi
 	add	esi,ecx
 	lodsb
 	cmp	al,':'
@@ -2975,7 +2975,7 @@ preprocess_line:
 	mov	[edx],al
 	jmp	use_macro
       not_preprocessor_symbol:
-	mov	esi,[current_line]
+	mov	esi,dword [current_line]
 	add	esi,12
 	call	process_symbolic_constants
       line_preprocessed:
@@ -2986,10 +2986,10 @@ preprocess_line:
 get_macro:
 	mov	edx,esi
 	mov	ebp,edi
-	mov	ebx,[additional_memory]
+	mov	ebx,dword [additional_memory]
       check_macro:
 	mov	cl,al
-	cmp	ebx,[macros_list]
+	cmp	ebx,dword [macros_list]
 	je	no_macro_found
 	sub	ebx,8
 	cmp	ax,[ebx]
@@ -3033,11 +3033,11 @@ process_symbolic_constants:
 	push edi
 	mov	ebx,esi
 	mov	eax,ecx
-	mov	edx,[labels_list]
+	mov	edx,dword [labels_list]
       scan_symbolic_constants:
 	mov	ecx,eax
 	mov	esi,ebx
-	cmp	edx,[additional_memory_end]
+	cmp	edx,dword [additional_memory_end]
 	je	not_symbolic_constant
 	cmp	al,[edx]
 	jne	next_symbolic_constant
@@ -3125,17 +3125,17 @@ define_symbolic_constant:
 	push esi
 	call	process_symbolic_constants
 	pop ebx
-	mov	edx,[labels_list]
+	mov	edx,dword [labels_list]
 	sub	edx,16
-	cmp	edx,[additional_memory]
+	cmp	edx,dword [additional_memory]
 	jb	out_of_memory
-	mov	[labels_list],edx
+	mov	dword [labels_list],edx
 	mov	ecx,edi
 	dec	ecx
 	sub	ecx,ebx
 	mov	[edx+8],ecx
 	mov	[edx+12],ebx
-	mov	ebx,[struc_name]
+	mov	ebx,dword [struc_name]
 	mov	byte [ebx-2],3Bh
 	mov	al,[ebx-1]
 	mov	[edx],al
@@ -3144,22 +3144,22 @@ define_symbolic_constant:
 define_struc:
 	or	ah,1
 define_macro:
-	cmp	[macro_status],0
+	cmp	byte [macro_status],0
 	jne	unexpected_instruction
 	lodsb
 	cmp	al,1Ah
 	jne	invalid_name
 	lodsb
-	mov	ebx,[additional_memory]
+	mov	ebx,dword [additional_memory]
 	mov	[ebx],ax
 	mov	[ebx+4],esi
 	add	ebx,8
-	cmp	ebx,[labels_list]
+	cmp	ebx,dword [labels_list]
 	jae	out_of_memory
-	mov	[additional_memory],ebx
+	mov	dword [additional_memory],ebx
 	movzx	eax,al
 	add	esi,eax
-	mov	[macro_status],1
+	mov	byte [macro_status],1
 	xor	bl,bl
 	lodsb
 	or	al,al
@@ -3205,7 +3205,7 @@ define_macro:
 	cmp	al,'{'
 	jne	unexpected_characters
       found_macro_block:
-	mov	[macro_status],2
+	mov	byte [macro_status],2
       skip_macro_block:
 	lodsb
 	cmp	al,1Ah
@@ -3221,7 +3221,7 @@ define_macro:
 	lodsb
 	or	al,al
 	jnz	extra_characters_on_line
-	mov	[macro_status],0
+	mov	byte [macro_status],0
 	jmp	line_preprocessed
       skip_macro_symbol:
 	movzx	eax,byte [esi]
@@ -3254,15 +3254,15 @@ use_macro:
 	push	dword [macro_block_line_number]
 	push	dword [counter]
 	push	dword [counter_limit]
-	or	[macro_status],80h
+	or	byte [macro_status],80h
 	or	byte [ebx+1],80h
 	mov	edx,esi
 	movzx	esi,byte [ebx]
 	add	esi,[ebx+4]
 	push edi
-	mov	edi,[additional_memory]
-	mov	[macro_constants],edi
-	mov	[counter],0
+	mov	edi,dword [additional_memory]
+	mov	dword [macro_constants],edi
+	mov	dword [counter],0
       process_macro_arguments:
 	lodsb
 	or	al,al
@@ -3273,14 +3273,14 @@ use_macro:
 	jne	get_macro_argument
 	mov	ebp,esi
 	inc	esi
-	inc	[counter]
+	inc	dword [counter]
       get_macro_argument:
 	movzx	eax,byte [esi]
 	inc	esi
 	mov	[edi+4],esi
 	add	esi,eax
 	ror	eax,8
-	or	eax,[counter]
+	or	eax,dword [counter]
 	rol	eax,8
 	mov	[edi],eax
 	xchg	esi,edx
@@ -3310,7 +3310,7 @@ use_macro:
 	mov	[edi+8],eax
 	xchg	esi,edx
 	add	edi,16
-	cmp	edi,[labels_list]
+	cmp	edi,dword [labels_list]
 	jae	out_of_memory
 	lodsb
 	cmp	al,','
@@ -3328,7 +3328,7 @@ use_macro:
 	cmp	byte [edx],','
 	jne	arguments_end
 	inc	edx
-	inc	[counter]
+	inc	dword [counter]
 	mov	esi,ebp
 	jmp	process_macro_arguments
       arguments_end:
@@ -3345,20 +3345,20 @@ use_macro:
       macro_instructions_start:
 	cmp	byte [edx],0
 	jne	invalid_macro_arguments
-	mov	[additional_memory],edi
+	mov	dword [additional_memory],edi
 	pop edi
 	mov	ecx,80000000h
 	push	dword [current_line]
-	mov	[macro_block],esi
-	mov	[macro_block_line_number],ecx
+	mov	dword [macro_block],esi
+	mov	dword [macro_block_line_number],ecx
 	mov	eax,1
-	xchg	eax,[counter]
-	mov	[counter_limit],eax
+	xchg	eax,dword [counter]
+	mov	dword [counter_limit],eax
 	or	eax,eax
 	jnz	process_macro_line
-	mov	[counter_limit],1
+	mov	dword [counter_limit],1
       process_macro_line:
-	mov	[current_line],edi
+	mov	dword [current_line],edi
 	mov	eax,[ebx+4]
 	dec	eax
 	stosd
@@ -3366,7 +3366,7 @@ use_macro:
 	stosd
 	mov	eax,[esp]
 	stosd
-	or	[macro_status],40h
+	or	byte [macro_status],40h
 	push ebx
 	push ecx
       process_macro:
@@ -3377,7 +3377,7 @@ use_macro:
 	jz	macro_line_processed
 	cmp	al,1Ah
 	je	process_macro_symbol
-	and	[macro_status],~40h
+	and	byte [macro_status],~40h
 	stosb
 	cmp	al,22h
 	jne	process_macro
@@ -3389,7 +3389,7 @@ use_macro:
       process_macro_symbol:
 	push esi
 	push edi
-	test	[macro_status],40h
+	test	byte [macro_status],40h
 	jz	not_macro_directive
 	movzx	ecx,byte [esi]
 	inc	esi
@@ -3409,8 +3409,8 @@ use_macro:
 	pop ebx
 	jmp	edx
       not_macro_directive:
-	and	[macro_status],~40h
-	mov	eax,[counter]
+	and	byte [macro_status],~40h
+	mov	eax,dword [counter]
 	or	eax,eax
 	jnz	check_for_macro_constant
 	inc	eax
@@ -3419,10 +3419,10 @@ use_macro:
 	mov	al,[esi]
 	inc	esi
 	movzx	ebp,al
-	mov	edx,[macro_constants]
+	mov	edx,dword [macro_constants]
 	mov	ebx,esi
       scan_macro_constants:
-	cmp	edx,[additional_memory]
+	cmp	edx,dword [additional_memory]
 	je	not_macro_constant
 	cmp	eax,[edx]
 	je	try_macro_constant
@@ -3438,13 +3438,13 @@ use_macro:
 	add	edx,16
 	jmp	scan_macro_constants
       macro_constant_found:
-	cmp	[counter],0
+	cmp	dword [counter],0
 	jne	replace_macro_constant
 	mov	eax,[edx]
 	shr	eax,8
 	or	eax,eax
 	jz	replace_macro_constant
-	cmp	eax,[counter_limit]
+	cmp	eax,dword [counter_limit]
 	je	replace_macro_constant
 	pop edi
 	mov	ecx,[edx+8]
@@ -3477,7 +3477,7 @@ use_macro:
 	stosb
 	cmp	byte [esi],'.'
 	jne	copy_macro_symbol
-	mov	ebx,[struc_name]
+	mov	ebx,dword [struc_name]
 	or	ebx,ebx
 	jz	copy_macro_symbol
 	xchg	esi,ebx
@@ -3512,18 +3512,18 @@ use_macro:
 	push ecx
 	movzx	ecx,byte [esi]
 	inc	esi
-	mov	edx,[additional_memory]
-	mov	eax,[counter]
+	mov	edx,dword [additional_memory]
+	mov	eax,dword [counter]
 	shl	eax,8
 	mov	al,cl
 	mov	[edx],eax
 	mov	[edx+4],esi
-	movzx	eax,[_counter]
-	mov	edi,[memory_end]
+	movzx	eax,byte [_counter]
+	mov	edi,dword [memory_end]
 	sub	edi,eax
 	sub	edi,ecx
 	sub	edi,3
-	mov	[memory_end],edi
+	mov	dword [memory_end],edi
 	mov	[edx+12],edi
 	add	al,cl
 	jc	name_too_long
@@ -3536,9 +3536,9 @@ use_macro:
 	add	eax,2
 	mov	[edx+8],eax
 	add	edx,16
-	cmp	edx,[labels_list]
+	cmp	edx,dword [labels_list]
 	jae	out_of_memory
-	mov	[additional_memory],edx
+	mov	dword [additional_memory],edx
 	rep	movsb
 	mov	al,'?'
 	stosb
@@ -3549,7 +3549,7 @@ use_macro:
 	pop esi
 	pop ecx
 	pop edi
-	cmp	edi,[memory_end]
+	cmp	edi,dword [memory_end]
 	jae	out_of_memory
 	lodsb
 	cmp	al,','
@@ -3562,45 +3562,45 @@ use_macro:
       common_block:
 	call	close_macro_block
 	jc	process_macro_line
-	mov	[counter],0
+	mov	dword [counter],0
 	jmp	new_macro_block
       forward_block:
 	call	close_macro_block
 	jc	process_macro_line
-	mov	[counter],1
+	mov	dword [counter],1
 	jmp	new_macro_block
       reverse_block:
 	call	close_macro_block
 	jc	process_macro_line
-	mov	eax,[counter_limit]
+	mov	eax,dword [counter_limit]
 	or	eax,80000000h
-	mov	[counter],eax
+	mov	dword [counter],eax
       new_macro_block:
-	mov	[macro_block],esi
-	mov	[macro_block_line_number],ecx
+	mov	dword [macro_block],esi
+	mov	dword [macro_block_line_number],ecx
 	jmp	process_macro_line
       close_macro_block:
 	push ecx
 	mov	eax,_counter
 	call	increase_counter
 	pop ecx
-	cmp	[counter],0
+	cmp	dword [counter],0
 	je	block_closed
 	jl	reverse_counter
-	mov	eax,[counter]
-	cmp	eax,[counter_limit]
+	mov	eax,dword [counter]
+	cmp	eax,dword [counter_limit]
 	je	block_closed
-	inc	[counter]
+	inc	dword [counter]
 	jmp	continue_block
       reverse_counter:
-	mov	eax,[counter]
+	mov	eax,dword [counter]
 	dec	eax
 	cmp	eax,80000000h
 	je	block_closed
-	mov	[counter],eax
+	mov	dword [counter],eax
       continue_block:
-	mov	esi,[macro_block]
-	mov	ecx,[macro_block_line_number]
+	mov	esi,dword [macro_block]
+	mov	ecx,dword [macro_block_line_number]
 	stc
 	ret
       block_closed:
@@ -3611,9 +3611,9 @@ use_macro:
 	jc	process_macro_line
 	and	byte [ebx+1],~80h
 	pop	dword [current_line]
-	mov	eax,[macro_constants]
-	mov	[additional_memory],eax
-	mov	[macro_status],0
+	mov	eax,dword [macro_constants]
+	mov	dword [additional_memory],eax
+	mov	byte [macro_status],0
 	pop	dword [counter_limit]
 	pop	dword [counter]
 	pop	dword [macro_block_line_number]
@@ -3652,15 +3652,15 @@ increase_counter:
 ; All rights reserved.
 
 parser:
-	mov	eax,[memory_end]
-	mov	[labels_list],eax
-	mov	[current_locals_prefix],0
-	mov	esi,[source_start]
-	mov	edi,[code_start]
+	mov	eax,dword [memory_end]
+	mov	dword [labels_list],eax
+	mov	dword [current_locals_prefix],0
+	mov	esi,dword [source_start]
+	mov	edi,dword [code_start]
 	push	dword [additional_memory]
      parser_loop:
-	mov	[current_line],esi
-	cmp	edi,[labels_list]
+	mov	dword [current_line],esi
+	cmp	edi,dword [labels_list]
 	jae	out_of_memory
 	mov	al,0Fh
 	stosb
@@ -3668,18 +3668,18 @@ parser:
 	stosd
 	add	esi,12
 	call	parse_line
-	cmp	esi,[code_start]
+	cmp	esi,dword [code_start]
 	jb	parser_loop
 	xor	al,al
 	stosb
 	pop	dword [additional_memory]
-	mov	eax,[code_start]
-	mov	[source_start],eax
-	mov	[code_start],edi
+	mov	eax,dword [code_start]
+	mov	dword [source_start],eax
+	mov	dword [code_start],edi
 	ret
 
 parse_line:
-	mov	[parenthesis_stack],0
+	mov	byte [parenthesis_stack],0
       instruction_start:
 	cmp	byte [esi],1Ah
 	jne	empty_instruction
@@ -3773,7 +3773,7 @@ parse_line:
 	call	get_label_id
 	mov	ebx,[eax+4]
 	dec	ebx
-	mov	[current_locals_prefix],ebx
+	mov	dword [current_locals_prefix],ebx
 	ret
       local_label_name:
 	call	get_label_id
@@ -3949,7 +3949,7 @@ parse_line:
 	inc	esi
 	mov	al,'{'
 	stosb
-	inc	[parenthesis_stack]
+	inc	byte [parenthesis_stack]
 	jmp	parse_arguments
       parse_expression:
 	mov	al,'('
@@ -4054,17 +4054,17 @@ parse_line:
 	mov	al,'ö'
 	jmp	separator
       argument_parsed:
-	cmp	[parenthesis_stack],0
+	cmp	byte [parenthesis_stack],0
 	je	parse_arguments
-	dec	[parenthesis_stack]
+	dec	byte [parenthesis_stack]
 	add	esp,8
 	jmp	argument_parsed
       expression_parsed:
-	cmp	[parenthesis_stack],0
+	cmp	byte [parenthesis_stack],0
 	je	parse_arguments
 	cmp	byte [esi],')'
 	jne	argument_parsed
-	dec	[parenthesis_stack]
+	dec	byte [parenthesis_stack]
 	pop edi
 	pop esi
 	jmp	parse_expression
@@ -4081,7 +4081,7 @@ parse_line:
       empty_label:
 	mov	eax,_counter
 	call	increase_counter
-	mov	[current_locals_prefix],eax
+	mov	dword [current_locals_prefix],eax
 	jmp	instruction_start
       skip_preprocessed_symbol:
 	lodsb
@@ -4101,7 +4101,7 @@ parse_line:
 	add	esi,eax
 	jmp	skip_next
       line_parsed:
-	cmp	[parenthesis_stack],0
+	cmp	byte [parenthesis_stack],0
 	jne	invalid_expression
 	ret
 
@@ -4112,86 +4112,86 @@ parse_line:
 ; All rights reserved.
 
 assembler:
-	mov	edi,[labels_list]
-	mov	ecx,[memory_end]
+	mov	edi,dword [labels_list]
+	mov	ecx,dword [memory_end]
 	sub	ecx,edi
 	shr	ecx,2
 	xor	eax,eax
 	rep	stosd
-	mov	[current_pass],0
-	mov	[number_of_sections],0
-	mov	[times_working],0
+	mov	byte [current_pass],0
+	mov	dword [number_of_sections],0
+	mov	byte [times_working],0
       assembler_loop:
-	mov	eax,[labels_list]
-	mov	[display_buffer],eax
-	mov	eax,[additional_memory_end]
-	mov	[structures_buffer],eax
-	mov	[next_pass_needed],0
-	mov	[output_format],0
-	mov	[format_flags],0
-	mov	[code_type],16
-	mov	[reloc_labels],0
-	mov	[virtual_data],0
-	mov	esi,[source_start]
-	mov	edi,[code_start]
-	mov	[org_start],edi
-	mov	[org_sib],0
-	mov	[error_line],0
-	mov	[counter],0
-	mov	[number_of_relocations],0
+	mov	eax,dword [labels_list]
+	mov	dword [display_buffer],eax
+	mov	eax,dword [additional_memory_end]
+	mov	dword [structures_buffer],eax
+	mov	byte [next_pass_needed],0
+	mov	byte [output_format],0
+	mov	dword [format_flags],0
+	mov	byte [code_type],16
+	mov	byte [reloc_labels],0
+	mov	byte [virtual_data],0
+	mov	esi,dword [source_start]
+	mov	edi,dword [code_start]
+	mov	dword [org_start],edi
+	mov	dword [org_sib],0
+	mov	dword [error_line],0
+	mov	dword [counter],0
+	mov	dword [number_of_relocations],0
       pass_loop:
 	call	assemble_line
 	jnc	pass_loop
-	mov	eax,[structures_buffer]
-	cmp	eax,[additional_memory_end]
+	mov	eax,dword [structures_buffer]
+	cmp	eax,dword [additional_memory_end]
 	jne	unexpected_end_of_file
-	cmp	[output_format],3
+	cmp	byte [output_format],3
 	jne	pass_done
 	call	finish_pe
       pass_done:
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	assemble_done
       next_pass:
-	inc	[current_pass]
-	cmp	[current_pass],100
+	inc	byte [current_pass]
+	cmp	byte [current_pass],100
 	jae	code_cannot_be_generated
 	jmp	assembler_loop
       pass_error:
-	mov	[current_line],eax
-	jmp	near [error]
+	mov	dword [current_line],eax
+	jmp	near dword [error]
       assemble_done:
-	mov	eax,[error_line]
+	mov	eax,dword [error_line]
 	or	eax,eax
 	jnz	pass_error
 	call	flush_display_buffer
       assemble_ok:
 	mov	eax,edi
-	sub	eax,[code_start]
-	mov	[real_code_size],eax
-	cmp	edi,[undefined_data_end]
+	sub	eax,dword [code_start]
+	mov	dword [real_code_size],eax
+	cmp	edi,dword [undefined_data_end]
 	jne	calculate_code_size
-	mov	edi,[undefined_data_start]
+	mov	edi,dword [undefined_data_start]
       calculate_code_size:
-	sub	edi,[code_start]
-	mov	[code_size],edi
-	mov	[written_size],0
-	mov	edx,[output_file]
+	sub	edi,dword [code_start]
+	mov	dword [code_size],edi
+	mov	dword [written_size],0
+	mov	edx,dword [output_file]
 	call	create
 	jc	write_failed
-	cmp	[output_format],2
+	cmp	byte [output_format],2
 	jne	write_code
 	call	write_mz_header
       write_code:
-	mov	edx,[code_start]
-	mov	ecx,[code_size]
-	add	[written_size],ecx
+	mov	edx,dword [code_start]
+	mov	ecx,dword [code_size]
+	add	dword [written_size],ecx
 	call	write
 	jc	write_failed
 	call	close
 	ret
 
 assemble_line:
-	mov	eax,[display_buffer]
+	mov	eax,dword [display_buffer]
 	sub	eax,100h
 	cmp	edi,eax
 	jae	out_of_memory
@@ -4216,16 +4216,16 @@ assemble_line:
 	cmp	ah,6
 	jne	illegal_instruction
 	and	al,1111b
-	mov	[segment_register],al
+	mov	byte [segment_register],al
 	call	store_segment_prefix
 	jmp	assemble_line
       code_type_setting:
 	lodsb
-	mov	[code_type],al
+	mov	byte [code_type],al
 	jmp	line_assembled
       new_line:
 	lodsd
-	mov	[current_line],eax
+	mov	dword [current_line],eax
 	jmp	assemble_line
       define_label:
 	lodsd
@@ -4233,25 +4233,25 @@ assemble_line:
 	lodsb
 	mov	dl,al
 	xor	ch,ch
-	cmp	[reloc_labels],0
+	cmp	byte [reloc_labels],0
 	je	label_reloc_ok
 	mov	ch,2
       label_reloc_ok:
 	xchg	ch,[ebx+11]
-	mov	al,[current_pass]
+	mov	al,byte [current_pass]
 	test	byte [ebx+8],1
 	jz	new_label
 	cmp	al,[ebx+9]
 	je	symbol_already_defined
 	mov	[ebx+9],al
 	mov	eax,edi
-	sub	eax,[org_start]
+	sub	eax,dword [org_start]
 	xchg	[ebx],eax
 	cdq
 	xchg	[ebx+4],edx
-	mov	ebp,[org_sib]
+	mov	ebp,dword [org_sib]
 	xchg	[ebx+12],ebp
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	assemble_line
 	cmp	eax,[ebx]
 	jne	changed_label
@@ -4263,18 +4263,18 @@ assemble_line:
 	jne	changed_label
 	jmp	assemble_line
       changed_label:
-	or	[next_pass_needed],-1
+	or	byte [next_pass_needed],-1
 	jmp	assemble_line
       new_label:
 	or	byte [ebx+8],1
 	mov	[ebx+9],al
 	mov	byte [ebx+10],dl
 	mov	eax,edi
-	sub	eax,[org_start]
+	sub	eax,dword [org_start]
 	mov	[ebx],eax
 	cdq
 	mov	dword [ebx+4],edx
-	mov	eax,[org_sib]
+	mov	eax,dword [org_sib]
 	mov	[ebx+12],eax
 	jmp	assemble_line
       define_constant:
@@ -4287,7 +4287,7 @@ assemble_line:
 	mov	ch,bl
 	pop ebx
       make_constant:
-	mov	cl,[current_pass]
+	mov	cl,byte [current_pass]
 	test	byte [ebx+8],1
 	jz	new_constant
 	cmp	cl,[ebx+9]
@@ -4299,9 +4299,9 @@ assemble_line:
 	mov	[ebx+9],cl
 	xchg	[ebx],eax
 	xchg	[ebx+4],edx
-	mov	cl,[value_type]
+	mov	cl,byte [value_type]
 	xchg	[ebx+11],cl
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	assemble_line
 	cmp	eax,[ebx]
 	jne	changed_constant
@@ -4313,19 +4313,19 @@ assemble_line:
       changed_constant:
 	test	byte [ebx+8],4
 	jnz	assemble_line
-	or	[next_pass_needed],-1
+	or	byte [next_pass_needed],-1
 	jmp	assemble_line
       new_constant:
 	or	byte [ebx+8],1+2
 	mov	word [ebx+9],cx
 	mov	[ebx],eax
 	mov	[ebx+4],edx
-	mov	cl,[value_type]
+	mov	cl,byte [value_type]
 	mov	[ebx+11],cl
 	jmp	assemble_line
       assemble_instruction:
-	mov	[operand_size],0
-	mov	[forced_size],0
+	mov	byte [operand_size],0
+	mov	byte [forced_size],0
 	lodsw
 	movzx	ebx,ax
 	add	ebx,assembler
@@ -4430,18 +4430,18 @@ org_directive:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	mov	[reloc_labels],0
-	mov	dl,[value_type]
+	mov	byte [reloc_labels],0
+	mov	dl,byte [value_type]
 	or	dl,dl
 	jz	org_ok
 	cmp	dl,2
 	jne	invalid_use_of_symbol
-	or	[reloc_labels],-1
+	or	byte [reloc_labels],-1
       org_ok:
 	mov	ecx,edi
 	sub	ecx,eax
-	mov	[org_start],ecx
-	mov	[org_sib],0
+	mov	dword [org_start],ecx
+	mov	dword [org_sib],0
 	jmp	instruction_assembled
 label_directive:
 	lodsb
@@ -4457,8 +4457,8 @@ label_directive:
 	mov	ch,ah
       label_size_ok:
 	mov	eax,edi
-	sub	eax,[org_start]
-	mov	ebp,[org_sib]
+	sub	eax,dword [org_start]
+	mov	ebp,dword [org_sib]
 	cmp	byte [esi],80h
 	jne	define_free_label
 	inc	esi
@@ -4481,18 +4481,18 @@ label_directive:
 	pop cx
 	pop ebx
 	mov	dl,al
-	mov	dh,[value_type]
+	mov	dh,byte [value_type]
 	cmp	dh,1
 	je	invalid_use_of_symbol
 	jb	free_label_reloc_ok
       define_free_label:
 	xor	dh,dh
-	cmp	[reloc_labels],0
+	cmp	byte [reloc_labels],0
 	je	free_label_reloc_ok
 	mov	dh,2
       free_label_reloc_ok:
 	xchg	dh,[ebx+11]
-	mov	cl,[current_pass]
+	mov	cl,byte [current_pass]
 	test	byte [ebx+8],1
 	jz	new_free_label
 	cmp	cl,[ebx+9]
@@ -4503,7 +4503,7 @@ label_directive:
 	cdq
 	xchg	[ebx+4],edx
 	xchg	[ebx+12],ebp
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	instruction_assembled
 	cmp	eax,[ebx]
 	jne	changed_free_label
@@ -4515,7 +4515,7 @@ label_directive:
 	jne	changed_free_label
 	jmp	instruction_assembled
       changed_free_label:
-	or	[next_pass_needed],-1
+	or	byte [next_pass_needed],-1
 	jmp	instruction_assembled
       new_free_label:
 	or	byte [ebx+8],1
@@ -4541,7 +4541,7 @@ load_directive:
       load_size_ok:
 	cmp	al,8
 	ja	invalid_value
-	mov	[operand_size],al
+	mov	byte [operand_size],al
 	lodsb
 	cmp	al,82h
 	jne	invalid_argument
@@ -4574,7 +4574,7 @@ load_directive:
 	call	lseek
 	mov	dword [value],0
 	mov	dword [value+4],0
-	movzx	ecx,[operand_size]
+	movzx	ecx,byte [operand_size]
 	mov	edx,value
 	call	read
 	jc	error_reading_file
@@ -4583,7 +4583,7 @@ load_directive:
 	mov	edx,dword [value+4]
 	pop ebx
 	xor	ch,ch
-	mov	[value_type],0
+	mov	byte [value_type],0
 	jmp	make_constant
 display_directive:
 	push esi
@@ -4604,7 +4604,7 @@ display_directive:
 	call	get_byte_value
 	stosb
       display_next:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -4624,12 +4624,12 @@ display_directive:
 	mov	esi,edi
 	mov	ecx,ebp
 	sub	ecx,esi
-	mov	edi,[display_buffer]
+	mov	edi,dword [display_buffer]
 	sub	edi,ecx
 	sub	edi,4
 	cmp	edi,esi
 	jbe	out_of_memory
-	mov	[display_buffer],edi
+	mov	dword [display_buffer],edi
 	mov	eax,ecx
 	rep	movsb
 	stosd
@@ -4637,10 +4637,10 @@ display_directive:
 	pop esi
 	jmp	instruction_assembled
 flush_display_buffer:
-	mov	eax,[display_buffer]
+	mov	eax,dword [display_buffer]
 	or	eax,eax
 	jz	display_done
-	mov	esi,[labels_list]
+	mov	esi,dword [labels_list]
 	cmp	esi,eax
 	je	display_done
 	mov	word [value],0
@@ -4660,7 +4660,7 @@ flush_display_buffer:
 	push esi
 	call	display_block
 	pop esi
-	cmp	esi,[display_buffer]
+	cmp	esi,dword [display_buffer]
 	jne	display_messages
 	mov	ax,0A0Dh
 	cmp	word [value],ax
@@ -4670,8 +4670,8 @@ flush_display_buffer:
 	mov	ecx,2
 	call	display_block
       display_ok:
-	mov	eax,[labels_list]
-	mov	[display_buffer],eax
+	mov	eax,dword [labels_list]
+	mov	dword [display_buffer],eax
       display_done:
 	ret
 times_directive:
@@ -4681,7 +4681,7 @@ times_directive:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	or	eax,eax
 	jz	zero_times
@@ -4691,20 +4691,20 @@ times_directive:
       times_argument_ok:
 	push	dword [counter]
 	push	dword [counter_limit]
-	mov	[counter_limit],eax
-	mov	[counter],1
+	mov	dword [counter_limit],eax
+	mov	dword [counter],1
       times_loop:
 	push esi
-	or	[times_working],-1
+	or	byte [times_working],-1
 	call	assemble_line
-	mov	eax,[counter_limit]
-	cmp	[counter],eax
+	mov	eax,dword [counter_limit]
+	cmp	dword [counter],eax
 	je	times_done
-	inc	[counter]
+	inc	dword [counter]
 	pop esi
 	jmp	times_loop
       times_done:
-	mov	[times_working],0
+	mov	byte [times_working],0
 	pop eax
 	pop	dword [counter_limit]
 	pop	dword [counter]
@@ -4731,15 +4731,15 @@ virtual_directive:
       virtual_at_current:
 	dec	esi
 	mov	eax,edi
-	sub	eax,[org_start]
+	sub	eax,dword [org_start]
 	xor	bx,bx
 	xor	cx,cx
-	mov	[value_type],0
-	cmp	[reloc_labels],0
+	mov	byte [value_type],0
+	cmp	byte [reloc_labels],0
 	je	set_virtual
-	mov	[value_type],2
+	mov	byte [value_type],2
       set_virtual:
-	mov	edx,[org_sib]
+	mov	edx,dword [org_sib]
 	mov	byte [org_sib],bh
 	mov	byte [org_sib+1],bl
 	mov	byte [org_sib+2],ch
@@ -4748,33 +4748,33 @@ virtual_directive:
 	mov	word [ebx],virtual_directive-assembler
 	neg	eax
 	add	eax,edi
-	xchg	[org_start],eax
+	xchg	dword [org_start],eax
 	mov	[ebx+4],eax
 	mov	[ebx+8],edx
-	mov	al,[virtual_data]
+	mov	al,byte [virtual_data]
 	mov	[ebx+2],al
-	mov	al,[reloc_labels]
+	mov	al,byte [reloc_labels]
 	mov	[ebx+3],al
 	mov	[ebx+0Ch],edi
-	or	[virtual_data],-1
-	mov	[reloc_labels],0
-	cmp	[value_type],1
+	or	byte [virtual_data],-1
+	mov	byte [reloc_labels],0
+	cmp	byte [value_type],1
 	je	invalid_use_of_symbol
-	cmp	[value_type],2
+	cmp	byte [value_type],2
 	jne	instruction_assembled
-	or	[reloc_labels],-1
+	or	byte [reloc_labels],-1
 	jmp	instruction_assembled
       allocate_structure_data:
-	mov	ebx,[structures_buffer]
+	mov	ebx,dword [structures_buffer]
 	sub	ebx,10h
-	cmp	ebx,[additional_memory]
+	cmp	ebx,dword [additional_memory]
 	jb	out_of_memory
-	mov	[structures_buffer],ebx
+	mov	dword [structures_buffer],ebx
 	ret
       find_structure_data:
-	mov	ebx,[structures_buffer]
+	mov	ebx,dword [structures_buffer]
       scan_structures:
-	cmp	ebx,[additional_memory_end]
+	cmp	ebx,dword [additional_memory_end]
 	je	no_such_structure
 	cmp	ax,[ebx]
 	jne	next_structure
@@ -4800,29 +4800,29 @@ virtual_directive:
 	call	find_structure_data
 	jc	unexpected_instruction
 	mov	al,[ebx+2]
-	mov	[virtual_data],al
+	mov	byte [virtual_data],al
 	mov	al,[ebx+3]
-	mov	[reloc_labels],al
+	mov	byte [reloc_labels],al
 	mov	eax,[ebx+4]
-	mov	[org_start],eax
+	mov	dword [org_start],eax
 	mov	eax,[ebx+8]
-	mov	[org_sib],eax
+	mov	dword [org_sib],eax
 	mov	edi,[ebx+0Ch]
       remove_structure_data:
 	push esi
 	push edi
-	mov	esi,[structures_buffer]
+	mov	esi,dword [structures_buffer]
 	mov	ecx,ebx
 	sub	ecx,esi
 	lea	edi,[esi+10h]
-	mov	[structures_buffer],edi
+	mov	dword [structures_buffer],edi
 	shr	ecx,2
 	rep	movsd
 	pop edi
 	pop esi
 	jmp	instruction_assembled
 repeat_directive:
-	cmp	[times_working],0
+	cmp	byte [times_working],0
 	jne	unexpected_instruction
 	lodsb
 	cmp	al,'('
@@ -4830,32 +4830,32 @@ repeat_directive:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	or	eax,eax
 	jz	zero_repeat
 	call	allocate_structure_data
 	mov	word [ebx],repeat_directive-assembler
-	xchg	eax,[counter_limit]
+	xchg	eax,dword [counter_limit]
 	mov	[ebx+4],eax
 	mov	eax,1
-	xchg	eax,[counter]
+	xchg	eax,dword [counter]
 	mov	[ebx+8],eax
 	mov	[ebx+0Ch],esi
 	jmp	instruction_assembled
       end_repeat:
-	cmp	[times_working],0
+	cmp	byte [times_working],0
 	jne	unexpected_instruction
 	call	find_structure_data
 	jc	unexpected_instruction
-	mov	eax,[counter_limit]
-	inc	[counter]
-	cmp	[counter],eax
+	mov	eax,dword [counter_limit]
+	inc	dword [counter]
+	cmp	dword [counter],eax
 	jbe	continue_repeating
 	mov	eax,[ebx+4]
-	mov	[counter_limit],eax
+	mov	dword [counter_limit],eax
 	mov	eax,[ebx+8]
-	mov	[counter],eax
+	mov	dword [counter],eax
 	jmp	remove_structure_data
       continue_repeating:
 	mov	esi,[ebx+0Ch]
@@ -4879,7 +4879,7 @@ repeat_directive:
 	cmp	al,0Fh
 	jne	unexpected_end_of_file
 	lodsd
-	mov	[current_line],eax
+	mov	dword [current_line],eax
       skip_labels:
 	cmp	byte [esi],2
 	jne	labels_ok
@@ -4914,7 +4914,7 @@ repeat_directive:
 	call	find_end_repeat
 	jmp	find_structure_end
 if_directive:
-	cmp	[times_working],0
+	cmp	byte [times_working],0
 	jne	unexpected_instruction
 	call	calculate_logical_expression
 	mov	dl,al
@@ -4949,7 +4949,7 @@ if_directive:
 	or	byte [ebx+2],-1
 	jmp	instruction_assembled
       else_directive:
-	cmp	[times_working],0
+	cmp	byte [times_working],0
 	jne	unexpected_instruction
 	mov	ax,if_directive-assembler
 	call	find_structure_data
@@ -4974,7 +4974,7 @@ if_directive:
 	call	find_end_if
 	jmp	remove_structure_data
       end_if:
-	cmp	[times_working],0
+	cmp	byte [times_working],0
 	jne	unexpected_instruction
 	call	find_structure_data
 	jc	unexpected_instruction
@@ -5040,7 +5040,7 @@ data_bytes:
 	call	get_byte_value
 	stosb
       byte_ok:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -5061,21 +5061,21 @@ data_bytes:
 	inc	esi
 	jmp	byte_ok
       undefined_data:
-	cmp	[virtual_data],0
+	cmp	byte [virtual_data],0
 	je	mark_undefined_data
 	ret
       mark_undefined_data:
-	cmp	eax,[undefined_data_end]
+	cmp	eax,dword [undefined_data_end]
 	je	undefined_data_ok
-	mov	[undefined_data_start],eax
+	mov	dword [undefined_data_start],eax
       undefined_data_ok:
-	mov	[undefined_data_end],edi
+	mov	dword [undefined_data_end],edi
 	ret
 data_unicode:
-	or	[base_code],-1
+	or	byte [base_code],-1
 	jmp	get_words_data
 data_words:
-	mov	[base_code],0
+	mov	byte [base_code],0
       get_words_data:
 	lodsb
 	cmp	al,'('
@@ -5088,7 +5088,7 @@ data_words:
 	call	undefined_data
 	jmp	word_ok
       get_word:
-	cmp	[base_code],0
+	cmp	byte [base_code],0
 	je	word_data_value
 	cmp	byte [esi],0
 	je	word_string
@@ -5097,7 +5097,7 @@ data_words:
 	call	mark_relocation
 	stosw
       word_ok:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -5150,7 +5150,7 @@ data_dwords:
 	lodsb
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[value_type]
+	mov	al,byte [value_type]
 	push ax
 	cmp	byte [esi],'.'
 	je	invalid_value
@@ -5158,12 +5158,12 @@ data_dwords:
 	call	mark_relocation
 	stosw
 	pop ax
-	mov	[value_type],al
+	mov	byte [value_type],al
 	mov	ax,dx
 	call	mark_relocation
 	stosw
       dword_ok:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -5207,7 +5207,7 @@ data_pwords:
 	lodsb
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[value_type]
+	mov	al,byte [value_type]
 	push ax
 	cmp	byte [esi],'.'
 	je	invalid_value
@@ -5215,12 +5215,12 @@ data_pwords:
 	call	mark_relocation
 	stosd
 	pop ax
-	mov	[value_type],al
+	mov	byte [value_type],al
 	mov	ax,dx
 	call	mark_relocation
 	stosw
       pword_ok:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -5250,7 +5250,7 @@ data_qwords:
 	mov	eax,edx
 	stosd
       qword_ok:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -5302,7 +5302,7 @@ data_twords:
 	stosw
 	add	esi,12
       tbyte_ok:
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	lodsb
 	or	al,al
@@ -5355,7 +5355,7 @@ data_file:
 	pop ebx
 	mov	[esp],eax
       size_ok:
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	jne	file_reserve
 	xor	al,al
 	call	lseek
@@ -5363,7 +5363,7 @@ data_file:
 	mov	edx,edi
 	add	edi,ecx
 	jc	out_of_memory
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	call	read
 	jc	error_reading_file
@@ -5379,7 +5379,7 @@ data_file:
 	pop ecx
 	add	edi,ecx
 	jc	out_of_memory
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	jmp	check_for_next_name
 reserve_bytes:
@@ -5389,7 +5389,7 @@ reserve_bytes:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	cmp	eax,0
 	jl	reserve_negative
@@ -5397,10 +5397,10 @@ reserve_bytes:
 	mov	edx,ecx
 	add	edx,edi
 	jc	out_of_memory
-	cmp	edx,[display_buffer]
+	cmp	edx,dword [display_buffer]
 	jae	out_of_memory
 	push edi
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	zero_bytes
 	add	edi,ecx
 	jmp	reserved_data
@@ -5420,11 +5420,11 @@ reserve_bytes:
 	call	undefined_data
 	jmp	instruction_assembled
       reserve_negative:
-	cmp	[error_line],0
+	cmp	dword [error_line],0
 	jne	instruction_assembled
-	mov	eax,[current_line]
-	mov	[error_line],eax
-	mov	[error],invalid_value
+	mov	eax,dword [current_line]
+	mov	dword [error_line],eax
+	mov	dword [error],invalid_value
 	jmp	instruction_assembled
 reserve_words:
 	lodsb
@@ -5433,7 +5433,7 @@ reserve_words:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	cmp	eax,0
 	jl	reserve_negative
@@ -5443,10 +5443,10 @@ reserve_words:
 	jc	out_of_memory
 	add	edx,edi
 	jc	out_of_memory
-	cmp	edx,[display_buffer]
+	cmp	edx,dword [display_buffer]
 	jae	out_of_memory
 	push edi
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	zero_words
 	lea	edi,[edi+ecx*2]
 	jmp	reserved_data
@@ -5465,7 +5465,7 @@ reserve_dwords:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	cmp	eax,0
 	jl	reserve_negative
@@ -5477,10 +5477,10 @@ reserve_dwords:
 	jc	out_of_memory
 	add	edx,edi
 	jc	out_of_memory
-	cmp	edx,[display_buffer]
+	cmp	edx,dword [display_buffer]
 	jae	out_of_memory
 	push edi
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	zero_dwords
 	lea	edi,[edi+ecx*4]
 	jmp	reserved_data
@@ -5495,7 +5495,7 @@ reserve_pwords:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	cmp	eax,0
 	jl	reserve_negative
@@ -5508,10 +5508,10 @@ reserve_pwords:
 	jc	out_of_memory
 	add	edx,edi
 	jc	out_of_memory
-	cmp	edx,[display_buffer]
+	cmp	edx,dword [display_buffer]
 	jae	out_of_memory
 	push edi
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	zero_words
 	lea	edi,[edi+ecx*2]
 	jmp	reserved_data
@@ -5522,7 +5522,7 @@ reserve_qwords:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	cmp	eax,0
 	jl	reserve_negative
@@ -5536,10 +5536,10 @@ reserve_qwords:
 	jc	out_of_memory
 	add	edx,edi
 	jc	out_of_memory
-	cmp	edx,[display_buffer]
+	cmp	edx,dword [display_buffer]
 	jae	out_of_memory
 	push edi
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	zero_dwords
 	lea	edi,[edi+ecx*4]
 	jmp	reserved_data
@@ -5550,7 +5550,7 @@ reserve_twords:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	cmp	eax,0
 	jl	reserve_negative
@@ -5563,10 +5563,10 @@ reserve_twords:
 	jc	out_of_memory
 	add	edx,edi
 	jc	out_of_memory
-	cmp	edx,[display_buffer]
+	cmp	edx,dword [display_buffer]
 	jae	out_of_memory
 	push edi
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	zero_words
 	lea	edi,[edi+ecx*2]
 	jmp	reserved_data
@@ -5575,7 +5575,7 @@ simple_instruction:
 	stosb
 	jmp	instruction_assembled
 simple_instruction_16bit:
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	size_prefix
 	stosb
 	jmp	instruction_assembled
@@ -5585,7 +5585,7 @@ simple_instruction_16bit:
 	stosw
 	jmp	instruction_assembled
 simple_instruction_32bit:
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	size_prefix
 	stosb
 	jmp	instruction_assembled
@@ -5616,13 +5616,13 @@ aa_instruction:
 	jne	.store
 	inc	esi
 	xor	al,al
-	xchg	al,[operand_size]
+	xchg	al,byte [operand_size]
 	cmp	al,1
 	ja	invalid_operand_size
 	call	get_byte_value
 	mov	bl,al
       .store:
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	invalid_operand
 	pop ax
 	mov	ah,bl
@@ -5630,7 +5630,7 @@ aa_instruction:
 	jmp	instruction_assembled
 
 basic_instruction:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -5647,7 +5647,7 @@ basic_instruction:
 	jne	invalid_operand
 	cmp	byte [esi],11h
 	sete	al
-	mov	[imm_sized],al
+	mov	byte [imm_sized],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
@@ -5657,7 +5657,7 @@ basic_instruction:
       basic_mem_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
@@ -5674,16 +5674,16 @@ basic_instruction:
 	jmp	instruction_assembled
       basic_mem_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       basic_mem_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       basic_mem_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	basic_mem_imm_8bit
 	cmp	al,2
@@ -5692,21 +5692,21 @@ basic_instruction:
 	je	basic_mem_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	basic_mem_imm_32bit
       basic_mem_imm_8bit:
 	call	get_byte_value
 	mov	byte [value],al
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	shr	al,3
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
-	mov	[base_code],80h
+	mov	byte [base_code],80h
 	call	store_instruction
 	mov	al,byte [value]
 	stosb
@@ -5714,30 +5714,30 @@ basic_instruction:
       basic_mem_imm_16bit:
 	call	get_word_value
 	mov	word [value],ax
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	shr	al,3
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	operand_16bit_prefix
 	pop cx
 	pop bx
 	pop edx
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	.store
-	cmp	[imm_sized],0
+	cmp	byte [imm_sized],0
 	jne	.store
 	cmp	word [value],80h
 	jb	basic_mem_simm_8bit
 	cmp	word [value],-80h
 	jae	basic_mem_simm_8bit
       .store:
-	mov	[base_code],81h
+	mov	byte [base_code],81h
 	call	store_instruction
 	mov	ax,word [value]
 	call	mark_relocation
 	stosw
 	jmp	instruction_assembled
       basic_mem_simm_8bit:
-	mov	[base_code],83h
+	mov	byte [base_code],83h
 	call	store_instruction
 	mov	al,byte [value]
 	stosb
@@ -5745,23 +5745,23 @@ basic_instruction:
       basic_mem_imm_32bit:
 	call	get_dword_value
 	mov	dword [value],eax
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	shr	al,3
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	operand_32bit_prefix
 	pop cx
 	pop bx
 	pop edx
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	.store
-	cmp	[imm_sized],0
+	cmp	byte [imm_sized],0
 	jne	.store
 	cmp	dword [value],80h
 	jb	basic_mem_simm_8bit
 	cmp	dword [value],-80h
 	jae	basic_mem_simm_8bit
       .store:
-	mov	[base_code],81h
+	mov	byte [base_code],81h
 	call	store_instruction
 	mov	eax,dword [value]
 	call	mark_relocation
@@ -5770,13 +5770,13 @@ basic_instruction:
       basic_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
 	cmp	byte [esi],11h
 	sete	al
-	mov	[imm_sized],al
+	mov	byte [imm_sized],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -5787,7 +5787,7 @@ basic_instruction:
 	jne	invalid_operand
       basic_reg_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	basic_reg_mem_8bit
 	cmp	al,2
@@ -5796,24 +5796,24 @@ basic_instruction:
 	je	basic_reg_mem_32bit
 	jmp	invalid_operand_size
       basic_reg_mem_8bit:
-	add	[base_code],2
+	add	byte [base_code],2
 	call	store_instruction
 	jmp	instruction_assembled
       basic_reg_mem_16bit:
 	call	operand_16bit_prefix
-	add	[base_code],3
+	add	byte [base_code],3
 	call	store_instruction
 	jmp	instruction_assembled
       basic_reg_mem_32bit:
 	call	operand_32bit_prefix
-	add	[base_code],3
+	add	byte [base_code],3
 	call	store_instruction
 	jmp	instruction_assembled
       basic_reg_reg:
 	lodsb
 	call	convert_register
 	shl	al,3
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	or	bl,al
 	or	bl,11000000b
 	mov	al,ah
@@ -5826,19 +5826,19 @@ basic_instruction:
 	jmp	invalid_operand_size
       basic_reg_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	jmp	basic_reg_reg_8bit
       basic_reg_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
       basic_reg_reg_8bit:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
       basic_reg_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	basic_reg_imm_8bit
 	cmp	al,2
@@ -5847,17 +5847,17 @@ basic_instruction:
 	je	basic_reg_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	basic_reg_imm_32bit
       basic_reg_imm_8bit:
 	call	get_byte_value
 	mov	dl,al
-	mov	ah,[base_code]
+	mov	ah,byte [base_code]
 	or	ah,11000000b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	and	bl,111b
 	or	bl,bl
 	jz	basic_al_imm
@@ -5868,7 +5868,7 @@ basic_instruction:
 	stosb
 	jmp	instruction_assembled
       basic_al_imm:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	add	al,4
 	stosb
 	mov	al,dl
@@ -5878,14 +5878,14 @@ basic_instruction:
 	call	get_word_value
 	mov	dx,ax
 	call	operand_16bit_prefix
-	mov	ah,[base_code]
+	mov	ah,byte [base_code]
 	or	ah,11000000b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	and	bl,111b
 	or	ah,bl
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	.store
-	cmp	[imm_sized],0
+	cmp	byte [imm_sized],0
 	jne	.store
 	cmp	dx,80h
 	jb	basic_reg_simm_8bit
@@ -5907,7 +5907,7 @@ basic_instruction:
 	stosb
 	jmp	instruction_assembled
       basic_ax_imm:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	add	al,5
 	stosb
 	mov	ax,dx
@@ -5918,14 +5918,14 @@ basic_instruction:
 	call	get_dword_value
 	mov	edx,eax
 	call	operand_32bit_prefix
-	mov	ah,[base_code]
+	mov	ah,byte [base_code]
 	or	ah,11000000b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	and	bl,111b
 	or	ah,bl
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	.store
-	cmp	[imm_sized],0
+	cmp	byte [imm_sized],0
 	jne	.store
 	cmp	edx,80h
 	jb	basic_reg_simm_8bit
@@ -5941,7 +5941,7 @@ basic_instruction:
 	stosd
 	jmp	instruction_assembled
       basic_eax_imm:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	add	al,5
 	stosb
 	mov	eax,edx
@@ -5949,8 +5949,8 @@ basic_instruction:
 	stosd
 	jmp	instruction_assembled
 single_operand_instruction:
-	mov	[base_code],0F6h
-	mov	[postbyte_register],al
+	mov	byte [base_code],0F6h
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -5959,7 +5959,7 @@ single_operand_instruction:
 	jne	invalid_operand
       single_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	single_mem_8bit
 	cmp	al,2
@@ -5968,27 +5968,27 @@ single_operand_instruction:
 	je	single_mem_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       single_mem_8bit:
 	call	store_instruction
 	jmp	instruction_assembled
       single_mem_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       single_mem_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       single_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -6018,7 +6018,7 @@ single_operand_instruction:
 	stosw
 	jmp	instruction_assembled
 mov_instruction:
-	mov	[base_code],88h
+	mov	byte [base_code],88h
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -6044,7 +6044,7 @@ mov_instruction:
 	cmp	al,60h
 	jae	mov_mem_sreg
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
@@ -6068,7 +6068,7 @@ mov_instruction:
 	jnz	mov_mem_address32_al
 	or	ch,ch
 	jnz	invalid_address_size
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	mov_mem_address32_al
 	cmp	edx,10000h
 	jb	mov_mem_address16_al
@@ -6093,11 +6093,11 @@ mov_instruction:
 	jmp	instruction_assembled
       mov_mem_reg_16bit:
 	call	operand_16bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	or	al,bl
 	or	al,bh
 	jz	mov_mem_ax
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       mov_mem_ax:
@@ -6107,7 +6107,7 @@ mov_instruction:
 	jnz	mov_mem_address32_ax
 	or	ch,ch
 	jnz	invalid_address_size
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	mov_mem_address32_ax
 	cmp	edx,10000h
 	jb	mov_mem_address16_ax
@@ -6123,22 +6123,22 @@ mov_instruction:
 	jmp	store_mov_address16
       mov_mem_reg_32bit:
 	call	operand_32bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	or	al,bl
 	or	al,bh
 	jz	mov_mem_ax
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       mov_mem_sreg:
 	cmp	al,70h
 	jae	invalid_operand
 	sub	al,61h
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
-	mov	ah,[operand_size]
+	mov	ah,byte [operand_size]
 	or	ah,ah
 	jz	mov_mem_sreg_size_ok
 	cmp	ah,2
@@ -6152,11 +6152,11 @@ mov_instruction:
       mov_mem16_sreg:
 	call	operand_16bit_prefix
       mov_mem_sreg_size_ok:
-	mov	[base_code],8Ch
+	mov	byte [base_code],8Ch
 	call	store_instruction
 	jmp	instruction_assembled
       mov_mem_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	mov_mem_imm_8bit
 	cmp	al,2
@@ -6165,16 +6165,16 @@ mov_instruction:
 	je	mov_mem_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	mov_mem_imm_32bit
       mov_mem_imm_8bit:
 	call	get_byte_value
 	mov	byte [value],al
-	mov	[postbyte_register],0
-	mov	[base_code],0C6h
+	mov	byte [postbyte_register],0
+	mov	byte [base_code],0C6h
 	pop cx
 	pop bx
 	pop edx
@@ -6185,8 +6185,8 @@ mov_instruction:
       mov_mem_imm_16bit:
 	call	get_word_value
 	mov	word [value],ax
-	mov	[postbyte_register],0
-	mov	[base_code],0C7h
+	mov	byte [postbyte_register],0
+	mov	byte [base_code],0C7h
 	call	operand_16bit_prefix
 	pop cx
 	pop bx
@@ -6199,8 +6199,8 @@ mov_instruction:
       mov_mem_imm_32bit:
 	call	get_dword_value
 	mov	dword [value],eax
-	mov	[postbyte_register],0
-	mov	[base_code],0C7h
+	mov	byte [postbyte_register],0
+	mov	byte [base_code],0C7h
 	call	operand_32bit_prefix
 	pop cx
 	pop bx
@@ -6215,7 +6215,7 @@ mov_instruction:
 	cmp	al,50h
 	jae	mov_sreg
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -6233,7 +6233,7 @@ mov_instruction:
 	jae	mov_reg_sreg
 	call	convert_register
 	shl	al,3
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	or	bl,al
 	or	bl,11000000b
 	mov	al,ah
@@ -6246,13 +6246,13 @@ mov_instruction:
 	jmp	invalid_operand_size
       mov_reg_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	jmp	mov_reg_reg_8bit
       mov_reg_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
       mov_reg_reg_8bit:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	al,bl
 	stosb
@@ -6266,13 +6266,13 @@ mov_instruction:
 	je	mov_reg_dreg
 	ja	invalid_operand
 	sub	al,61h
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	or	bl,11000000b
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	mov_reg_sreg32
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	jne	invalid_operand_size
 	call	operand_16bit_prefix
 	jmp	mov_reg_sreg_store
@@ -6291,11 +6291,11 @@ mov_instruction:
 	mov	bh,21h
       mov_reg_xrx:
 	and	al,111b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	or	bl,11000000b
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	jne	invalid_operand_size
 	mov	ah,bh
 	mov	al,0Fh
@@ -6305,7 +6305,7 @@ mov_instruction:
 	jmp	instruction_assembled
       mov_reg_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	mov_reg_mem_8bit
 	cmp	al,2
@@ -6314,11 +6314,11 @@ mov_instruction:
 	je	mov_reg_mem_32bit
 	jmp	invalid_operand_size
       mov_reg_mem_8bit:
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	or	al,bl
 	or	al,bh
 	jz	mov_al_mem
-	add	[base_code],2
+	add	byte [base_code],2
 	call	store_instruction
 	jmp	instruction_assembled
       mov_al_mem:
@@ -6328,7 +6328,7 @@ mov_instruction:
 	jnz	mov_al_mem_address32
 	or	ch,ch
 	jnz	invalid_address_size
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	mov_al_mem_address32
 	cmp	edx,10000h
 	jb	mov_al_mem_address16
@@ -6344,11 +6344,11 @@ mov_instruction:
 	jmp	store_mov_address16
       mov_reg_mem_16bit:
 	call	operand_16bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	or	al,bl
 	or	al,bh
 	jz	mov_ax_mem
-	add	[base_code],3
+	add	byte [base_code],3
 	call	store_instruction
 	jmp	instruction_assembled
       mov_ax_mem:
@@ -6358,7 +6358,7 @@ mov_instruction:
 	jnz	mov_ax_mem_address32
 	or	ch,ch
 	jnz	invalid_address_size
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	mov_ax_mem_address32
 	cmp	edx,10000h
 	jb	mov_ax_mem_address16
@@ -6374,15 +6374,15 @@ mov_instruction:
 	jmp	store_mov_address16
       mov_reg_mem_32bit:
 	call	operand_32bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	or	al,bl
 	or	al,bh
 	jz	mov_ax_mem
-	add	[base_code],3
+	add	byte [base_code],3
 	call	store_instruction
 	jmp	instruction_assembled
       mov_reg_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	mov_reg_imm_8bit
 	cmp	al,2
@@ -6391,15 +6391,15 @@ mov_instruction:
 	je	mov_reg_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	mov_reg_imm_32bit
       mov_reg_imm_8bit:
 	call	get_byte_value
 	mov	ah,al
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	and	al,111b
 	add	al,0B0h
 	stosw
@@ -6408,7 +6408,7 @@ mov_instruction:
 	call	get_word_value
 	mov	dx,ax
 	call	operand_16bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	and	al,111b
 	add	al,0B8h
 	stosb
@@ -6420,7 +6420,7 @@ mov_instruction:
 	call	get_dword_value
 	mov	edx,eax
 	call	operand_32bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	and	al,111b
 	add	al,0B8h
 	stosb
@@ -6437,7 +6437,7 @@ mov_instruction:
 	je	mov_dreg
 	ja	invalid_operand
 	sub	al,61h
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -6469,7 +6469,7 @@ mov_instruction:
       mov_sreg_reg_size_ok:
 	mov	bl,11000000b
 	or	bl,al
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	mov	al,8Eh
@@ -6479,7 +6479,7 @@ mov_instruction:
 	jmp	instruction_assembled
       mov_sreg_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	mov_sreg_mem_size_ok
 	cmp	al,2
@@ -6493,7 +6493,7 @@ mov_instruction:
       mov_sreg_mem16:
 	call	operand_16bit_prefix
       mov_sreg_mem_size_ok:
-	mov	[base_code],8Eh
+	mov	byte [base_code],8Eh
 	call	store_instruction
 	jmp	instruction_assembled
       mov_creg:
@@ -6526,15 +6526,15 @@ mov_instruction:
 	stosb
 	jmp	instruction_assembled
 cmov_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -6547,7 +6547,7 @@ cmov_instruction:
       cmov_reg_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -6563,7 +6563,7 @@ cmov_instruction:
       cmov_reg_reg_16bit:
 	call	operand_16bit_prefix
       cmov_reg_reg_store:
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -6571,7 +6571,7 @@ cmov_instruction:
 	jmp	instruction_assembled
       cmov_reg_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	cmov_reg_mem_16bit
 	cmp	al,4
@@ -6586,7 +6586,7 @@ cmov_instruction:
 	call	store_instruction
 	jmp	instruction_assembled
 test_instruction:
-	mov	[base_code],84h
+	mov	byte [base_code],84h
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -6610,7 +6610,7 @@ test_instruction:
       test_mem_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
@@ -6627,16 +6627,16 @@ test_instruction:
 	jmp	instruction_assembled
       test_mem_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       test_mem_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       test_mem_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	test_mem_imm_8bit
 	cmp	al,2
@@ -6645,16 +6645,16 @@ test_instruction:
 	je	test_mem_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	test_mem_imm_32bit
       test_mem_imm_8bit:
 	call	get_byte_value
 	mov	byte [value],al
-	mov	[postbyte_register],0
-	mov	[base_code],0F6h
+	mov	byte [postbyte_register],0
+	mov	byte [base_code],0F6h
 	pop cx
 	pop bx
 	pop edx
@@ -6665,8 +6665,8 @@ test_instruction:
       test_mem_imm_16bit:
 	call	get_word_value
 	mov	word [value],ax
-	mov	[postbyte_register],0
-	mov	[base_code],0F7h
+	mov	byte [postbyte_register],0
+	mov	byte [base_code],0F7h
 	call	operand_16bit_prefix
 	pop cx
 	pop bx
@@ -6679,8 +6679,8 @@ test_instruction:
       test_mem_imm_32bit:
 	call	get_dword_value
 	mov	dword [value],eax
-	mov	[postbyte_register],0
-	mov	[base_code],0F7h
+	mov	byte [postbyte_register],0
+	mov	byte [base_code],0F7h
 	call	operand_32bit_prefix
 	pop cx
 	pop bx
@@ -6693,7 +6693,7 @@ test_instruction:
       test_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -6707,7 +6707,7 @@ test_instruction:
 	lodsb
 	call	convert_register
 	shl	al,3
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	or	bl,al
 	or	bl,11000000b
 	mov	al,ah
@@ -6720,19 +6720,19 @@ test_instruction:
 	jmp	invalid_operand_size
       test_reg_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	jmp	basic_reg_reg_8bit
       test_reg_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
       test_reg_reg_8bit:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
       test_reg_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	test_reg_imm_8bit
 	cmp	al,2
@@ -6741,16 +6741,16 @@ test_instruction:
 	je	test_reg_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	test_reg_imm_32bit
       test_reg_imm_8bit:
 	call	get_byte_value
 	mov	dl,al
 	mov	ah,11000000b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	and	bl,111b
 	or	bl,bl
 	jz	test_al_imm
@@ -6771,7 +6771,7 @@ test_instruction:
 	mov	dx,ax
 	call	operand_16bit_prefix
 	mov	ah,11000000b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	and	bl,111b
 	or	bl,bl
 	jz	test_ax_imm
@@ -6793,7 +6793,7 @@ test_instruction:
 	mov	edx,eax
 	call	operand_32bit_prefix
 	mov	ah,11000000b
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	and	bl,111b
 	or	bl,bl
 	jz	test_eax_imm
@@ -6811,7 +6811,7 @@ test_instruction:
 	stosd
 	jmp	instruction_assembled
 xchg_instruction:
-	mov	[base_code],86h
+	mov	byte [base_code],86h
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -6833,7 +6833,7 @@ xchg_instruction:
       xchg_mem_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
@@ -6850,18 +6850,18 @@ xchg_instruction:
 	jmp	instruction_assembled
       xchg_mem_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       xchg_mem_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       xchg_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -6875,10 +6875,10 @@ xchg_instruction:
 	lodsb
 	call	convert_register
 	mov	bh,al
-	mov	bl,[postbyte_register]
-	shl	[postbyte_register],3
+	mov	bl,byte [postbyte_register]
+	shl	byte [postbyte_register],3
 	or	al,11000000b
-	or	[postbyte_register],al
+	or	byte [postbyte_register],al
 	mov	al,ah
 	cmp	al,1
 	je	xchg_reg_reg_8bit
@@ -6894,7 +6894,7 @@ xchg_instruction:
 	xchg	bh,bl
 	or	bh,bh
 	jz	xchg_ax_reg
-	inc	[base_code]
+	inc	byte [base_code]
 	jmp	xchg_reg_reg_8bit
       xchg_reg_reg_16bit:
 	call	operand_16bit_prefix
@@ -6903,10 +6903,10 @@ xchg_instruction:
 	xchg	bh,bl
 	or	bh,bh
 	jz	xchg_ax_reg
-	inc	[base_code]
+	inc	byte [base_code]
       xchg_reg_reg_8bit:
-	mov	al,[base_code]
-	mov	ah,[postbyte_register]
+	mov	al,byte [base_code]
+	mov	ah,byte [postbyte_register]
 	stosw
 	jmp	instruction_assembled
       xchg_ax_reg:
@@ -6916,7 +6916,7 @@ xchg_instruction:
 	jmp	instruction_assembled
       xchg_reg_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	xchg_reg_mem_8bit
 	cmp	al,2
@@ -6929,12 +6929,12 @@ xchg_instruction:
 	jmp	instruction_assembled
       xchg_reg_mem_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       xchg_reg_mem_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
 push_instruction:
@@ -6948,27 +6948,27 @@ push_instruction:
 	jne	invalid_operand
       push_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	push_mem_16bit
 	cmp	al,4
 	je	push_mem_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       push_mem_16bit:
 	call	operand_16bit_prefix
-	mov	[base_code],0FFh
-	mov	[postbyte_register],110b
+	mov	byte [base_code],0FFh
+	mov	byte [postbyte_register],110b
 	call	store_instruction
 	jmp	push_done
       push_mem_32bit:
 	call	operand_32bit_prefix
-	mov	[base_code],0FFh
-	mov	[postbyte_register],110b
+	mov	byte [base_code],0FFh
+	mov	byte [postbyte_register],110b
 	call	store_instruction
 	jmp	push_done
       push_reg:
@@ -6995,7 +6995,7 @@ push_instruction:
 	stosb
 	jmp	push_done
       push_sreg:
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,4
 	je	push_sreg32
 	cmp	bl,2
@@ -7031,19 +7031,19 @@ push_instruction:
 	stosw
 	jmp	push_done
       push_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	push_imm_16bit
 	cmp	al,4
 	je	push_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	push_imm_optimized_16bit
       push_imm_optimized_32bit:
 	call	get_dword_value
 	mov	edx,eax
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	push_imm_32bit_forced
 	cmp	eax,-80h
 	jl	push_imm_32bit_forced
@@ -7057,7 +7057,7 @@ push_instruction:
       push_imm_optimized_16bit:
 	call	get_word_value
 	mov	dx,ax
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	push_imm_16bit_forced
 	cmp	ax,-80h
 	jl	push_imm_16bit_forced
@@ -7092,8 +7092,8 @@ push_instruction:
 	je	instruction_assembled
 	or	al,al
 	jz	instruction_assembled
-	mov	[operand_size],0
-	mov	[forced_size],0
+	mov	byte [operand_size],0
+	mov	byte [forced_size],0
 	jmp	push_instruction
 pop_instruction:
 	lodsb
@@ -7104,27 +7104,27 @@ pop_instruction:
 	jne	invalid_operand
       pop_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	pop_mem_16bit
 	cmp	al,4
 	je	pop_mem_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       pop_mem_16bit:
 	call	operand_16bit_prefix
-	mov	[base_code],08Fh
-	mov	[postbyte_register],0
+	mov	byte [base_code],08Fh
+	mov	byte [postbyte_register],0
 	call	store_instruction
 	jmp	pop_done
       pop_mem_32bit:
 	call	operand_32bit_prefix
-	mov	[base_code],08Fh
-	mov	[postbyte_register],0
+	mov	byte [base_code],08Fh
+	mov	byte [postbyte_register],0
 	call	store_instruction
 	jmp	pop_done
       pop_reg:
@@ -7151,7 +7151,7 @@ pop_instruction:
 	stosb
 	jmp	pop_done
       pop_sreg:
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,4
 	je	pop_sreg32
 	cmp	bl,2
@@ -7194,11 +7194,11 @@ pop_instruction:
 	je	instruction_assembled
 	or	al,al
 	jz	instruction_assembled
-	mov	[operand_size],0
-	mov	[forced_size],0
+	mov	byte [operand_size],0
+	mov	byte [forced_size],0
 	jmp	pop_instruction
 inc_instruction:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -7208,7 +7208,7 @@ inc_instruction:
 	jne	invalid_operand
       inc_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	inc_mem_8bit
 	cmp	al,2
@@ -7217,28 +7217,28 @@ inc_instruction:
 	je	inc_mem_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       inc_mem_8bit:
 	mov	al,0FEh
-	xchg	al,[base_code]
-	mov	[postbyte_register],al
+	xchg	al,byte [base_code]
+	mov	byte [postbyte_register],al
 	call	store_instruction
 	jmp	instruction_assembled
       inc_mem_16bit:
 	call	operand_16bit_prefix
 	mov	al,0FFh
-	xchg	al,[base_code]
-	mov	[postbyte_register],al
+	xchg	al,byte [base_code]
+	mov	byte [postbyte_register],al
 	call	store_instruction
 	jmp	instruction_assembled
       inc_mem_32bit:
 	call	operand_32bit_prefix
 	mov	al,0FFh
-	xchg	al,[base_code]
-	mov	[postbyte_register],al
+	xchg	al,byte [base_code]
+	mov	byte [postbyte_register],al
 	call	store_instruction
 	jmp	instruction_assembled
       inc_reg:
@@ -7249,7 +7249,7 @@ inc_instruction:
 	mov	al,ah
 	cmp	al,1
 	je	inc_reg_8bit
-	mov	dh,[base_code]
+	mov	dh,byte [base_code]
 	shl	dh,3
 	add	dl,dh
 	add	dl,40h
@@ -7260,7 +7260,7 @@ inc_instruction:
 	jmp	invalid_operand_size
       inc_reg_8bit:
 	mov	al,0FEh
-	mov	ah,[base_code]
+	mov	ah,byte [base_code]
 	shl	ah,3
 	or	ah,dl
 	or	ah,11000000b
@@ -7277,7 +7277,7 @@ inc_instruction:
 	stosb
 	jmp	instruction_assembled
 arpl_instruction:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -7293,10 +7293,10 @@ arpl_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	cmp	ah,2
 	jne	invalid_operand_size
-	mov	[base_code],63h
+	mov	byte [base_code],63h
 	call	store_instruction
 	jmp	instruction_assembled
       arpl_reg:
@@ -7329,7 +7329,7 @@ bound_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -7337,7 +7337,7 @@ bound_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	bound_16bit
 	cmp	al,4
@@ -7345,17 +7345,17 @@ bound_instruction:
 	jmp	invalid_operand_size
       bound_32bit:
 	call	operand_32bit_prefix
-	mov	[base_code],62h
+	mov	byte [base_code],62h
 	call	store_instruction
 	jmp	instruction_assembled
       bound_16bit:
 	call	operand_16bit_prefix
-	mov	[base_code],62h
+	mov	byte [base_code],62h
 	call	store_instruction
 	jmp	instruction_assembled
 set_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -7364,9 +7364,9 @@ set_instruction:
 	jne	invalid_operand
       set_mem:
 	call	get_address
-	cmp	[operand_size],1
+	cmp	byte [operand_size],1
 	ja	invalid_operand_size
-	mov	[postbyte_register],0
+	mov	byte [postbyte_register],0
 	call	store_instruction
 	jmp	instruction_assembled
       set_reg:
@@ -7375,7 +7375,7 @@ set_instruction:
 	mov	bl,al
 	cmp	ah,1
 	jne	invalid_operand_size
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,11000000b
@@ -7392,7 +7392,7 @@ ret_instruction_32bit:
 	call	operand_32bit_prefix
 	mov	al,ah
 ret_instruction:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	dec	esi
 	or	al,al
@@ -7410,34 +7410,34 @@ ret_instruction:
 	cmp	al,'('
 	jne	invalid_operand
 	call	get_word_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	mov	dx,ax
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	ax,dx
 	stosw
 	jmp	instruction_assembled
       simple_ret:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	inc	al
 	stosb
 	jmp	instruction_assembled
 lea_instruction:
-	mov	[base_code],8Dh
+	mov	byte [base_code],8Dh
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
@@ -7463,14 +7463,14 @@ ls_instruction:
 	cmp	al,3
 	jz	lds_instruction
 	add	al,0B0h
-	mov	[extended_code],al
-	mov	[base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [base_code],0Fh
 	jmp	ls_code_ok
       les_instruction:
-	mov	[base_code],0C4h
+	mov	byte [base_code],0C4h
 	jmp	ls_code_ok
       lds_instruction:
-	mov	[base_code],0C5h
+	mov	byte [base_code],0C5h
       ls_code_ok:
 	lodsb
 	call	get_size_operator
@@ -7478,17 +7478,17 @@ ls_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	add	[operand_size],2
+	add	byte [operand_size],2
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,4
 	je	ls_16bit
 	cmp	al,6
@@ -7497,17 +7497,17 @@ ls_instruction:
       ls_16bit:
 	call	operand_16bit_prefix
 	call	store_instruction
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	instruction_assembled
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	jne	invalid_operand_size
 	jmp	instruction_assembled
       ls_32bit:
 	call	operand_32bit_prefix
 	call	store_instruction
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	instruction_assembled
-	cmp	[operand_size],6
+	cmp	byte [operand_size],6
 	jne	invalid_operand_size
 	jmp	instruction_assembled
 enter_instruction:
@@ -7521,10 +7521,10 @@ enter_instruction:
 	cmp	al,'('
 	jne	invalid_operand
 	call	get_word_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -7548,7 +7548,7 @@ enter_instruction:
 	stosb
 	jmp	instruction_assembled
 sh_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -7560,9 +7560,9 @@ sh_instruction:
 	push edx
 	push bx
 	push cx
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -7588,26 +7588,26 @@ sh_instruction:
 	je	sh_mem_cl_32bit
 	or	ah,ah
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       sh_mem_cl_8bit:
-	mov	[base_code],0D2h
+	mov	byte [base_code],0D2h
 	call	store_instruction
 	jmp	instruction_assembled
       sh_mem_cl_16bit:
-	mov	[base_code],0D3h
+	mov	byte [base_code],0D3h
 	call	operand_16bit_prefix
 	call	store_instruction
 	jmp	instruction_assembled
       sh_mem_cl_32bit:
-	mov	[base_code],0D3h
+	mov	byte [base_code],0D3h
 	call	operand_32bit_prefix
 	call	store_instruction
 	jmp	instruction_assembled
       sh_mem_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	sh_mem_imm_size_ok
 	cmp	al,1
@@ -7627,59 +7627,59 @@ sh_instruction:
 	je	sh_mem_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       sh_mem_imm_8bit:
 	cmp	byte [value],1
 	je	sh_mem_1_8bit
-	mov	[base_code],0C0h
+	mov	byte [base_code],0C0h
 	call	store_instruction
 	mov	al,byte [value]
 	stosb
 	jmp	instruction_assembled
       sh_mem_1_8bit:
-	mov	[base_code],0D0h
+	mov	byte [base_code],0D0h
 	call	store_instruction
 	jmp	instruction_assembled
       sh_mem_imm_16bit:
 	cmp	byte [value],1
 	je	sh_mem_1_16bit
-	mov	[base_code],0C1h
+	mov	byte [base_code],0C1h
 	call	operand_16bit_prefix
 	call	store_instruction
 	mov	al,byte [value]
 	stosb
 	jmp	instruction_assembled
       sh_mem_1_16bit:
-	mov	[base_code],0D1h
+	mov	byte [base_code],0D1h
 	call	operand_16bit_prefix
 	call	store_instruction
 	jmp	instruction_assembled
       sh_mem_imm_32bit:
 	cmp	byte [value],1
 	je	sh_mem_1_32bit
-	mov	[base_code],0C1h
+	mov	byte [base_code],0C1h
 	call	operand_32bit_prefix
 	call	store_instruction
 	mov	al,byte [value]
 	stosb
 	jmp	instruction_assembled
       sh_mem_1_32bit:
-	mov	[base_code],0D1h
+	mov	byte [base_code],0D1h
 	call	operand_32bit_prefix
 	call	store_instruction
 	jmp	instruction_assembled
       sh_reg:
 	lodsb
 	call	convert_register
-	shl	[postbyte_register],3
+	shl	byte [postbyte_register],3
 	or	al,11000000b
-	or	[postbyte_register],al
+	or	byte [postbyte_register],al
 	mov	al,ah
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -7694,7 +7694,7 @@ sh_instruction:
 	cmp	al,11h
 	jne	invalid_operand
 	pop ax
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	cmp	al,1
 	je	sh_reg_cl_8bit
 	cmp	al,2
@@ -7723,7 +7723,7 @@ sh_instruction:
 	stosb
 	jmp	instruction_assembled
       sh_reg_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	sh_reg_imm_size_ok
 	cmp	al,1
@@ -7732,7 +7732,7 @@ sh_instruction:
 	call	get_byte_value
 	mov	byte [value],al
 	pop ax
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	cmp	al,1
 	je	sh_reg_imm_8bit
 	cmp	al,2
@@ -7790,8 +7790,8 @@ sh_instruction:
 	stosb
 	jmp	instruction_assembled
 shd_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -7812,12 +7812,12 @@ shd_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
 	xor	al,al
-	xchg	al,[operand_size]
+	xchg	al,byte [operand_size]
 	push ax
 	lodsb
 	call	get_size_operator
@@ -7839,16 +7839,16 @@ shd_instruction:
 	jmp	invalid_operand_size
       shd_mem_reg_cl_16bit:
 	call	operand_16bit_prefix
-	inc	[extended_code]
+	inc	byte [extended_code]
 	call	store_instruction
 	jmp	instruction_assembled
       shd_mem_reg_cl_32bit:
 	call	operand_32bit_prefix
-	inc	[extended_code]
+	inc	byte [extended_code]
 	call	store_instruction
 	jmp	instruction_assembled
       shd_mem_reg_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	shd_mem_reg_imm_size_ok
 	cmp	al,1
@@ -7880,7 +7880,7 @@ shd_instruction:
       shd_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -7890,7 +7890,7 @@ shd_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	or	bl,11000000b
@@ -7900,7 +7900,7 @@ shd_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
@@ -7923,7 +7923,7 @@ shd_instruction:
       shd_reg_reg_cl_32bit:
 	call	operand_32bit_prefix
       shd_reg_reg_cl_store:
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	inc	ah
 	mov	al,0Fh
 	stosw
@@ -7931,7 +7931,7 @@ shd_instruction:
 	stosb
 	jmp	instruction_assembled
       shd_reg_reg_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	shd_reg_reg_imm_size_ok
 	cmp	al,1
@@ -7952,7 +7952,7 @@ shd_instruction:
       shd_reg_reg_imm_32bit:
 	call	operand_32bit_prefix
       shd_reg_reg_imm_store:
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -7961,15 +7961,15 @@ shd_instruction:
 	stosb
 	jmp	instruction_assembled
 movx_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	mov	al,ah
 	cmp	al,2
 	je	movx_16bit
@@ -7980,7 +7980,7 @@ movx_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -7988,7 +7988,7 @@ movx_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	movx_16bit_mem_8bit
 	or	al,al
@@ -8000,7 +8000,7 @@ movx_instruction:
       movx_16bit_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -8009,7 +8009,7 @@ movx_instruction:
 	call	operand_16bit_prefix
 	mov	al,0Fh
 	stosb
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	stosb
 	mov	al,bl
 	stosb
@@ -8018,7 +8018,7 @@ movx_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8026,30 +8026,30 @@ movx_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	movx_32bit_mem_8bit
 	cmp	al,2
 	je	movx_32bit_mem_16bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       movx_32bit_mem_8bit:
 	call	operand_32bit_prefix
 	call	store_instruction
 	jmp	instruction_assembled
       movx_32bit_mem_16bit:
-	inc	[extended_code]
+	inc	byte [extended_code]
 	call	operand_32bit_prefix
 	call	store_instruction
 	jmp	instruction_assembled
       movx_32bit_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -8063,7 +8063,7 @@ movx_instruction:
 	call	operand_32bit_prefix
 	mov	al,0Fh
 	stosb
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	stosb
 	mov	al,bl
 	stosb
@@ -8072,18 +8072,18 @@ movx_instruction:
 	call	operand_32bit_prefix
 	mov	al,0Fh
 	stosb
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	inc	al
 	stosb
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
 bt_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	shl	al,3
 	add	al,83h
-	mov	[extended_code],al
-	mov	[base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [base_code],0Fh
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8110,7 +8110,7 @@ bt_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
@@ -8130,19 +8130,19 @@ bt_instruction:
 	jmp	instruction_assembled
       bt_mem_imm:
 	xor	al,al
-	xchg	al,[operand_size]
+	xchg	al,byte [operand_size]
 	push ax
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	bt_mem_imm_size_ok
 	cmp	al,1
 	jne	invalid_operand_size
       bt_mem_imm_size_ok:
-	mov	[extended_code],0BAh
+	mov	byte [extended_code],0BAh
 	call	get_byte_value
 	mov	byte [value],al
 	pop ax
@@ -8152,9 +8152,9 @@ bt_instruction:
 	je	bt_mem_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	bt_mem_imm_32bit
       bt_mem_imm_16bit:
@@ -8178,7 +8178,7 @@ bt_instruction:
       bt_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -8195,7 +8195,7 @@ bt_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	or	bl,11000000b
@@ -8207,7 +8207,7 @@ bt_instruction:
 	jmp	invalid_operand_size
       bt_reg_reg_16bit:
 	call	operand_16bit_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -8215,7 +8215,7 @@ bt_instruction:
 	jmp	instruction_assembled
       bt_reg_reg_32bit:
 	call	operand_32bit_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -8223,13 +8223,13 @@ bt_instruction:
 	jmp	instruction_assembled
       bt_reg_imm:
 	xor	al,al
-	xchg	al,[operand_size]
+	xchg	al,byte [operand_size]
 	push ax
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	bt_reg_imm_size_ok
 	cmp	al,1
@@ -8244,9 +8244,9 @@ bt_instruction:
 	je	bt_reg_imm_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
 	jmp	bt_reg_imm_32bit
       bt_reg_imm_16bit:
@@ -8258,8 +8258,8 @@ bt_instruction:
 	mov	ax,0BA0Fh
 	stosw
 	mov	al,11000000b
-	or	al,[postbyte_register]
-	mov	ah,[extended_code]
+	or	al,byte [postbyte_register]
+	mov	ah,byte [extended_code]
 	sub	ah,83h
 	or	al,ah
 	stosb
@@ -8267,15 +8267,15 @@ bt_instruction:
 	stosb
 	jmp	instruction_assembled
 bs_instruction:
-	mov	[extended_code],al
-	mov	[base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [base_code],0Fh
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -8285,7 +8285,7 @@ bs_instruction:
 	cmp	al,'['
 	jne	invalid_argument
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	bs_reg_mem_16bit
 	cmp	al,4
@@ -8302,7 +8302,7 @@ bs_instruction:
       bs_reg_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -8318,7 +8318,7 @@ bs_instruction:
       bs_reg_reg_32bit:
 	call	operand_32bit_prefix
       bs_reg_reg_store:
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -8329,9 +8329,9 @@ pm_word_instruction:
 	mov	ah,al
 	shr	ah,4
 	and	al,111b
-	mov	[base_code],0Fh
-	mov	[extended_code],ah
-	mov	[postbyte_register],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],ah
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8339,7 +8339,7 @@ pm_word_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	.store
 	or	al,al
@@ -8354,24 +8354,24 @@ pm_word_instruction:
 	jne	invalid_operand_size
 	mov	bl,al
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	shl	al,3
 	or	al,bl
 	or	al,11000000b
 	stosb
 	jmp	instruction_assembled
 pm_pword_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],1
-	mov	[postbyte_register],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],1
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,6
 	je	.store
 	or	al,al
@@ -8381,8 +8381,8 @@ pm_pword_instruction:
 	jmp	instruction_assembled
 
 imul_instruction:
-	mov	[base_code],0F6h
-	mov	[postbyte_register],5
+	mov	byte [base_code],0F6h
+	mov	byte [postbyte_register],5
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8391,7 +8391,7 @@ imul_instruction:
 	jne	invalid_operand
       imul_mem:
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,1
 	je	imul_mem_8bit
 	cmp	al,2
@@ -8400,21 +8400,21 @@ imul_instruction:
 	je	imul_mem_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       imul_mem_8bit:
 	call	store_instruction
 	jmp	instruction_assembled
       imul_mem_16bit:
 	call	operand_16bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       imul_mem_32bit:
 	call	operand_32bit_prefix
-	inc	[base_code]
+	inc	byte [base_code]
 	call	store_instruction
 	jmp	instruction_assembled
       imul_reg:
@@ -8422,7 +8422,7 @@ imul_instruction:
 	call	convert_register
 	cmp	byte [esi],','
 	je	imul_reg_
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -8451,7 +8451,7 @@ imul_instruction:
 	stosw
 	jmp	instruction_assembled
       imul_reg_:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	inc	esi
 	cmp	byte [esi],'('
 	je	imul_reg_imm
@@ -8474,7 +8474,7 @@ imul_instruction:
 	push cx
 	cmp	byte [esi],','
 	je	imul_reg_mem_imm
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	imul_reg_mem_16bit
 	cmp	al,4
@@ -8489,20 +8489,20 @@ imul_instruction:
 	pop cx
 	pop bx
 	pop edx
-	mov	[base_code],0Fh
-	mov	[extended_code],0AFh
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],0AFh
 	call	store_instruction
 	jmp	instruction_assembled
       imul_reg_mem_imm:
 	inc	esi
 	xor	cl,cl
-	xchg	cl,[operand_size]
+	xchg	cl,byte [operand_size]
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[operand_size]
-	mov	[operand_size],cl
+	mov	al,byte [operand_size]
+	mov	byte [operand_size],cl
 	cmp	al,1
 	je	imul_reg_mem_imm_8bit
 	cmp	al,2
@@ -8522,10 +8522,10 @@ imul_instruction:
 	pop cx
 	pop bx
 	pop edx
-	mov	[base_code],6Bh
-	cmp	[operand_size],2
+	mov	byte [base_code],6Bh
+	cmp	byte [operand_size],2
 	je	imul_reg_mem_16bit_imm_8bit
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	imul_reg_mem_32bit_imm_8bit
 	jmp	invalid_operand_size
       imul_reg_mem_16bit_imm_8bit:
@@ -8546,8 +8546,8 @@ imul_instruction:
 	pop cx
 	pop bx
 	pop edx
-	mov	[base_code],69h
-	cmp	[operand_size],2
+	mov	byte [base_code],69h
+	cmp	byte [operand_size],2
 	jne	invalid_operand_size
 	call	operand_16bit_prefix
 	call	store_instruction
@@ -8561,8 +8561,8 @@ imul_instruction:
 	pop cx
 	pop bx
 	pop edx
-	mov	[base_code],69h
-	cmp	[operand_size],4
+	mov	byte [base_code],69h
+	cmp	byte [operand_size],4
 	jne	invalid_operand_size
 	call	operand_32bit_prefix
 	call	store_instruction
@@ -8571,14 +8571,14 @@ imul_instruction:
 	stosd
 	jmp	instruction_assembled
       imul_reg_imm:
-	mov	dl,[postbyte_register]
+	mov	dl,byte [postbyte_register]
 	mov	bl,dl
 	dec	esi
 	jmp	imul_reg_reg_imm
       imul_reg_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	mov	dl,al
 	cmp	byte [esi],','
 	je	imul_reg_reg_imm
@@ -8605,13 +8605,13 @@ imul_instruction:
       imul_reg_reg_imm:
 	inc	esi
 	xor	cl,cl
-	xchg	cl,[operand_size]
+	xchg	cl,byte [operand_size]
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[operand_size]
-	mov	[operand_size],cl
+	mov	al,byte [operand_size]
+	mov	byte [operand_size],cl
 	cmp	al,1
 	je	imul_reg_reg_imm_8bit
 	cmp	al,2
@@ -8633,9 +8633,9 @@ imul_instruction:
 	pop bx
       imul_reg_reg_imm_8bit_store:
 	mov	byte [value],al
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	je	imul_reg_reg_16bit_imm_8bit
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	imul_reg_reg_32bit_imm_8bit
 	jmp	invalid_operand_size
       imul_reg_reg_16bit_imm_8bit:
@@ -8668,7 +8668,7 @@ imul_instruction:
 	call	get_word_value
 	pop dx
 	pop bx
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	imul_reg_reg_imm_16bit_forced
 	cmp	ax,-80h
 	jl	imul_reg_reg_imm_16bit_forced
@@ -8694,7 +8694,7 @@ imul_instruction:
 	call	get_dword_value
 	pop dx
 	pop bx
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	imul_reg_reg_imm_32bit_forced
 	cmp	ax,-80h
 	jl	imul_reg_reg_imm_32bit_forced
@@ -8728,7 +8728,7 @@ in_instruction:
 	jne	invalid_operand
 	mov	al,ah
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,'('
@@ -8763,7 +8763,7 @@ in_instruction:
 	stosb
 	jmp	instruction_assembled
       in_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	in_imm_size_ok
 	cmp	al,1
@@ -8812,7 +8812,7 @@ out_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8844,7 +8844,7 @@ out_instruction:
 	stosb
 	jmp	instruction_assembled
       out_imm:
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	out_imm_size_ok
 	cmp	al,1
@@ -8855,7 +8855,7 @@ out_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8893,15 +8893,15 @@ out_instruction:
 	stosb
 	jmp	instruction_assembled
 lar_instruction:
-	mov	[extended_code],al
-	mov	[base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [base_code],0Fh
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -8912,7 +8912,7 @@ lar_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	lar_16bit
 	cmp	al,4
@@ -8929,7 +8929,7 @@ lar_instruction:
       lar_reg_reg:
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
@@ -8946,15 +8946,15 @@ lar_instruction:
 	call	operand_16bit_prefix
       lar_reg_reg_store:
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
 invlpg_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],1
-	mov	[postbyte_register],7
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],1
+	mov	byte [postbyte_register],7
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
@@ -8963,8 +8963,8 @@ invlpg_instruction:
 	call	store_instruction
 	jmp	instruction_assembled
 basic_486_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -8984,7 +8984,7 @@ basic_486_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	pop cx
 	pop bx
 	pop edx
@@ -9001,18 +9001,18 @@ basic_486_instruction:
 	jmp	instruction_assembled
       basic_486_mem_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[extended_code]
+	inc	byte [extended_code]
 	call	store_instruction
 	jmp	instruction_assembled
       basic_486_mem_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[extended_code]
+	inc	byte [extended_code]
 	call	store_instruction
 	jmp	instruction_assembled
       basic_486_reg:
 	lodsb
 	call	convert_register
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -9022,7 +9022,7 @@ basic_486_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_register
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	or	bl,11000000b
@@ -9036,14 +9036,14 @@ basic_486_instruction:
 	jmp	invalid_operand_size
       basic_486_reg_reg_32bit:
 	call	operand_32bit_prefix
-	inc	[extended_code]
+	inc	byte [extended_code]
 	jmp	basic_486_reg_reg_8bit
       basic_486_reg_reg_16bit:
 	call	operand_16bit_prefix
-	inc	[extended_code]
+	inc	byte [extended_code]
       basic_486_reg_reg_8bit:
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
 	mov	al,bl
 	stosb
@@ -9064,15 +9064,15 @@ bswap_instruction:
 	stosw
 	jmp	instruction_assembled
 cmpxchg8b_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],0C7h
-	mov	[postbyte_register],1
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],0C7h
+	mov	byte [postbyte_register],1
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,8
 	je	.store
 	or	al,al
@@ -9082,10 +9082,10 @@ cmpxchg8b_instruction:
 	jmp	instruction_assembled
 
 conditional_jump:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	call	get_jump_operator
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	invalid_operand
 	call	get_size_operator
 	cmp	al,'('
@@ -9093,14 +9093,14 @@ conditional_jump:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],1
+	cmp	byte [value_type],1
 	je	invalid_use_of_symbol
 	sub	eax,edi
-	add	eax,[org_start]
+	add	eax,dword [org_start]
 	sub	eax,2
-	cmp	[org_sib],0
+	cmp	dword [org_sib],0
 	jne	invalid_use_of_symbol
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,1
 	je	conditional_jump_8bit
 	cmp	bl,2
@@ -9113,7 +9113,7 @@ conditional_jump:
 	jb	conditional_jump_8bit
 	cmp	eax,-80h
 	jae	conditional_jump_8bit
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	conditional_jump_16bit
       conditional_jump_32bit:
 	sub	eax,4
@@ -9122,7 +9122,7 @@ conditional_jump:
 	call	operand_32bit_prefix
 	sub	edx,edi
 	add	edx,ecx
-	mov	ah,[base_code]
+	mov	ah,byte [base_code]
 	add	ah,10h
 	mov	al,0Fh
 	stosw
@@ -9136,7 +9136,7 @@ conditional_jump:
 	call	operand_16bit_prefix
 	sub	edx,edi
 	add	edx,ecx
-	mov	ah,[base_code]
+	mov	ah,byte [base_code]
 	add	ah,10h
 	mov	al,0Fh
 	stosw
@@ -9150,7 +9150,7 @@ conditional_jump:
       conditional_jump_8bit:
 	mov	edx,eax
 	mov	ah,al
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosw
 	cmp	edx,80h
 	jge	jump_out_of_range
@@ -9158,11 +9158,11 @@ conditional_jump:
 	jl	jump_out_of_range
 	jmp	instruction_assembled
       jump_out_of_range:
-	cmp	[error_line],0
+	cmp	dword [error_line],0
 	jne	instruction_assembled
-	mov	eax,[current_line]
-	mov	[error_line],eax
-	mov	[error],relative_jump_out_of_range
+	mov	eax,dword [current_line]
+	mov	dword [error_line],eax
+	mov	dword [error],relative_jump_out_of_range
 	jmp	instruction_assembled
 loop_instruction_16bit:
 	mov	cl,al
@@ -9174,10 +9174,10 @@ loop_instruction_32bit:
 	call	address_32bit_prefix
 	mov	al,cl
 loop_instruction:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	call	get_jump_operator
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	invalid_operand
 	call	get_size_operator
 	cmp	al,'('
@@ -9185,13 +9185,13 @@ loop_instruction:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],1
+	cmp	byte [value_type],1
 	je	invalid_use_of_symbol
 	sub	eax,edi
-	add	eax,[org_start]
-	cmp	[org_sib],0
+	add	eax,dword [org_start]
+	cmp	dword [org_sib],0
 	jne	invalid_use_of_symbol
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,1
 	je	loop_8bit
 	or	bl,bl
@@ -9199,7 +9199,7 @@ loop_instruction:
       loop_8bit:
 	sub	eax,2
 	mov	edx,eax
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	eax,edx
 	stosb
@@ -9209,14 +9209,14 @@ loop_instruction:
 	jl	jump_out_of_range
 	jmp	instruction_assembled
 call_instruction:
-	mov	[postbyte_register],10b
-	mov	[base_code],0E8h
-	mov	[extended_code],9Ah
+	mov	byte [postbyte_register],10b
+	mov	byte [base_code],0E8h
+	mov	byte [extended_code],9Ah
 	jmp	process_jmp
 jmp_instruction:
-	mov	[postbyte_register],100b
-	mov	[base_code],0E9h
-	mov	[extended_code],0EAh
+	mov	byte [postbyte_register],100b
+	mov	byte [base_code],0E9h
+	mov	byte [extended_code],0EAh
       process_jmp:
 	lodsb
 	call	get_jump_operator
@@ -9229,9 +9229,9 @@ jmp_instruction:
 	jne	invalid_operand
       jmp_mem:
 	call	get_address
-	mov	[base_code],0FFh
+	mov	byte [base_code],0FFh
 	mov	edx,eax
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	jmp_mem_size_not_specified
 	cmp	al,2
@@ -9242,34 +9242,34 @@ jmp_instruction:
 	je	jmp_mem_48bit
 	jmp	invalid_operand_size
       jmp_mem_size_not_specified:
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	jmp_mem_far
-	cmp	[jump_type],1
+	cmp	byte [jump_type],1
 	je	jmp_mem_near
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       jmp_mem_near:
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	jmp_mem_16bit
 	jmp	jmp_mem_near_32bit
       jmp_mem_far:
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	jmp_mem_far_32bit
       jmp_mem_48bit:
-	cmp	[jump_type],1
+	cmp	byte [jump_type],1
 	je	invalid_operand_size
 	call	operand_32bit_prefix
-	inc	[postbyte_register]
+	inc	byte [postbyte_register]
 	call	store_instruction
 	jmp	instruction_assembled
       jmp_mem_32bit:
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	jmp_mem_far_32bit
-	cmp	[jump_type],1
+	cmp	byte [jump_type],1
 	je	jmp_mem_near_32bit
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	jmp_mem_far_32bit
       jmp_mem_near_32bit:
 	call	operand_32bit_prefix
@@ -9277,11 +9277,11 @@ jmp_instruction:
 	jmp	instruction_assembled
       jmp_mem_far_32bit:
 	call	operand_16bit_prefix
-	inc	[postbyte_register]
+	inc	byte [postbyte_register]
 	call	store_instruction
 	jmp	instruction_assembled
       jmp_mem_16bit:
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	invalid_operand_size
 	call	operand_16bit_prefix
 	call	store_instruction
@@ -9298,15 +9298,15 @@ jmp_instruction:
 	je	jmp_reg_32bit
 	jmp	invalid_operand_size
       jmp_reg_32bit:
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	jmp_reg_far32bit
-	cmp	[jump_type],1
+	cmp	byte [jump_type],1
 	je	jmp_reg_near32bit
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	jmp_reg_far32bit
       jmp_reg_near32bit:
 	call	operand_32bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	mov	ah,bl
@@ -9315,7 +9315,7 @@ jmp_instruction:
 	jmp	instruction_assembled
       jmp_reg_far32bit:
 	call	operand_32bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	inc	al
 	shl	al,3
 	or	bl,al
@@ -9324,10 +9324,10 @@ jmp_instruction:
 	stosw
 	jmp	instruction_assembled
       jmp_reg_16bit:
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	invalid_operand_size
 	call	operand_16bit_prefix
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	shl	al,3
 	or	bl,al
 	mov	ah,bl
@@ -9342,16 +9342,16 @@ jmp_instruction:
 	pop ebx
 	cmp	byte [esi],':'
 	je	jmp_far
-	cmp	[value_type],1
+	cmp	byte [value_type],1
 	je	invalid_use_of_symbol
-	cmp	[jump_type],2
+	cmp	byte [jump_type],2
 	je	invalid_operand
 	sub	eax,edi
-	add	eax,[org_start]
+	add	eax,dword [org_start]
 	sub	eax,2
-	cmp	[org_sib],0
+	cmp	dword [org_sib],0
 	jne	invalid_use_of_symbol
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,1
 	je	jmp_8bit
 	cmp	bl,2
@@ -9360,14 +9360,14 @@ jmp_instruction:
 	je	jmp_32bit
 	or	bl,bl
 	jnz	invalid_operand_size
-	cmp	[base_code],0E9h
+	cmp	byte [base_code],0E9h
 	jne	jmp_no8bit
 	cmp	eax,80h
 	jb	jmp_8bit
 	cmp	eax,-80h
 	jae	jmp_8bit
       jmp_no8bit:
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	jmp_32bit
       jmp_16bit:
 	dec	eax
@@ -9376,7 +9376,7 @@ jmp_instruction:
 	call	operand_16bit_prefix
 	sub	edx,edi
 	add	edx,ecx
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	eax,edx
 	stosw
@@ -9392,13 +9392,13 @@ jmp_instruction:
 	call	operand_32bit_prefix
 	sub	edx,edi
 	add	edx,ecx
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	mov	eax,edx
 	stosd
 	jmp	instruction_assembled
       jmp_8bit:
-	cmp	[base_code],0E9h
+	cmp	byte [base_code],0E9h
 	jne	invalid_operand_size
 	mov	edx,eax
 	mov	ah,al
@@ -9410,39 +9410,39 @@ jmp_instruction:
 	jl	jump_out_of_range
 	jmp	instruction_assembled
       jmp_far:
-	cmp	[jump_type],1
+	cmp	byte [jump_type],1
 	je	invalid_operand
 	mov	esi,ebx
 	call	get_word_value
 	mov	dx,ax
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,4
 	je	jmp_far_16bit
 	cmp	bl,6
 	je	jmp_far_32bit
 	or	bl,bl
 	jnz	invalid_operand_size
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	jmp_far_32bit
       jmp_far_16bit:
 	inc	esi
 	lodsb
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[value_type]
+	mov	al,byte [value_type]
 	push ax
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_word_value
 	mov	ebx,eax
 	call	operand_16bit_prefix
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	stosb
 	mov	ax,bx
 	call	mark_relocation
 	stosw
 	pop ax
-	mov	[value_type],al
+	mov	byte [value_type],al
 	mov	ax,dx
 	call	mark_relocation
 	stosw
@@ -9452,20 +9452,20 @@ jmp_instruction:
 	lodsb
 	cmp	al,'('
 	jne	invalid_operand
-	mov	al,[value_type]
+	mov	al,byte [value_type]
 	push ax
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
 	mov	ebx,eax
 	call	operand_32bit_prefix
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	stosb
 	mov	eax,ebx
 	call	mark_relocation
 	stosd
 	pop ax
-	mov	[value_type],al
+	mov	byte [value_type],al
 	mov	ax,dx
 	call	mark_relocation
 	stosw
@@ -9489,7 +9489,7 @@ ins_instruction:
       ins_16bit:
 	call	address_16bit_prefix
       ins_store:
-	cmp	[segment_register],1
+	cmp	byte [segment_register],1
 	ja	invalid_address
 	lodsb
 	cmp	al,','
@@ -9501,14 +9501,14 @@ ins_instruction:
 	cmp	al,22h
 	jne	invalid_operand
 	mov	al,6Ch
-	cmp	[operand_size],1
+	cmp	byte [operand_size],1
 	je	simple_instruction
 	inc	al
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	je	simple_instruction_16bit
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	simple_instruction_32bit
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	operand_size_not_specified
 	jmp	invalid_operand_size
 outs_instruction:
@@ -9539,19 +9539,19 @@ outs_instruction:
       outs_16bit:
 	call	address_16bit_prefix
       outs_store:
-	cmp	[segment_register],4
+	cmp	byte [segment_register],4
 	je	outs_segment_ok
 	call	store_segment_prefix
       outs_segment_ok:
 	mov	al,6Eh
-	cmp	[operand_size],1
+	cmp	byte [operand_size],1
 	je	simple_instruction
 	inc	al
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	je	simple_instruction_16bit
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	simple_instruction_32bit
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	operand_size_not_specified
 	jmp	invalid_operand_size
 movs_instruction:
@@ -9564,7 +9564,7 @@ movs_instruction:
 	jnz	invalid_address
 	or	bl,ch
 	jnz	invalid_address
-	cmp	[segment_register],1
+	cmp	byte [segment_register],1
 	ja	invalid_address
 	push bx
 	lodsb
@@ -9601,12 +9601,12 @@ movs_instruction:
       movs_16bit:
 	call	address_16bit_prefix
       movs_store:
-	cmp	[segment_register],4
+	cmp	byte [segment_register],4
 	je	movs_segment_ok
 	call	store_segment_prefix
       movs_segment_ok:
 	mov	al,0A4h
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,1
 	je	simple_instruction
 	inc	al
@@ -9636,23 +9636,23 @@ lods_instruction:
       lods_16bit:
 	call	address_16bit_prefix
       lods_store:
-	cmp	[segment_register],4
+	cmp	byte [segment_register],4
 	je	lods_segment_ok
 	call	store_segment_prefix
       lods_segment_ok:
 	mov	al,0ACh
-	cmp	[operand_size],1
+	cmp	byte [operand_size],1
 	je	simple_instruction
 	inc	al
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	je	simple_instruction_16bit
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	simple_instruction_32bit
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	operand_size_not_specified
 	jmp	invalid_operand_size
 stos_instruction:
-	mov	[base_code],al
+	mov	byte [base_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
@@ -9671,17 +9671,17 @@ stos_instruction:
       stos_16bit:
 	call	address_16bit_prefix
       stos_store:
-	cmp	[segment_register],1
+	cmp	byte [segment_register],1
 	ja	invalid_address
-	mov	al,[base_code]
-	cmp	[operand_size],1
+	mov	al,byte [base_code]
+	cmp	byte [operand_size],1
 	je	simple_instruction
 	inc	al
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	je	simple_instruction_16bit
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	je	simple_instruction_32bit
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	operand_size_not_specified
 	jmp	invalid_operand_size
 cmps_instruction:
@@ -9694,7 +9694,7 @@ cmps_instruction:
 	jnz	invalid_address
 	or	bl,ch
 	jnz	invalid_address
-	mov	al,[segment_register]
+	mov	al,byte [segment_register]
 	push ax
 	push bx
 	lodsb
@@ -9711,9 +9711,9 @@ cmps_instruction:
 	jnz	invalid_address
 	pop dx
 	pop ax
-	cmp	[segment_register],1
+	cmp	byte [segment_register],1
 	ja	invalid_address
-	mov	[segment_register],al
+	mov	byte [segment_register],al
 	mov	al,dh
 	mov	ah,bh
 	shr	al,4
@@ -9735,12 +9735,12 @@ cmps_instruction:
       cmps_16bit:
 	call	address_16bit_prefix
       cmps_store:
-	cmp	[segment_register],4
+	cmp	byte [segment_register],4
 	je	cmps_segment_ok
 	call	store_segment_prefix
       cmps_segment_ok:
 	mov	al,0A6h
-	mov	bl,[operand_size]
+	mov	bl,byte [operand_size]
 	cmp	bl,1
 	je	simple_instruction
 	inc	al
@@ -9772,12 +9772,12 @@ xlat_instruction:
       xlat_store:
 	call	store_segment_prefix_if_necessary
 	mov	al,0D7h
-	cmp	[operand_size],1
+	cmp	byte [operand_size],1
 	jbe	simple_instruction
 	jmp	invalid_operand_size
 
 basic_fpu_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -9785,27 +9785,27 @@ basic_fpu_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,4
 	je	basic_fpu_mem_32bit
 	cmp	al,8
 	je	basic_fpu_mem_64bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       basic_fpu_mem_32bit:
-	mov	[base_code],0D8h
+	mov	byte [base_code],0D8h
 	call	store_instruction
 	jmp	instruction_assembled
       basic_fpu_mem_64bit:
-	mov	[base_code],0DCh
+	mov	byte [base_code],0DCh
 	call	store_instruction
 	jmp	instruction_assembled
       basic_fpu_streg:
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	invalid_operand
 	lodsb
 	mov	ah,al
@@ -9813,7 +9813,7 @@ basic_fpu_instruction:
 	cmp	ah,0Ah
 	jne	invalid_operand
 	and	al,111b
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	cmp	ah,2
 	je	basic_fpu_single_streg
 	cmp	ah,3
@@ -9822,7 +9822,7 @@ basic_fpu_instruction:
 	jz	basic_fpu_st0
 	shl	ah,3
 	or	al,ah
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -9832,7 +9832,7 @@ basic_fpu_instruction:
 	lodsb
 	cmp	al,0A0h
 	jne	invalid_operand
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	or	ah,11000000b
 	mov	al,0DCh
 	stosw
@@ -9850,7 +9850,7 @@ basic_fpu_instruction:
 	cmp	ah,0Ah
 	jne	invalid_operand
 	and	al,111b
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	shl	ah,3
 	or	ah,al
 	or	ah,11000000b
@@ -9871,33 +9871,33 @@ simple_fpu_instruction:
 	stosw
 	jmp	instruction_assembled
 fi_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	fi_mem_16bit
 	cmp	al,4
 	je	fi_mem_32bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       fi_mem_32bit:
-	mov	[base_code],0DAh
+	mov	byte [base_code],0DAh
 	call	store_instruction
 	jmp	instruction_assembled
       fi_mem_16bit:
-	mov	[base_code],0DEh
+	mov	byte [base_code],0DEh
 	call	store_instruction
 	jmp	instruction_assembled
 fld_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -9905,7 +9905,7 @@ fld_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,4
 	je	fld_mem_32bit
 	cmp	al,8
@@ -9914,33 +9914,33 @@ fld_instruction:
 	je	fld_mem_80bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       fld_mem_32bit:
-	mov	[base_code],0D9h
+	mov	byte [base_code],0D9h
 	call	store_instruction
 	jmp	instruction_assembled
       fld_mem_64bit:
-	mov	[base_code],0DDh
+	mov	byte [base_code],0DDh
 	call	store_instruction
 	jmp	instruction_assembled
       fld_mem_80bit:
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	cmp	al,0
 	je	.store
-	dec	[postbyte_register]
+	dec	byte [postbyte_register]
 	cmp	al,3
 	je	.store
 	jmp	invalid_operand_size
       .store:
-	add	[postbyte_register],5
-	mov	[base_code],0DBh
+	add	byte [postbyte_register],5
+	mov	byte [base_code],0DBh
 	call	store_instruction
 	jmp	instruction_assembled
       fld_streg:
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	invalid_operand
 	lodsb
 	mov	ah,al
@@ -9948,11 +9948,11 @@ fld_instruction:
 	cmp	ah,0Ah
 	jne	invalid_operand
 	and	al,111b
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	shl	ah,3
 	or	ah,al
 	or	ah,11000000b
-	cmp	[postbyte_register],2
+	cmp	byte [postbyte_register],2
 	jae	fst_streg
 	mov	al,0D9h
 	stosw
@@ -9962,13 +9962,13 @@ fld_instruction:
 	stosw
 	jmp	instruction_assembled
 fild_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	cmp	al,2
 	je	fild_mem_16bit
 	cmp	al,4
@@ -9977,50 +9977,50 @@ fild_instruction:
 	je	fild_mem_64bit
 	or	al,al
 	jnz	invalid_operand_size
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	jne	operand_size_not_specified
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	operand_size_not_specified
       fild_mem_32bit:
-	mov	[base_code],0DBh
+	mov	byte [base_code],0DBh
 	call	store_instruction
 	jmp	instruction_assembled
       fild_mem_16bit:
-	mov	[base_code],0DFh
+	mov	byte [base_code],0DFh
 	call	store_instruction
 	jmp	instruction_assembled
       fild_mem_64bit:
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	cmp	al,0
 	je	.store
-	dec	[postbyte_register]
+	dec	byte [postbyte_register]
 	cmp	al,3
 	je	.store
 	jmp	invalid_operand_size
       .store:
-	add	[postbyte_register],5
-	mov	[base_code],0DFh
+	add	byte [postbyte_register],5
+	mov	byte [base_code],0DFh
 	call	store_instruction
 	jmp	instruction_assembled
 fbld_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	fbld_mem_80bit
 	cmp	al,10
 	je	fbld_mem_80bit
 	jmp	invalid_operand_size
       fbld_mem_80bit:
-	mov	[base_code],0DFh
+	mov	byte [base_code],0DFh
 	call	store_instruction
 	jmp	instruction_assembled
 faddp_instruction:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -10030,10 +10030,10 @@ faddp_instruction:
 	cmp	ah,0Ah
 	jne	invalid_operand
 	and	al,111b
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	shl	ah,3
 	or	al,ah
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10043,7 +10043,7 @@ faddp_instruction:
 	lodsb
 	cmp	al,0A0h
 	jne	invalid_operand
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	or	ah,11000000b
 	mov	al,0DEh
 	stosw
@@ -10053,12 +10053,12 @@ fcompp_instruction:
 	stosw
 	jmp	instruction_assembled
 fxch_instruction:
-	mov	[base_code],0D9h
-	mov	[postbyte_register],1
+	mov	byte [base_code],0D9h
+	mov	byte [postbyte_register],1
 	jmp	fpu_streg
 ffree_instruction:
-	mov	[base_code],0DDh
-	mov	[postbyte_register],al
+	mov	byte [base_code],0DDh
+	mov	byte [postbyte_register],al
       fpu_streg:
 	lodsb
 	cmp	al,10h
@@ -10069,38 +10069,38 @@ ffree_instruction:
 	cmp	ah,0Ah
 	jne	invalid_operand
 	and	al,111b
-	mov	ah,[postbyte_register]
+	mov	ah,byte [postbyte_register]
 	shl	ah,3
 	or	ah,al
 	or	ah,11000000b
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosw
 	jmp	instruction_assembled
 fldenv_instruction:
-	mov	[base_code],0D9h
+	mov	byte [base_code],0D9h
 	jmp	fpu_mem
 fsave_instruction:
-	mov	[base_code],0DDh
+	mov	byte [base_code],0DDh
       fpu_mem:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	invalid_operand_size
 	call	store_instruction
 	jmp	instruction_assembled
 fldcw_instruction:
-	mov	[postbyte_register],al
-	mov	[base_code],0D9h
+	mov	byte [postbyte_register],al
+	mov	byte [base_code],0D9h
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	fldcw_mem_16bit
 	cmp	al,2
@@ -10113,8 +10113,8 @@ fstsw_instruction:
 	mov	al,9Bh
 	stosb
 fnstsw_instruction:
-	mov	[base_code],0DDh
-	mov	[postbyte_register],7
+	mov	byte [base_code],0DDh
+	mov	byte [postbyte_register],7
 	lodsb
 	call	get_size_operator
 	cmp	al,10h
@@ -10122,7 +10122,7 @@ fnstsw_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	mov	al,[operand_size]
+	mov	al,byte [operand_size]
 	or	al,al
 	jz	fstsw_mem_16bit
 	cmp	al,2
@@ -10175,9 +10175,9 @@ movd_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	test	[operand_size],~4
+	test	byte [operand_size],~4
 	jnz	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10187,9 +10187,9 @@ movd_instruction:
 	lodsb
 	call	convert_mmx_register
 	call	make_mmx_prefix
-	mov	[postbyte_register],al
-	mov	[base_code],0Fh
-	mov	[extended_code],7Eh
+	mov	byte [postbyte_register],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],7Eh
 	call	store_mmx_instruction
 	jmp	instruction_assembled
       movd_reg:
@@ -10199,7 +10199,7 @@ movd_instruction:
 	call	convert_register
 	cmp	ah,4
 	jne	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	push ax
 	lodsb
 	cmp	al,','
@@ -10224,7 +10224,7 @@ movd_instruction:
 	call	convert_mmx_register
 	call	make_mmx_prefix
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10236,11 +10236,11 @@ movd_instruction:
 	jne	invalid_operand
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
-	test	[operand_size],~4
+	mov	byte [postbyte_register],al
+	test	byte [operand_size],~4
 	jnz	invalid_operand_size
-	mov	[base_code],0Fh
-	mov	[extended_code],6Eh
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],6Eh
 	call	store_mmx_instruction
 	jmp	instruction_assembled
       movd_mmreg_reg:
@@ -10259,10 +10259,10 @@ movd_instruction:
 	stosb
 	jmp	instruction_assembled
       make_mmx_prefix:
-	mov	[mmx_prefix],0
-	cmp	[operand_size],16
+	mov	byte [mmx_prefix],0
+	cmp	byte [operand_size],16
 	jne	no_mmx_prefix
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       no_mmx_prefix:
 	ret
 movq_instruction:
@@ -10273,9 +10273,9 @@ movq_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	test	[operand_size],~8
+	test	byte [operand_size],~8
 	jnz	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10284,16 +10284,16 @@ movq_instruction:
 	jne	invalid_operand
 	lodsb
 	call	convert_mmx_register
-	mov	[postbyte_register],al
-	mov	[base_code],0Fh
+	mov	byte [postbyte_register],al
+	mov	byte [base_code],0Fh
 	cmp	ah,16
 	je	movq_mem_xmmreg
-	mov	[extended_code],7Fh
+	mov	byte [extended_code],7Fh
 	call	store_instruction
 	jmp	instruction_assembled
      movq_mem_xmmreg:
-	mov	[extended_code],0D6h
-	mov	[mmx_prefix],66h
+	mov	byte [extended_code],0D6h
+	mov	byte [mmx_prefix],66h
 	call	store_mmx_instruction
 	jmp	instruction_assembled
      movq_mmreg:
@@ -10303,25 +10303,25 @@ movq_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,10h
 	je	movq_mmreg_mmreg
 	call	get_size_operator
 	call	get_address
-	test	[operand_size],~8
+	test	byte [operand_size],~8
 	jnz	invalid_operand_size
 	pop ax
-	mov	[postbyte_register],al
-	mov	[base_code],0Fh
-	cmp	[operand_size],16
+	mov	byte [postbyte_register],al
+	mov	byte [base_code],0Fh
+	cmp	byte [operand_size],16
 	je	movq_xmmreg_mem
-	mov	[extended_code],6Fh
+	mov	byte [extended_code],6Fh
 	call	store_instruction
 	jmp	instruction_assembled
       movq_xmmreg_mem:
-	mov	[extended_code],7Eh
-	mov	[mmx_prefix],0F3h
+	mov	byte [extended_code],7Eh
+	mov	byte [mmx_prefix],0F3h
 	call	store_instruction
 	jmp	instruction_assembled
       movq_mmreg_mmreg:
@@ -10346,7 +10346,7 @@ movq_instruction:
 	stosw
 	jmp	instruction_assembled
 movdq_instruction:
-	mov	[mmx_prefix],al
+	mov	byte [mmx_prefix],al
 	lodsb
 	cmp	al,10h
 	je	movdq_mmreg
@@ -10364,9 +10364,9 @@ movdq_instruction:
 	call	convert_mmx_register
 	cmp	ah,16
 	jne	invalid_operand_size
-	mov	[postbyte_register],al
-	mov	[base_code],0Fh
-	mov	[extended_code],7Fh
+	mov	byte [postbyte_register],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],7Fh
 	call	store_mmx_instruction
 	jmp	instruction_assembled
       movdq_mmreg:
@@ -10386,9 +10386,9 @@ movdq_instruction:
 	jne	invalid_operand
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
-	mov	[base_code],0Fh
-	mov	[extended_code],6Fh
+	mov	byte [postbyte_register],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],6Fh
 	call	store_mmx_instruction
 	jmp	instruction_assembled
       movdq_mmreg_mmreg:
@@ -10415,7 +10415,7 @@ movq2dq_instruction:
 	cmp	ah,16
 	jne	invalid_operand_size
 	mov	bl,al
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10444,7 +10444,7 @@ movdq2q_instruction:
 	cmp	ah,8
 	jne	invalid_operand_size
 	mov	bl,al
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10466,8 +10466,8 @@ movdq2q_instruction:
 	jmp	instruction_assembled
 
 mmx_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -10487,7 +10487,7 @@ mmx_instruction:
       mmx_mmreg_mem:
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	store_mmx_instruction
 	jmp	instruction_assembled
       mmx_mmreg_mmreg:
@@ -10498,15 +10498,15 @@ mmx_instruction:
 	or	bl,al
 	or	bl,11000000b
 	call	store_mmx_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
 mmx_ps_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -10517,7 +10517,7 @@ mmx_ps_instruction:
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,10h
 	je	mmx_mmreg_mmreg
@@ -10530,14 +10530,14 @@ mmx_ps_instruction:
       mmx_ps_mmreg_imm8:
 	call	get_byte_value
 	mov	byte [value],al
-	test	[operand_size],~1
+	test	byte [operand_size],~1
 	jnz	invalid_value
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	mov	ah,al
 	shr	al,4
 	and	ah,1111b
 	add	ah,70h
-	mov	[extended_code],ah
+	mov	byte [extended_code],ah
 	sub	al,0Ch
 	shl	al,1
 	pop bx
@@ -10545,7 +10545,7 @@ mmx_ps_instruction:
 	or	bl,al
 	or	bl,11000000b
 	call	store_mmx_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -10554,7 +10554,7 @@ mmx_ps_instruction:
 	stosb
 	jmp	instruction_assembled
 pmovmskb_instruction:
-	mov	[extended_code],al
+	mov	byte [extended_code],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -10563,7 +10563,7 @@ pmovmskb_instruction:
 	cmp	ah,4
 	jnz	invalid_operand_size
 	mov	bl,al
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10578,14 +10578,14 @@ pmovmskb_instruction:
 	or	bl,11000000b
 	call	store_mmx_prefix
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
 	mov	al,bl
 	stosb
-	cmp	[extended_code],0C5h
+	cmp	byte [extended_code],0C5h
 	jne	instruction_assembled
       mmx_imm8:
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10599,16 +10599,16 @@ pmovmskb_instruction:
 	stosb
 	jmp	instruction_assembled
 pinsrw_instruction:
-	mov	[extended_code],al
-	mov	[base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [base_code],0Fh
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_mmx_register
 	call	make_mmx_prefix
-	mov	[postbyte_register],al
-	mov	[operand_size],0
+	mov	byte [postbyte_register],al
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10619,9 +10619,9 @@ pinsrw_instruction:
 	cmp	al,'['
 	jne	invalid_operand
 	call	get_address
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	pinsrw_store
-	cmp	[operand_size],2
+	cmp	byte [operand_size],2
 	jne	invalid_operand_size
       pinsrw_store:
 	call	store_mmx_instruction
@@ -10631,33 +10631,33 @@ pinsrw_instruction:
 	call	convert_register
 	cmp	ah,4
 	jne	invalid_operand_size
-	mov	bl,[postbyte_register]
+	mov	bl,byte [postbyte_register]
 	shl	bl,3
 	or	bl,al
 	or	bl,11000000b
 	call	store_mmx_prefix
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
 	mov	al,bl
 	stosb
 	jmp	mmx_imm8
 pshufw_instruction:
-	mov	[mmx_size],8
-	mov	[mmx_prefix],al
+	mov	byte [mmx_size],8
+	mov	byte [mmx_prefix],al
 	jmp	pshuf_instruction
 pshufd_instruction:
-	mov	[mmx_size],16
-	mov	[mmx_prefix],al
+	mov	byte [mmx_size],16
+	mov	byte [mmx_prefix],al
       pshuf_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],70h
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],70h
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
 	lodsb
 	call	convert_mmx_register
-	cmp	ah,[mmx_size]
+	cmp	ah,byte [mmx_size]
 	jne	invalid_operand_size
 	push ax
 	lodsb
@@ -10671,7 +10671,7 @@ pshufd_instruction:
 	jne	invalid_operand
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	store_mmx_instruction
 	jmp	mmx_imm8
       pshufw_mmreg_mmreg:
@@ -10682,7 +10682,7 @@ pshufd_instruction:
 	or	bl,al
 	or	bl,11000000b
 	call	store_mmx_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
@@ -10690,39 +10690,39 @@ pshufd_instruction:
 	jmp	mmx_imm8
 
 sse_ps_instruction:
-	mov	[mmx_size],16
-	mov	[mmx_prefix],0
+	mov	byte [mmx_size],16
+	mov	byte [mmx_prefix],0
 	jmp	sse_instruction
 sse_pd_instruction:
-	mov	[mmx_size],16
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_size],16
+	mov	byte [mmx_prefix],66h
 	jmp	sse_instruction
 sse_ss_instruction:
-	mov	[mmx_size],4
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_size],4
+	mov	byte [mmx_prefix],0F3h
 	jmp	sse_instruction
 sse_sd_instruction:
-	mov	[mmx_size],8
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_size],8
+	mov	byte [mmx_prefix],0F2h
 	jmp	sse_instruction
 comiss_instruction:
-	mov	[mmx_size],4
-	mov	[mmx_prefix],0
+	mov	byte [mmx_size],4
+	mov	byte [mmx_prefix],0
 	jmp	sse_instruction
 comisd_instruction:
-	mov	[mmx_size],8
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_size],8
+	mov	byte [mmx_prefix],66h
 	jmp	sse_instruction
 cvtpd2dq_instruction:
-	mov	[mmx_size],16
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_size],16
+	mov	byte [mmx_prefix],0F2h
 	jmp	sse_instruction
 cvtdq2pd_instruction:
-	mov	[mmx_size],16
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_size],16
+	mov	byte [mmx_prefix],0F3h
 sse_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -10733,7 +10733,7 @@ sse_instruction:
 	jne	invalid_operand_size
       sse_reg:
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -10743,21 +10743,21 @@ sse_instruction:
 	call	get_size_operator
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
-	cmp	[operand_size],0
+	mov	byte [postbyte_register],al
+	cmp	byte [operand_size],0
 	je	sse_mem_size_ok
-	mov	al,[mmx_size]
-	cmp	[operand_size],al
+	mov	al,byte [mmx_size]
+	cmp	byte [operand_size],al
 	jne	invalid_operand_size
       sse_mem_size_ok:
 	call	store_mmx_instruction
-	cmp	[extended_code],0C6h
+	cmp	byte [extended_code],0C6h
 	je	mmx_imm8
 	jmp	instruction_assembled
       sse_xmmreg_xmmreg:
-	cmp	[extended_code],12h
+	cmp	byte [extended_code],12h
 	je	invalid_operand
-	cmp	[extended_code],16h
+	cmp	byte [extended_code],16h
 	je	invalid_operand
       sse_xmmreg_xmmreg_ok:
 	lodsb
@@ -10770,11 +10770,11 @@ sse_instruction:
 	or	bl,11000000b
 	call	store_mmx_prefix
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
 	mov	al,bl
 	stosb
-	cmp	[extended_code],0C6h
+	cmp	byte [extended_code],0C6h
 	jne	instruction_assembled
 ps_dq_instruction:
 	mov	bl,al
@@ -10795,18 +10795,18 @@ ps_dq_instruction:
 	stosw
 	jmp	mmx_imm8
 movps_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	sse_movp
 movpd_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       sse_movp:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
-	mov	[mmx_size],16
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [mmx_size],16
 	jmp	sse_mov_instruction
 movss_instruction:
-	mov	[mmx_size],4
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_size],4
+	mov	byte [mmx_prefix],0F3h
 	jmp	sse_movs
 movsd_instruction:
 	mov	al,0A5h
@@ -10817,21 +10817,21 @@ movsd_instruction:
 	je	simple_instruction_32bit
 	mov	al,66h
 	stosb
-	mov	[mmx_size],8
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_size],8
+	mov	byte [mmx_prefix],0F2h
       sse_movs:
-	mov	[base_code],0Fh
-	mov	[extended_code],10h
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],10h
 	jmp	sse_mov_instruction
 movlps_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	sse_movlp
 movlpd_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       sse_movlp:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
-	mov	[mmx_size],8
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [mmx_size],8
 	jmp	sse_mov_instruction
 sse_mov_instruction:
 	lodsb
@@ -10840,14 +10840,14 @@ sse_mov_instruction:
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
-	inc	[extended_code]
+	inc	byte [extended_code]
 	call	get_address
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	je	sse_mem_xmmreg
-	mov	al,[mmx_size]
-	cmp	[operand_size],al
+	mov	al,byte [mmx_size]
+	cmp	byte [operand_size],al
 	jne	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
       sse_mem_xmmreg:
 	lodsb
 	cmp	al,','
@@ -10859,14 +10859,14 @@ sse_mov_instruction:
 	call	convert_mmx_register
 	cmp	ah,16
 	jne	invalid_operand_size
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	store_mmx_instruction
 	jmp	instruction_assembled
 movhlps_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
-	mov	[mmx_size],0
-	mov	[mmx_prefix],0
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [mmx_size],0
+	mov	byte [mmx_prefix],0
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -10883,10 +10883,10 @@ movhlps_instruction:
 	je	sse_xmmreg_xmmreg_ok
 	jmp	invalid_operand
 movmskps_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	sse_movmsk
 movmskpd_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       sse_movmsk:
 	lodsb
 	cmp	al,10h
@@ -10895,7 +10895,7 @@ movmskpd_instruction:
 	call	convert_register
 	cmp	ah,4
 	jne	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	mov	bl,al
 	lodsb
 	cmp	al,','
@@ -10917,30 +10917,30 @@ movmskpd_instruction:
 	stosb
 	jmp	instruction_assembled
 cmpps_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	cmppx_instruction
 cmppd_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       cmppx_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],0C2h
-	mov	[mmx_size],16
-	mov	[nextbyte],-1
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],0C2h
+	mov	byte [mmx_size],16
+	mov	byte [nextbyte],-1
 	jmp	sse_cmp_instruction
 cmp_ps_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	cmp_px_instruction
 cmp_pd_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       cmp_px_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],0C2h
-	mov	[mmx_size],16
-	mov	[nextbyte],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],0C2h
+	mov	byte [mmx_size],16
+	mov	byte [nextbyte],al
 	jmp	sse_cmp_instruction
 cmpss_instruction:
-	mov	[mmx_size],4
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_size],4
+	mov	byte [mmx_prefix],0F3h
 	jmp	cmpsx_instruction
 cmpsd_instruction:
 	mov	al,0A7h
@@ -10949,24 +10949,24 @@ cmpsd_instruction:
 	jz	simple_instruction_32bit
 	cmp	ah,0Fh
 	je	simple_instruction_32bit
-	mov	[mmx_size],8
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_size],8
+	mov	byte [mmx_prefix],0F2h
       cmpsx_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],0C2h
-	mov	[nextbyte],-1
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],0C2h
+	mov	byte [nextbyte],-1
 	jmp	sse_cmp_instruction
 cmp_ss_instruction:
-	mov	[mmx_size],4
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_size],4
+	mov	byte [mmx_prefix],0F3h
 	jmp	cmp_sx_instruction
 cmp_sd_instruction:
-	mov	[mmx_size],8
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_size],8
+	mov	byte [mmx_prefix],0F2h
       cmp_sx_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],0C2h
-	mov	[nextbyte],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],0C2h
+	mov	byte [nextbyte],al
 sse_cmp_instruction:
 	lodsb
 	cmp	al,10h
@@ -10985,28 +10985,28 @@ sse_cmp_instruction:
 	call	get_size_operator
 	cmp	al,'['
 	jne	invalid_operand
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
-	cmp	[operand_size],0
+	mov	byte [postbyte_register],al
+	cmp	byte [operand_size],0
 	je	sse_cmp_xmmreg_mem_store
-	mov	al,[mmx_size]
-	cmp	[operand_size],al
+	mov	al,byte [mmx_size]
+	cmp	byte [operand_size],al
 	jne	invalid_operand_size
       sse_cmp_xmmreg_mem_store:
 	call	store_mmx_instruction
       sse_cmp_nextbyte:
-	mov	al,[nextbyte]
+	mov	al,byte [nextbyte]
 	cmp	al,-1
 	jne	nextbyte_ok
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
 	lodsb
 	call	get_size_operator
-	test	[operand_size],~1
+	test	byte [operand_size],~1
 	jnz	invalid_value
 	cmp	al,'('
 	jne	invalid_operand
@@ -11026,20 +11026,20 @@ sse_cmp_instruction:
 	or	bl,al
 	or	bl,11000000b
 	call	store_mmx_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
 	stosb
 	jmp	sse_cmp_nextbyte
 cvtpi2ps_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	cvtpi_instruction
 cvtpi2pd_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       cvtpi_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -11048,7 +11048,7 @@ cvtpi2pd_instruction:
 	cmp	ah,16
 	jne	invalid_operand_size
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -11060,10 +11060,10 @@ cvtpi2pd_instruction:
 	jne	invalid_operand
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
-	cmp	[operand_size],0
+	mov	byte [postbyte_register],al
+	cmp	byte [operand_size],0
 	je	cvtpi_size_ok
-	cmp	[operand_size],8
+	cmp	byte [operand_size],8
 	jne	invalid_operand_size
       cvtpi_size_ok:
 	call	store_mmx_instruction
@@ -11078,20 +11078,20 @@ cvtpi2pd_instruction:
 	or	bl,al
 	or	bl,11000000b
 	call	store_mmx_prefix
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	mov	al,0Fh
 	stosw
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
 cvtsi2ss_instruction:
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_prefix],0F3h
 	jmp	cvtsi_instruction
 cvtsi2sd_instruction:
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_prefix],0F2h
       cvtsi_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -11100,7 +11100,7 @@ cvtsi2sd_instruction:
 	cmp	ah,16
 	jne	invalid_operand_size
 	push ax
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	lodsb
 	cmp	al,','
 	jne	invalid_operand
@@ -11112,10 +11112,10 @@ cvtsi2sd_instruction:
 	jne	invalid_operand
 	call	get_address
 	pop ax
-	mov	[postbyte_register],al
-	cmp	[operand_size],0
+	mov	byte [postbyte_register],al
+	cmp	byte [operand_size],0
 	je	cvtsi_size_ok
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	jne	invalid_operand_size
       cvtsi_size_ok:
 	call	store_mmx_instruction
@@ -11123,7 +11123,7 @@ cvtsi2sd_instruction:
       cvtsi_xmmreg_reg:
 	lodsb
 	call	convert_register
-	cmp	[operand_size],4
+	cmp	byte [operand_size],4
 	jne	invalid_operand_size
 	pop bx
 	shl	bl,3
@@ -11131,20 +11131,20 @@ cvtsi2sd_instruction:
 	or	bl,11000000b
 	call	store_mmx_prefix
 	mov	al,0Fh
-	mov	ah,[extended_code]
+	mov	ah,byte [extended_code]
 	stosw
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
 cvtps2pi_instruction:
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	cvtpd_instruction
 cvtpd2pi_instruction:
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       cvtpd_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
-	mov	[mmx_size],8
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
+	mov	byte [mmx_size],8
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -11152,17 +11152,17 @@ cvtpd2pi_instruction:
 	call	convert_mmx_register
 	cmp	ah,8
 	jne	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	jmp	sse_reg
 cvtss2si_instruction:
-	mov	[mmx_prefix],0F3h
+	mov	byte [mmx_prefix],0F3h
 	jmp	cvt2si_instruction
 cvtsd2si_instruction:
-	mov	[mmx_prefix],0F2h
+	mov	byte [mmx_prefix],0F2h
       cvt2si_instruction:
-	mov	[extended_code],al
-	mov	[base_code],0Fh
-	mov	[mmx_size],4
+	mov	byte [extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [mmx_size],4
 	lodsb
 	cmp	al,10h
 	jne	invalid_operand
@@ -11170,14 +11170,14 @@ cvtsd2si_instruction:
 	call	convert_register
 	cmp	ah,4
 	jne	invalid_operand_size
-	mov	[operand_size],0
+	mov	byte [operand_size],0
 	jmp	sse_reg
 
 fxsave_instruction:
-	mov	[extended_code],0AEh
+	mov	byte [extended_code],0AEh
       extended_mem:
-	mov	[base_code],0Fh
-	mov	[postbyte_register],al
+	mov	byte [base_code],0Fh
+	mov	byte [postbyte_register],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
@@ -11186,7 +11186,7 @@ fxsave_instruction:
 	je	fxsave_size_ok
 	cmp	ah,4
 	jne	invalid_operand_size
-	mov	al,[postbyte_register]
+	mov	al,byte [postbyte_register]
 	cmp	al,10b
 	jb	invalid_operand_size
 	cmp	al,11b
@@ -11196,7 +11196,7 @@ fxsave_instruction:
 	call	store_instruction
 	jmp	instruction_assembled
 prefetch_instruction:
-	mov	[extended_code],18h
+	mov	byte [extended_code],18h
 	jmp	extended_mem
 fence_instruction:
 	mov	bl,al
@@ -11211,11 +11211,11 @@ pause_instruction:
 	jmp	instruction_assembled
 maskmovq_instruction:
 	mov	cl,8
-	mov	[mmx_prefix],0
+	mov	byte [mmx_prefix],0
 	jmp	maskmov_instruction
 maskmovdqu_instruction:
 	mov	cl,16
-	mov	[mmx_prefix],66h
+	mov	byte [mmx_prefix],66h
       maskmov_instruction:
 	lodsb
 	cmp	al,10h
@@ -11244,15 +11244,15 @@ maskmovdqu_instruction:
 	stosb
 	jmp	instruction_assembled
 movntq_instruction:
-	mov	[extended_code],al
-	mov	[mmx_prefix],0
+	mov	byte [extended_code],al
+	mov	byte [mmx_prefix],0
 	jmp	movnt_instruction
 movntdq_instruction:
-	mov	[extended_code],al
-	mov	[mmx_prefix],66h
+	mov	byte [extended_code],al
+	mov	byte [mmx_prefix],66h
       movnt_instruction:
-	mov	[base_code],0Fh
-	cmp	[extended_code],0E7h
+	mov	byte [base_code],0Fh
+	cmp	byte [extended_code],0E7h
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
@@ -11267,7 +11267,7 @@ movntdq_instruction:
 	lodsb
 	call	convert_mmx_register
 	jne	movnt_128bit
-	cmp	[mmx_prefix],0
+	cmp	byte [mmx_prefix],0
 	jne	movnt_128bit
 	cmp	ah,8
 	je	movnt_store
@@ -11276,12 +11276,12 @@ movntdq_instruction:
 	cmp	ah,16
 	jne	invalid_operand_size
       movnt_store:
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	store_mmx_instruction
 	jmp	instruction_assembled
 movnti_instruction:
-	mov	[base_code],0Fh
-	mov	[extended_code],al
+	mov	byte [base_code],0Fh
+	mov	byte [extended_code],al
 	lodsb
 	call	get_size_operator
 	cmp	al,'['
@@ -11297,7 +11297,7 @@ movnti_instruction:
 	call	convert_register
 	cmp	ah,4
 	jne	invalid_operand_size
-	mov	[postbyte_register],al
+	mov	byte [postbyte_register],al
 	call	store_instruction
 	jmp	instruction_assembled
 
@@ -11308,11 +11308,11 @@ convert_register:
 	cmp	ah,4
 	ja	invalid_operand
       match_register_size:
-	cmp	ah,[operand_size]
+	cmp	ah,byte [operand_size]
 	je	register_size_ok
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	operand_sizes_do_not_match
-	mov	[operand_size],ah
+	mov	byte [operand_size],ah
       register_size_ok:
 	ret
 convert_mmx_register:
@@ -11334,43 +11334,43 @@ get_size_operator:
 	jne	operand_size_ok
 	lodsw
 	xchg	al,ah
-	mov	[forced_size],1
-	cmp	ah,[operand_size]
+	mov	byte [forced_size],1
+	cmp	ah,byte [operand_size]
 	je	forced_ok
-	cmp	[operand_size],0
+	cmp	byte [operand_size],0
 	jne	operand_sizes_do_not_match
-	mov	[operand_size],ah
+	mov	byte [operand_size],ah
       forced_ok:
 	ret
       operand_size_ok:
 	cmp	al,'['
 	jne	forced_ok
-	mov	[forced_size],0
+	mov	byte [forced_size],0
 	ret
 get_jump_operator:
-	mov	[jump_type],0
+	mov	byte [jump_type],0
 	cmp	al,12h
 	jne	jump_operator_ok
 	lodsw
-	mov	[jump_type],al
+	mov	byte [jump_type],al
 	mov	al,ah
       jump_operator_ok:
 	ret
 operand_16bit_prefix:
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	size_prefix_ok
 	mov	al,66h
 	stosb
 	ret
 operand_32bit_prefix:
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	size_prefix_ok
 	mov	al,66h
 	stosb
       size_prefix_ok:
 	ret
 store_segment_prefix_if_necessary:
-	mov	al,[segment_register]
+	mov	al,byte [segment_register]
 	or	al,al
 	jz	segment_prefix_ok
 	cmp	al,3
@@ -11394,7 +11394,7 @@ store_segment_prefix_if_necessary:
 	je	segment_prefix_ok
 	jmp	segment_prefix
 store_segment_prefix:
-	mov	al,[segment_register]
+	mov	al,byte [segment_register]
 	or	al,al
 	jz	segment_prefix_ok
 	cmp	al,5
@@ -11411,7 +11411,7 @@ store_segment_prefix:
       segment_prefix_ok:
 	ret
 store_mmx_prefix:
-	mov	al,[mmx_prefix]
+	mov	al,byte [mmx_prefix]
 	or	al,al
 	jz	mmx_prefix_ok
 	stosb
@@ -11496,7 +11496,7 @@ store_instruction:
 	jae	address_8bit_value
       address_16bit_value:
 	or	al,10000000b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11509,7 +11509,7 @@ store_instruction:
 	ret
       address_8bit_value:
 	or	al,01000000b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11523,7 +11523,7 @@ store_instruction:
       address:
 	cmp	al,110b
 	je	address_8bit_value
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11576,14 +11576,14 @@ store_instruction:
 	jae	sib_address_8bit_value
       sib_address_32bit_value:
 	or	al,10000000b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosw
 	jmp	store_address_32bit_value
       sib_address_8bit_value:
 	or	al,01000000b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosw
@@ -11595,7 +11595,7 @@ store_instruction:
 	jl	value_out_of_range
 	ret
       sib_address:
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosw
@@ -11605,7 +11605,7 @@ store_instruction:
 	and	bl,111b
 	shl	bl,3
 	or	ah,bl
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosw
@@ -11637,14 +11637,14 @@ store_instruction:
 	jae	simple_address_8bit_value
       simple_address_32bit_value:
 	or	al,10000000b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
 	jmp	store_address_32bit_value
       simple_address_8bit_value:
 	or	al,01000000b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11658,7 +11658,7 @@ store_instruction:
       simple_address:
 	cmp	al,5
 	je	simple_address_8bit_value
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11670,13 +11670,13 @@ store_instruction:
 	je	address_immediate_16bit
 	or	ch,ch
 	jnz	invalid_address_size
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	addressing_16bit
       address_immediate_32bit:
 	call	address_32bit_prefix
 	call	store_instruction_code
 	mov	al,101b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11684,10 +11684,10 @@ store_instruction:
 	test	ch,80h
 	jz	address_relocation_ok
 	push word [value_type]
-	mov	[value_type],2
+	mov	byte [value_type],2
 	call	mark_relocation
 	pop ax
-	mov	[value_type],al
+	mov	byte [value_type],al
       address_relocation_ok:
 	mov	eax,edx
 	stosd
@@ -11702,7 +11702,7 @@ store_instruction:
 	call	address_16bit_prefix
 	call	store_instruction_code
 	mov	al,110b
-	mov	cl,[postbyte_register]
+	mov	cl,byte [postbyte_register]
 	shl	cl,3
 	or	al,cl
 	stosb
@@ -11714,23 +11714,23 @@ store_instruction:
 	jl	value_out_of_range
 	ret
       store_instruction_code:
-	mov	al,[base_code]
+	mov	al,byte [base_code]
 	stosb
 	cmp	al,0Fh
 	jne	instruction_code_ok
       store_extended_code:
-	mov	al,[extended_code]
+	mov	al,byte [extended_code]
 	stosb
       instruction_code_ok:
 	ret
       address_16bit_prefix:
-	cmp	[code_type],16
+	cmp	byte [code_type],16
 	je	instruction_prefix_ok
 	mov	al,67h
 	stosb
 	ret
       address_32bit_prefix:
-	cmp	[code_type],32
+	cmp	byte [code_type],32
 	je	instruction_prefix_ok
 	mov	al,67h
 	stosb
@@ -11744,80 +11744,80 @@ store_instruction:
 ; All rights reserved.
 
 format_directive:
-	cmp	edi,[code_start]
+	cmp	edi,dword [code_start]
 	jne	unexpected_instruction
-	cmp	[output_format],0
+	cmp	byte [output_format],0
 	jne	unexpected_instruction
 	lodsb
 	cmp	al,18h
 	jne	invalid_argument
 	lodsb
-	mov	[output_format],al
+	mov	byte [output_format],al
 	cmp	al,2
 	je	format_mz
 	cmp	al,3
 	je	format_pe
 	jmp	instruction_assembled
 entry_directive:
-	bts	[format_flags],1
+	bts	dword [format_flags],1
 	jc	symbol_already_defined
-	mov	al,[output_format]
+	mov	al,byte [output_format]
 	cmp	al,2
 	je	mz_entry
 	cmp	al,3
 	je	pe_entry
 	jmp	illegal_instruction
 stack_directive:
-	bts	[format_flags],2
+	bts	dword [format_flags],2
 	jc	symbol_already_defined
-	mov	al,[output_format]
+	mov	al,byte [output_format]
 	cmp	al,2
 	je	mz_stack
 	cmp	al,3
 	je	pe_stack
 	jmp	illegal_instruction
 heap_directive:
-	bts	[format_flags],3
+	bts	dword [format_flags],3
 	jc	symbol_already_defined
-	mov	al,[output_format]
+	mov	al,byte [output_format]
 	cmp	al,2
 	je	mz_heap
 	cmp	al,3
 	je	pe_heap
 	jmp	illegal_instruction
 mark_relocation:
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	je	relocation_ok
-	cmp	[virtual_data],0
+	cmp	byte [virtual_data],0
 	jne	relocation_ok
-	cmp	[output_format],2
+	cmp	byte [output_format],2
 	je	mark_mz_relocation
-	cmp	[output_format],3
+	cmp	byte [output_format],3
 	je	mark_pe_relocation
       relocation_ok:
 	ret
 
 format_mz:
-	mov	edx,[additional_memory]
-	mov	[header_data],edx
+	mov	edx,dword [additional_memory]
+	mov	dword [header_data],edx
 	push edi
 	mov	edi,edx
 	mov	ecx,1Ch >> 2
 	xor	eax,eax
 	rep	stosd
-	mov	[additional_memory],edi
+	mov	dword [additional_memory],edi
 	pop edi
 	mov	word [edx+0Ch],0FFFFh
 	mov	word [edx+10h],1000h
-	mov	[code_type],16
+	mov	byte [code_type],16
 	jmp	instruction_assembled
 mark_mz_relocation:
 	push eax
 	push ebx
-	inc	[number_of_relocations]
-	mov	ebx,[additional_memory]
+	inc	dword [number_of_relocations]
+	mov	ebx,dword [additional_memory]
 	mov	eax,edi
-	sub	eax,[code_start]
+	sub	eax,dword [code_start]
 	mov	[ebx],ax
 	shr	eax,16
 	shl	ax,12
@@ -11828,16 +11828,16 @@ mark_mz_relocation:
 	sub	word [ebx],10h
       mz_relocation_ok:
 	add	ebx,4
-	cmp	ebx,[structures_buffer]
+	cmp	ebx,dword [structures_buffer]
 	jae	out_of_memory
-	mov	[additional_memory],ebx
+	mov	dword [additional_memory],ebx
 	pop ebx
 	pop eax
 	ret
 segment_directive:
-	cmp	[output_format],2
+	cmp	byte [output_format],2
 	jne	illegal_instruction
-	cmp	[virtual_data],0
+	cmp	byte [virtual_data],0
 	jne	illegal_instruction
 	lodsb
 	cmp	al,2
@@ -11846,7 +11846,7 @@ segment_directive:
 	inc	esi
 	mov	ebx,eax
 	mov	eax,edi
-	sub	eax,[code_start]
+	sub	eax,dword [code_start]
 	mov	ecx,0Fh
 	add	eax,0Fh
 	and	eax,1111b
@@ -11854,15 +11854,15 @@ segment_directive:
 	mov	edx,edi
 	xor	al,al
 	rep	stosb
-	mov	[org_start],edi
+	mov	dword [org_start],edi
 	mov	eax,edx
 	call	undefined_data
 	mov	eax,edi
-	sub	eax,[code_start]
+	sub	eax,dword [code_start]
 	shr	eax,4
 	cmp	eax,10000h
 	jae	value_out_of_range
-	mov	cl,[current_pass]
+	mov	cl,byte [current_pass]
 	cmp	byte [ebx+8],0
 	je	new_segment
 	cmp	cl,[ebx+9]
@@ -11876,7 +11876,7 @@ segment_directive:
 	jnz	changed_segment
 	jmp	segment_ok
       changed_segment:
-	or	[next_pass_needed],-1
+	or	byte [next_pass_needed],-1
 	jmp	segment_ok
       new_segment:
 	mov	byte [ebx+8],1
@@ -11892,22 +11892,22 @@ segment_directive:
 	lodsb
 	lodsb
       segment_type_ok:
-	mov	[code_type],al
+	mov	byte [code_type],al
 	jmp	instruction_assembled
 mz_entry:
 	lodsb
 	cmp	al,'('
 	jne	invalid_argument
 	call	get_word_value
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	check_initial_cs
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	initial_cs_ok
       check_initial_cs:
-	cmp	[value_type],1
+	cmp	byte [value_type],1
 	jne	invalid_address
       initial_cs_ok:
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+16h],ax
 	lodsb
 	cmp	al,':'
@@ -11917,9 +11917,9 @@ mz_entry:
 	jne	invalid_argument
 	ja	invalid_address
 	call	get_word_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+14h],ax
 	jmp	instruction_assembled
 mz_stack:
@@ -11931,21 +11931,21 @@ mz_stack:
 	je	stack_pointer
 	cmp	ax,10h
 	jb	invalid_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+10h],ax
 	jmp	instruction_assembled
       stack_pointer:
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	check_initial_ss
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	initial_ss_ok
       check_initial_ss:
-	cmp	[value_type],1
+	cmp	byte [value_type],1
 	jne	invalid_address
       initial_ss_ok:
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+0Eh],ax
 	lodsb
 	cmp	al,':'
@@ -11954,14 +11954,14 @@ mz_stack:
 	cmp	al,'('
 	jne	invalid_argument
 	call	get_word_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+10h],ax
-	bts	[format_flags],4
+	bts	dword [format_flags],4
 	jmp	instruction_assembled
 mz_heap:
-	cmp	[output_format],2
+	cmp	byte [output_format],2
 	jne	illegal_instruction
 	lodsb
 	call	get_size_operator
@@ -11972,16 +11972,16 @@ mz_heap:
 	cmp	al,'('
 	jne	invalid_argument
 	call	get_word_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+0Ch],ax
 	jmp	instruction_assembled
 write_mz_header:
-	mov	edx,[header_data]
-	bt	[format_flags],4
+	mov	edx,dword [header_data]
+	bt	dword [format_flags],4
 	jc	mz_stack_ok
-	mov	eax,[real_code_size]
+	mov	eax,dword [real_code_size]
 	dec	eax
 	shr	eax,4
 	inc	eax
@@ -11989,28 +11989,28 @@ write_mz_header:
 	shl	eax,4
 	movzx	ecx,word [edx+10h]
 	add	eax,ecx
-	mov	[real_code_size],eax
+	mov	dword [real_code_size],eax
       mz_stack_ok:
-	mov	edi,[additional_memory]
-	mov	eax,[number_of_relocations]
+	mov	edi,dword [additional_memory]
+	mov	eax,dword [number_of_relocations]
 	shl	eax,2
 	add	eax,1Ch
 	sub	edi,eax
-	xchg	edi,[additional_memory]
+	xchg	edi,dword [additional_memory]
 	mov	ecx,0Fh
 	add	eax,0Fh
 	and	eax,1111b
 	sub	ecx,eax
 	xor	al,al
 	rep	stosb
-	sub	edi,[additional_memory]
+	sub	edi,dword [additional_memory]
 	mov	ecx,edi
 	shr	edi,4
 	mov	word [edx],'MZ' 	; signature
 	mov	[edx+8],di		; header size in paragraphs
-	mov	eax,[number_of_relocations]
+	mov	eax,dword [number_of_relocations]
 	mov	[edx+6],ax		; number of relocation entries
-	mov	eax,[code_size]
+	mov	eax,dword [code_size]
 	add	eax,ecx
 	mov	esi,eax
 	shr	esi,9
@@ -12023,11 +12023,11 @@ write_mz_header:
       mz_size_ok:
 	mov	[edx+2],ax		; number of bytes in last page
 	mov	[edx+4],si		; number of pages
-	mov	eax,[real_code_size]
+	mov	eax,dword [real_code_size]
 	dec	eax
 	shr	eax,4
 	inc	eax
-	mov	esi,[code_size]
+	mov	esi,dword [code_size]
 	dec	esi
 	shr	esi,4
 	inc	esi
@@ -12038,7 +12038,7 @@ write_mz_header:
 	mov	ah,al
 	or	[edx+0Ch],ax
 	mov	word [edx+18h],1Ch	; offset of relocation table
-	add	[written_size],ecx
+	add	dword [written_size],ecx
 	call	write
 	jc	write_failed
 	ret
@@ -12100,7 +12100,7 @@ make_stub:
 	shl	ecx,2
 	add	ecx,(40h-1Ch) >> 2
 	lea	eax,[edi+ecx*4]
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	xor	eax,eax
 	rep	stosd
@@ -12132,7 +12132,7 @@ make_stub:
 	inc	ecx
 	shl	ecx,1
 	lea	eax,[edi+ecx*4]
-	cmp	edi,[display_buffer]
+	cmp	edi,dword [display_buffer]
 	jae	out_of_memory
 	xor	eax,eax
 	rep	stosd
@@ -12199,7 +12199,7 @@ make_stub:
 	mov	[esi+16h],ax
 	mov	word [esi+14h],100h
 	mov	word [esi+18h],40h
-	mov	eax,[display_buffer]
+	mov	eax,dword [display_buffer]
 	sub	eax,ecx
 	cmp	edi,eax
 	jae	out_of_memory
@@ -12214,9 +12214,9 @@ make_stub:
 	ret
 
 format_pe:
-	mov	[machine],14Ch		; intel 80386
-	mov	[subsystem],3		; console subsystem
-	mov	[subsystem_version],3 + (10 << 16)
+	mov	word [machine],14Ch		; intel 80386
+	mov	word [subsystem],3		; console subsystem
+	mov	dword [subsystem_version],3 + (10 << 16)
 	xor	edx,edx
       pe_settings:
 	cmp	byte [esi],84h
@@ -12233,21 +12233,21 @@ format_pe:
 	je	pe_dll
 	jmp	pe_settings
       pe_dll:
-	bts	[format_flags],8
+	bts	dword [format_flags],8
 	jc	symbol_already_defined
 	jmp	pe_settings
       machine_setting:
-	bts	[format_flags],6
+	bts	dword [format_flags],6
 	jc	symbol_already_defined
 	and	ax,3Fh
 	add	ax,149h
-	mov	[machine],ax
+	mov	word [machine],ax
 	jmp	pe_settings
       subsystem_setting:
-	bts	[format_flags],7
+	bts	dword [format_flags],7
 	jc	symbol_already_defined
 	and	ax,3Fh
-	mov	[subsystem],ax
+	mov	word [subsystem],ax
 	cmp	byte [esi],'('
 	jne	pe_settings
 	inc	esi
@@ -12258,7 +12258,7 @@ format_pe:
 	call	fp_to_version
 	pop edx
 	add	esi,12
-	mov	[subsystem_version],eax
+	mov	dword [subsystem_version],eax
 	jmp	pe_settings
       get_stub_name:
 	lodsb
@@ -12270,19 +12270,19 @@ format_pe:
 	add	esi,eax
 	inc	esi
       pe_settings_ok:
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	make_pe_stub
-	add	edi,[stub_size]
+	add	edi,dword [stub_size]
 	jmp	pe_stub_ok
       make_pe_stub:
 	call	make_stub
       pe_stub_ok:
-	mov	[header_data],edi
+	mov	dword [header_data],edi
 	mov	edx,edi
 	mov	eax,edi
-	sub	eax,[code_start]
-	mov	[stub_size],eax
-	imul	ecx,[number_of_sections],28h
+	sub	eax,dword [code_start]
+	mov	dword [stub_size],eax
+	imul	ecx,dword [number_of_sections],28h
 	add	ecx,18h+0E0h
 	add	ecx,eax
 	dec	ecx
@@ -12290,7 +12290,7 @@ format_pe:
 	inc	ecx
 	shl	ecx,9
 	sub	ecx,eax
-	mov	eax,[display_buffer]
+	mov	eax,dword [display_buffer]
 	sub	eax,ecx
 	cmp	edi,eax
 	jae	out_of_memory
@@ -12298,7 +12298,7 @@ format_pe:
 	xor	eax,eax
 	rep	stosd
 	mov	word [edx],'PE' 	; signature
-	mov	ax,[machine]
+	mov	ax,word [machine]
 	mov	word [edx+4],ax
 	mov	dword [edx+14h],0E0h	; size of optional header
 	mov	dword [edx+16h],10B818Eh; flags and magic value
@@ -12306,13 +12306,13 @@ format_pe:
 	mov	dword [edx+38h],1000h	; section alignment
 	mov	dword [edx+3Ch],200h	; file alignment
 	mov	word [edx+40h],1	; OS version
-	mov	ax,[subsystem]
+	mov	ax,word [subsystem]
 	mov	[edx+5Ch],ax
-	mov	eax,[subsystem_version]
+	mov	eax,dword [subsystem_version]
 	mov	[edx+48h],eax
 	mov	word [edx+1Ah],VERSION_MAJOR + (VERSION_MINOR << 8)
 	mov	eax,edi
-	sub	eax,[code_start]
+	sub	eax,dword [code_start]
 	mov	[edx+54h],eax		; size of headers
 	mov	dword [edx+60h],1000h	; stack reserve
 	mov	dword [edx+64h],1000h	; stack commit
@@ -12324,12 +12324,12 @@ format_pe:
 	inc	eax
 	shl	eax,12
 	mov	[edx+28h],eax		; entry point rva
-	mov	[code_type],32
-	or	[reloc_labels],-1
-	mov	[number_of_sections],0
-	mov	[sections_data],edi
+	mov	byte [code_type],32
+	or	byte [reloc_labels],-1
+	mov	dword [number_of_sections],0
+	mov	dword [sections_data],edi
 	lea	ebx,[edx+18h+0E0h]
-	mov	[current_section],ebx
+	mov	dword [current_section],ebx
 	mov	dword [ebx],'.fla'
 	mov	dword [ebx+4],'t'
 	mov	[ebx+14h],edi
@@ -12338,8 +12338,8 @@ format_pe:
 	neg	eax
 	add	eax,edi
 	sub	eax,[edx+34h]
-	mov	[org_start],eax
-	bt	[format_flags],8
+	mov	dword [org_start],eax
+	bt	dword [format_flags],8
 	jnc	instruction_assembled
 	or	dword [edx+16h],2000h
 	jmp	instruction_assembled
@@ -12376,17 +12376,17 @@ format_pe:
 	xor	eax,eax
 	ret
 section_directive:
-	cmp	[output_format],3
+	cmp	byte [output_format],3
 	jne	illegal_instruction
-	cmp	[virtual_data],0
+	cmp	byte [virtual_data],0
 	jne	illegal_instruction
 	call	close_section
-	bts	[format_flags],5
+	bts	dword [format_flags],5
 	lea	ecx,[ebx+28h]
-	cmp	ecx,[sections_data]
+	cmp	ecx,dword [sections_data]
 	jbe	new_section
 	sub	ebx,28h
-	or	[next_pass_needed],-1
+	or	byte [next_pass_needed],-1
       new_section:
 	mov	[ebx+0Ch],eax
 	lodsw
@@ -12407,14 +12407,14 @@ section_directive:
 	rep	movsb
 	pop edi
 	pop esi
-	mov	[code_type],32
+	mov	byte [code_type],32
 	mov	dword [ebx+24h],0
 	mov	[ebx+14h],edi
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	eax,edi
 	sub	eax,[ebx+0Ch]
 	sub	eax,[edx+34h]
-	mov	[org_start],eax
+	mov	dword [org_start],eax
       get_section_flags:
 	lodsb
 	cmp	al,1Ah
@@ -12426,7 +12426,7 @@ section_directive:
 	jne	instruction_assembled
 	lodsb
 	lodsb
-	mov	[code_type],al
+	mov	byte [code_type],al
 	cmp	al,16
 	jne	instruction_assembled
 	or	byte [ebx+24h],4
@@ -12451,19 +12451,19 @@ section_directive:
 	or	dword [ebx+24h],eax
 	jmp	get_section_flags
       close_section:
-	mov	ebx,[current_section]
+	mov	ebx,dword [current_section]
 	mov	eax,edi
 	sub	eax,[ebx+14h]
 	jnz	finish_section
-	bt	[format_flags],5
+	bt	dword [format_flags],5
 	jc	finish_section
 	mov	eax,[ebx+0Ch]
 	ret
       finish_section:
 	mov	[ebx+8],eax
-	cmp	edi,[undefined_data_end]
+	cmp	edi,dword [undefined_data_end]
 	jne	align_section
-	mov	edi,[undefined_data_start]
+	mov	edi,dword [undefined_data_start]
       align_section:
 	mov	edx,edi
 	sub	edx,[ebx+14h]
@@ -12476,7 +12476,7 @@ section_directive:
 	sub	ecx,edx
 	xor	al,al
 	rep	stosb
-	mov	eax,[code_start]
+	mov	eax,dword [code_start]
 	sub	dword [ebx+14h],eax
 	mov	eax,[ebx+8]
 	dec	eax
@@ -12485,12 +12485,12 @@ section_directive:
 	shl	eax,12
 	add	eax,[ebx+0Ch]
 	add	ebx,28h
-	mov	[current_section],ebx
+	mov	dword [current_section],ebx
 	inc	word [number_of_sections]
 	jz	illegal_instruction
 	ret
 data_directive:
-	cmp	[output_format],3
+	cmp	byte [output_format],3
 	jne	illegal_instruction
 	lodsb
 	cmp	al,1Ah
@@ -12505,11 +12505,11 @@ data_directive:
 	movzx	eax,byte [esi]
 	inc	esi
       data_type_ok:
-	mov	ebx,[current_section]
+	mov	ebx,dword [current_section]
 	mov	ecx,edi
 	sub	ecx,[ebx+14h]
 	add	ecx,[ebx+0Ch]
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	xchg	ecx,[edx+78h+eax*8]
 	or	ecx,ecx
 	jnz	symbol_already_defined
@@ -12521,16 +12521,16 @@ data_directive:
 	call	make_pe_fixups
 	jmp	instruction_assembled
       end_data:
-	cmp	[output_format],3
+	cmp	byte [output_format],3
 	jne	illegal_instruction
 	call	find_structure_data
 	jc	unexpected_instruction
 	movzx	eax,byte [ebx+2]
-	mov	edx,[current_section]
+	mov	edx,dword [current_section]
 	mov	ecx,edi
 	sub	ecx,[edx+14h]
 	add	ecx,[edx+0Ch]
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	sub	ecx,[edx+78h+eax*8]
 	mov	[edx+78h+eax*8+4],ecx
 	jmp	remove_structure_data
@@ -12544,15 +12544,15 @@ pe_entry:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[next_pass_needed],0
+	cmp	byte [next_pass_needed],0
 	je	check_pe_entry
-	cmp	[current_pass],0
+	cmp	byte [current_pass],0
 	je	pe_entry_ok
       check_pe_entry:
-	cmp	[value_type],2
+	cmp	byte [value_type],2
 	jne	invalid_address
       pe_entry_ok:
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	sub	eax,[edx+34h]
 	mov	[edx+28h],eax
 	jmp	instruction_assembled
@@ -12566,9 +12566,9 @@ pe_stack:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+60h],eax
 	cmp	byte [esi],','
 	jne	default_stack_commit
@@ -12582,9 +12582,9 @@ pe_stack:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+64h],eax
 	cmp	eax,[edx+60h]
 	ja	value_out_of_range
@@ -12606,9 +12606,9 @@ pe_heap:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+68h],eax
 	cmp	byte [esi],','
 	jne	default_heap_commit
@@ -12622,9 +12622,9 @@ pe_heap:
 	cmp	byte [esi],'.'
 	je	invalid_value
 	call	get_dword_value
-	cmp	[value_type],0
+	cmp	byte [value_type],0
 	jne	invalid_use_of_symbol
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+6Ch],eax
 	cmp	eax,[edx+68h]
 	ja	value_out_of_range
@@ -12635,18 +12635,18 @@ pe_heap:
 mark_pe_relocation:
 	push eax
 	push ebx
-	mov	ebx,[current_section]
+	mov	ebx,dword [current_section]
 	mov	eax,edi
 	sub	eax,[ebx+14h]
 	add	eax,[ebx+0Ch]
-	mov	ebx,[additional_memory]
-	inc	[number_of_relocations]
+	mov	ebx,dword [additional_memory]
+	inc	dword [number_of_relocations]
 	jz	invalid_use_of_symbol
 	mov	[ebx],eax
 	add	ebx,4
-	cmp	ebx,[structures_buffer]
+	cmp	ebx,dword [structures_buffer]
 	jae	out_of_memory
-	mov	[additional_memory],ebx
+	mov	dword [additional_memory],ebx
 	pop ebx
 	pop eax
 	ret
@@ -12654,14 +12654,14 @@ make_pe_fixups:
 	push ebx
 	push edx
 	push esi
-	mov	ecx,[number_of_relocations]
+	mov	ecx,dword [number_of_relocations]
 	jecxz	fixups_done
-	mov	esi,[additional_memory]
+	mov	esi,dword [additional_memory]
 	mov	eax,ecx
 	shl	eax,2
 	sub	esi,eax
-	mov	[additional_memory],esi
-	or	[number_of_relocations],-1
+	mov	dword [additional_memory],esi
+	or	dword [number_of_relocations],-1
 	mov	edx,1000h
 	mov	ebp,edi
       make_fixups:
@@ -12698,13 +12698,13 @@ make_pe_fixups:
 	ret
 finish_pe:
 	call	close_section
-	mov	edx,[header_data]
+	mov	edx,dword [header_data]
 	mov	[edx+50h],eax
-	cmp	[number_of_relocations],0
+	cmp	dword [number_of_relocations],0
 	jle	pe_flags_ok
 	or	word [edx+16h],1
       pe_flags_ok:
-	mov	eax,[number_of_sections]
+	mov	eax,dword [number_of_sections]
 	mov	[edx+6],ax
 	xor	ecx,ecx
       process_directories:
@@ -12724,8 +12724,8 @@ finish_pe:
 	cmp	cl,10h
 	jb	process_directories
 	mov	eax,edi
-	sub	eax,[code_start]
-	mov	[code_size],eax
+	sub	eax,dword [code_start]
+	mov	dword [code_size],eax
 	ret
 
 ;%include '../tables.inc'
@@ -12848,20 +12848,20 @@ get_label_id:
 	jne	standard_label
 	cmp	byte [esi+1],'.'
 	je	standard_label
-	cmp	[current_locals_prefix],0
+	cmp	dword [current_locals_prefix],0
 	je	standard_label
 	push edi
 	push ecx
 	push esi
-	mov	edi,[additional_memory]
+	mov	edi,dword [additional_memory]
 	xor	al,al
 	stosb
-	mov	esi,[current_locals_prefix]
+	mov	esi,dword [current_locals_prefix]
 	mov	ebx,edi
 	lodsb
 	movzx	ecx,al
 	lea	ebp,[edi+ecx]
-	cmp	ebp,[additional_memory_end]
+	cmp	ebp,dword [additional_memory_end]
 	jae	out_of_memory
 	rep	movsb
 	pop esi
@@ -12869,10 +12869,10 @@ get_label_id:
 	add	al,cl
 	jc	name_too_long
 	lea	ebp,[edi+ecx]
-	cmp	ebp,[additional_memory_end]
+	cmp	ebp,dword [additional_memory_end]
 	jae	out_of_memory
 	rep	movsb
-	mov	[additional_memory],edi
+	mov	dword [additional_memory],edi
 	pop edi
 	push esi
 	movzx	ecx,al
@@ -12908,16 +12908,16 @@ get_label_id:
 	jb	hash_label
 	shl	ebx,24
 	or	ebp,ebx
-	mov	[label_hash],ebp
+	mov	dword [label_hash],ebp
 	push edi
 	push esi
 	mov	ebx,esi
 	mov	edx,ecx
-	mov	eax,[labels_list]
+	mov	eax,dword [labels_list]
       check_label:
 	mov	esi,ebx
 	mov	ecx,edx
-	cmp	eax,[memory_end]
+	cmp	eax,dword [memory_end]
 	je	add_label
 	cmp	ebp,[eax]
 	jne	next_label
@@ -12958,12 +12958,12 @@ get_label_id:
 	call	get_symbol
 	jnc	reserved_word_used_as_symbol
       label_name_ok:
-	mov	eax,[labels_list]
+	mov	eax,dword [labels_list]
 	sub	eax,16
-	mov	[labels_list],eax
+	mov	dword [labels_list],eax
 	mov	[eax+4],esi
 	add	esi,ecx
-	mov	edx,[label_hash]
+	mov	edx,dword [label_hash]
 	mov	[eax],edx
 	pop edi
 	cmp	eax,edi
