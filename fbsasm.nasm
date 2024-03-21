@@ -67,15 +67,15 @@ start:
 	mov	byte [edi+ebx],0
 	loop	convert_table
 
-	mov	eax,78
-	mov	ebx,buffer
+	mov	eax,78  ; SYS_gettimeofday.
+	mov	ebx,gettimeofday_buffer
 	xor	ecx,ecx
 	int	0x80
-	mov	eax,dword [buffer]
+	mov	eax,dword [gettimeofday_buffer]
 	mov	ecx,1000
 	mul	ecx
 	mov	ebx,eax
-	mov	eax,dword [buffer+4]
+	mov	eax,dword [gettimeofday_buffer+4]
 	div	ecx
 	add	eax,ebx
 	mov	dword [start_time],eax
@@ -89,15 +89,15 @@ start:
 	call	display_number
 	mov	esi,_passes_suffix
 	call	display_string
-	mov	eax,78
-	mov	ebx,buffer
+	mov	eax,78  ; SYS_gettimeofday.
+	mov	ebx,gettimeofday_buffer
 	xor	ecx,ecx
 	int	0x80
-	mov	eax,dword [buffer]
+	mov	eax,dword [gettimeofday_buffer]
 	mov	ecx,1000
 	mul	ecx
 	mov	ebx,eax
-	mov	eax,dword [buffer+4]
+	mov	eax,dword [gettimeofday_buffer+4]
 	div	ecx
 	add	eax,ebx
 	sub	eax,dword [start_time]
@@ -166,16 +166,16 @@ S_IXOTH    equ 00001o
 
 init_memory:
 	xor	ebx,ebx
-	mov	eax,45
+	mov	eax,45  ; SYS_brk.
 	int	0x80
 	mov	dword [additional_memory],eax
-	mov	ebx,buffer
-	mov	eax,116
-	int	0x80
-	mov dword [buffer+14h],0x100000  ; PATCH
+	;mov	ebx,syscall_buffer
+	;mov	eax,116  ; SYS_sysinfo. We are interested only the sysinfo.freeram field ([syscall_buffer+14h]), but on modern Linux it's not bytes anymore (see mem_unit in sysinfo(2)), so it's meaningless below.
+	;int	0x80
+	mov dword [available_memory],0x100000  ; Hardcode allocating maximum 1 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30.
     allocate_memory:
 	mov	ebx,dword [additional_memory]
-	add	ebx,dword [buffer+14h]
+	add	ebx,dword [available_memory]
 	mov	eax,45
 	int	0x80
 	mov	dword [memory_end],eax
@@ -187,8 +187,8 @@ init_memory:
 	mov	dword [memory_start],eax
 	ret
     not_enough_memory:
-	shr	dword [buffer+14h],1
-	cmp	dword [buffer+14h],4000h
+	shr	dword [available_memory],1
+	cmp	dword [available_memory],4000h
 	jb	out_of_memory
 	jmp	allocate_memory
 
@@ -12009,6 +12009,7 @@ nextbyte resb 1
 
 characters resb 100h
 converted resb 100h
-buffer resb 100h
+available_memory resb 4
+gettimeofday_buffer resb 8
 
 program_end:
