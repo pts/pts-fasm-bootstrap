@@ -4,6 +4,8 @@
 ;
 ; Compile with: nasm-0.98.39 -O999999999 -w+orphan-labels -f bin -o fnasm fasm.asm && chmod +x fnasm
 ;
+; !! It may not work (untested).
+;
 	cpu 386
 	bits 32
 
