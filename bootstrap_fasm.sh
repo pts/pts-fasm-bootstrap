@@ -25,8 +25,9 @@ mv fasm-src-1.42/linux/fasm.asm fasm-src-1.42/linux/fasm.asm.orig
 awk >fasm-src-1.42/linux/fasm.asm <fasm-src-1.42/linux/fasm.asm.orig '{gsub(/^include '\''..\\/, "include '\''../"); print}'
 mv fasm-src-1.42/linux/system.inc fasm-src-1.42/linux/system.inc.orig
 awk >fasm-src-1.42/linux/system.inc <fasm-src-1.42/linux/system.inc.orig '{if(/allocate_memory:/){print"\tmov dword [buffer+14h],0x100000  ; PATCH\r"}print}'  # Try to use at least 1 MiB of memory.  !! less
-mv fasm-src-1.42/formats.inc fasm-src-1.42/formats.inc.orig
-awk <fasm-src-1.42/formats.inc.orig >fasm-src-1.42/formats.inc 'BEGIN{print"salc equ setalc"}{print}'  # fasm 1.30 doesn't know salc.
+#mv fasm-src-1.42/formats.inc fasm-src-1.42/formats.inc.orig
+#awk <fasm-src-1.42/formats.inc.orig >fasm-src-1.42/formats.inc 'BEGIN{print"salc equ setalc"}{print}'  # fasm 1.30 doesn't know salc.
+awk <fasm-src-1.42/linux/fasm.asm >fasm-src-1.42/linux/fasmb-1.30.asm 'BEGIN{print"salc equ setalc"}{print}'  # fasm 1.30 doesn't know salc.
 
 #rm -rf tmp
 #mkdir tmp
@@ -57,7 +58,7 @@ rm -rf tmp
 mv fasm-src-1.37/linux/fasm.asm fasm-src-1.37/linux/fasm.asm.orig
 awk >fasm-src-1.37/linux/fasm.asm <fasm-src-1.37/linux/fasm.asm.orig '{gsub(/^include '\''..\\/, "include '\''../"); print}'
 mv fasm-src-1.37/linux/system.inc fasm-src-1.37/linux/system.inc.orig
-awk >fasm-src-1.37/linux/system.inc <fasm-src-1.37/linux/system.inc.orig '{if(/allocate_memory:/){print"\tmov dword [buffer+14h],0x100000  ; PATCH\r"}print}'  # Try to use at least 1 MiB of memory.  !! less
+awk >fasm-src-1.37/linux/system.inc <fasm-src-1.37/linux/system.inc.orig '{if(/allocate_memory:/){print"\tmov dword [buffer+14h],0x100000  ; PATCH\r"}print}'  # Try to use at least 1 MiB of memory.  !! Use less.
 
 rm -rf tmp
 mkdir tmp
@@ -66,55 +67,32 @@ rm -rf tmp/SOURCE/DOS
 mv tmp/SOURCE fasm-src-1.30
 rm -rf tmp
 mkdir fasm-src-1.30/linux
+# !! Rather than this copy, discard 1.37 and generate fasm-src-1.30/linux/fasm.asm from fasm-src-1.30/fasm.asm (Win32) instead.
 cp -a fasm-src-1.37/linux/fasm.asm fasm-src-1.37/linux/system.inc fasm-src-1.30/linux/
 
-../../fasm-1.73.30/fasm fasm-src-1.30/linux/fasm.asm fasm-pass1-1.30  # !! Use earlier fasm or do a binary patch.
-chmod 755 fasm-pass1-1.30
-(cd fasm-src-1.30/linux && ../../fasm-pass1-1.30 fasm.asm ../../fasm-re-1.30) || exit "$?"
-chmod 755 fasm-re-1.30
+# Compile version $2 using executable binary version $1, and then $2 by itself.
+# Input:  fasm-$1-re fasm-$2-src/
+# Output: fasm-$2-re
+compile() {
+  local src=fasm.asm
+  test -f fasm-src-"$2"/linux/fasmb-"$1".asm && src=fasmb-"$1".asm
+  (cd fasm-src-"$2"/linux && ../../fasm-re-"$1" "$src" ../../fasm-pass1-"$2"-by-"$1") || exit "$?"
+  chmod 755 fasm-pass1-"$2"-by-"$1"
+  (cd fasm-src-"$2"/linux && ../../fasm-pass1-"$2"-by-"$1" fasm.asm ../../fasm-pass2-"$2") || exit "$?"
+  rm -f fasm-pass1-"$2"-by-"$1"
+  chmod 755 fasm-pass2-"$2"
+  (cd fasm-src-"$2"/linux && ../../fasm-pass2-"$2" fasm.asm ../../fasm-re-"$2") || exit "$?"
+  chmod 755 fasm-re-"$2"
+  cmp fasm-pass2-"$2" fasm-re-"$2"  
+  rm -f fasm-pass2-"$2"
+  if test -f fasm-golden-"$2"; then
+    cmp fasm-golden-"$2" fasm-re-"$2"
+  fi
+}
 
-../../fasm-1.73.30/fasm fasm-src-1.37/linux/fasm.asm fasm-pass1-1.37  # !! Use earlier fasm or do a binary patch.
-chmod 755 fasm-pass1-1.37
-(cd fasm-src-1.37/linux && ../../fasm-pass1-1.37 fasm.asm ../../fasm-re-1.37) || exit "$?"
-chmod 755 fasm-re-1.37
-#cmp fasm-pass1-1.37 fasm-re-1.37  # Not the same, some offsets are different.
-rm -f fasm-pass1-1.37
+cp -a ../../fasm-1.73.30/fasm fasm-re-bootstrap  # !! Use earlier fasm or do a binary patch.
 
-(cd fasm-src-1.37/linux && ../../fasm-re-1.30 fasm.asm ../../fasm-re-1.37-by-1.30) || exit "$?"
-chmod +x fasm-re-1.37-by-1.30
-
-(cd fasm-src-1.42/linux && ../../fasm-re-1.30 fasm.asm ../../fasm-re-1.42-by-1.30) || exit "$?"
-chmod +x fasm-re-1.42-by-1.30
-
-mv fasm-src-1.42/formats.inc.orig fasm-src-1.42/formats.inc  # !! Remove `salc equ setalc'.
-(cd fasm-src-1.42/linux && ../../fasm-re-1.42-by-1.30 fasm.asm ../../fasm-pass1-1.42) || exit "$?"
-chmod +x fasm-pass1-1.42
-(cd fasm-src-1.42/linux && ../../fasm-pass1-1.42 fasm.asm ../../fasm-re-1.42) || exit "$?"  # !! Compile without the `setalc' patch.
-chmod +x fasm-re-1.42
-rm -f fasm-pass1-1.42
-
-
-
-#./fasm-orig-1.37 fasm-src-1.37/linux/fasm.asm fasm-re-1.37
-#(cd fasm-src-1.37/linux && strace ../../fasm-orig-1.37 fasm.asm ../../fasm-re-1.37) || exit "$?"
-# SUXX:
-# flat assembler  version 1.37
-# error: out of memory.
-#cmp fasm-orig-1.37 fasm-re-1.37
-
-#(cd fasm-src-1.37/linux && ../../fasm-orig-1.41 fasm.asm ../../fasm-re-1.37) || exit "$?"
-## SUXX:
-## flat assembler  version 1.37
-## error: out of memory.
-#cmp fasm-orig-1.37 fasm-re-1.37
-
-#(cd fasm-src-1.37/linux && ../../fasm-orig-1.50 fasm.asm ../../fasm-re-1.37) || exit "$?"
-## SUXX:
-## flat assembler  version 1.37
-## error: out of memory.
-#cmp fasm-orig-1.37 fasm-re-1.37
-
-# This works:
-#../../fasm-1.73.30/fasm fasm-src-1.37/linux/fasm.asm
+compile bootstrap 1.30
+compile 1.30 1.42
 
 : "$0" OK.
