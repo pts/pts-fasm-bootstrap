@@ -9778,397 +9778,6 @@ xlat_instruction:
 	jbe	simple_instruction
 	jmp	invalid_operand_size
 
-basic_fpu_instruction:
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,10h
-	je	basic_fpu_streg
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	cmp	al,4
-	je	basic_fpu_mem_32bit
-	cmp	al,8
-	je	basic_fpu_mem_64bit
-	or	al,al
-	jnz	invalid_operand_size
-	cmp	byte [current_pass],0
-	jne	operand_size_not_specified
-	cmp	byte [next_pass_needed],0
-	je	operand_size_not_specified
-      basic_fpu_mem_32bit:
-	mov	byte [base_code],0D8h
-	call	store_instruction
-	jmp	instruction_assembled
-      basic_fpu_mem_64bit:
-	mov	byte [base_code],0DCh
-	call	store_instruction
-	jmp	instruction_assembled
-      basic_fpu_streg:
-	cmp	byte [operand_size],0
-	jne	invalid_operand
-	lodsb
-	mov	ah,al
-	shr	ah,4
-	cmp	ah,0Ah
-	jne	invalid_operand
-	and	al,111b
-	mov	ah,byte [postbyte_register]
-	cmp	ah,2
-	je	basic_fpu_single_streg
-	cmp	ah,3
-	je	basic_fpu_single_streg
-	or	al,al
-	jz	basic_fpu_st0
-	shl	ah,3
-	or	al,ah
-	mov	byte [postbyte_register],al
-	lodsb
-	cmp	al,','
-	jne	invalid_operand
-	lodsb
-	cmp	al,10h
-	jne	invalid_operand
-	lodsb
-	cmp	al,0A0h
-	jne	invalid_operand
-	mov	ah,byte [postbyte_register]
-	or	ah,11000000b
-	mov	al,0DCh
-	stosw
-	jmp	instruction_assembled
-      basic_fpu_st0:
-	lodsb
-	cmp	al,','
-	jne	invalid_operand
-	lodsb
-	cmp	al,10h
-	jne	invalid_operand
-	lodsb
-	mov	ah,al
-	shr	ah,4
-	cmp	ah,0Ah
-	jne	invalid_operand
-	and	al,111b
-	mov	ah,byte [postbyte_register]
-	shl	ah,3
-	or	ah,al
-	or	ah,11000000b
-	mov	al,0D8h
-	stosw
-	jmp	instruction_assembled
-      basic_fpu_single_streg:
-	shl	ah,3
-	or	ah,al
-	or	ah,11000000b
-	mov	al,0D8h
-	stosw
-	jmp	instruction_assembled
-simple_fpu_instruction:
-	mov	ah,al
-	or	ah,11000000b
-	mov	al,0D9h
-	stosw
-	jmp	instruction_assembled
-fi_instruction:
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	cmp	al,2
-	je	fi_mem_16bit
-	cmp	al,4
-	je	fi_mem_32bit
-	or	al,al
-	jnz	invalid_operand_size
-	cmp	byte [current_pass],0
-	jne	operand_size_not_specified
-	cmp	byte [next_pass_needed],0
-	je	operand_size_not_specified
-      fi_mem_32bit:
-	mov	byte [base_code],0DAh
-	call	store_instruction
-	jmp	instruction_assembled
-      fi_mem_16bit:
-	mov	byte [base_code],0DEh
-	call	store_instruction
-	jmp	instruction_assembled
-fld_instruction:
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,10h
-	je	fld_streg
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	cmp	al,4
-	je	fld_mem_32bit
-	cmp	al,8
-	je	fld_mem_64bit
-	cmp	al,10
-	je	fld_mem_80bit
-	or	al,al
-	jnz	invalid_operand_size
-	cmp	byte [current_pass],0
-	jne	operand_size_not_specified
-	cmp	byte [next_pass_needed],0
-	je	operand_size_not_specified
-      fld_mem_32bit:
-	mov	byte [base_code],0D9h
-	call	store_instruction
-	jmp	instruction_assembled
-      fld_mem_64bit:
-	mov	byte [base_code],0DDh
-	call	store_instruction
-	jmp	instruction_assembled
-      fld_mem_80bit:
-	mov	al,byte [postbyte_register]
-	cmp	al,0
-	je	.store
-	dec	byte [postbyte_register]
-	cmp	al,3
-	je	.store
-	jmp	invalid_operand_size
-      .store:
-	add	byte [postbyte_register],5
-	mov	byte [base_code],0DBh
-	call	store_instruction
-	jmp	instruction_assembled
-      fld_streg:
-	cmp	byte [operand_size],0
-	jne	invalid_operand
-	lodsb
-	mov	ah,al
-	shr	ah,4
-	cmp	ah,0Ah
-	jne	invalid_operand
-	and	al,111b
-	mov	ah,byte [postbyte_register]
-	shl	ah,3
-	or	ah,al
-	or	ah,11000000b
-	cmp	byte [postbyte_register],2
-	jae	fst_streg
-	mov	al,0D9h
-	stosw
-	jmp	instruction_assembled
-      fst_streg:
-	mov	al,0DDh
-	stosw
-	jmp	instruction_assembled
-fild_instruction:
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	cmp	al,2
-	je	fild_mem_16bit
-	cmp	al,4
-	je	fild_mem_32bit
-	cmp	al,8
-	je	fild_mem_64bit
-	or	al,al
-	jnz	invalid_operand_size
-	cmp	byte [current_pass],0
-	jne	operand_size_not_specified
-	cmp	byte [next_pass_needed],0
-	je	operand_size_not_specified
-      fild_mem_32bit:
-	mov	byte [base_code],0DBh
-	call	store_instruction
-	jmp	instruction_assembled
-      fild_mem_16bit:
-	mov	byte [base_code],0DFh
-	call	store_instruction
-	jmp	instruction_assembled
-      fild_mem_64bit:
-	mov	al,byte [postbyte_register]
-	cmp	al,0
-	je	.store
-	dec	byte [postbyte_register]
-	cmp	al,3
-	je	.store
-	jmp	invalid_operand_size
-      .store:
-	add	byte [postbyte_register],5
-	mov	byte [base_code],0DFh
-	call	store_instruction
-	jmp	instruction_assembled
-fbld_instruction:
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	or	al,al
-	jz	fbld_mem_80bit
-	cmp	al,10
-	je	fbld_mem_80bit
-	jmp	invalid_operand_size
-      fbld_mem_80bit:
-	mov	byte [base_code],0DFh
-	call	store_instruction
-	jmp	instruction_assembled
-faddp_instruction:
-	mov	byte [postbyte_register],al
-	lodsb
-	cmp	al,10h
-	jne	invalid_operand
-	lodsb
-	mov	ah,al
-	shr	ah,4
-	cmp	ah,0Ah
-	jne	invalid_operand
-	and	al,111b
-	mov	ah,byte [postbyte_register]
-	shl	ah,3
-	or	al,ah
-	mov	byte [postbyte_register],al
-	lodsb
-	cmp	al,','
-	jne	invalid_operand
-	lodsb
-	cmp	al,10h
-	jne	invalid_operand
-	lodsb
-	cmp	al,0A0h
-	jne	invalid_operand
-	mov	ah,byte [postbyte_register]
-	or	ah,11000000b
-	mov	al,0DEh
-	stosw
-	jmp	instruction_assembled
-fcompp_instruction:
-	mov	ax,0D9DEh
-	stosw
-	jmp	instruction_assembled
-fxch_instruction:
-	mov	byte [base_code],0D9h
-	mov	byte [postbyte_register],1
-	jmp	fpu_streg
-ffree_instruction:
-	mov	byte [base_code],0DDh
-	mov	byte [postbyte_register],al
-      fpu_streg:
-	lodsb
-	cmp	al,10h
-	jne	invalid_operand
-	lodsb
-	mov	ah,al
-	shr	ah,4
-	cmp	ah,0Ah
-	jne	invalid_operand
-	and	al,111b
-	mov	ah,byte [postbyte_register]
-	shl	ah,3
-	or	ah,al
-	or	ah,11000000b
-	mov	al,byte [base_code]
-	stosw
-	jmp	instruction_assembled
-fldenv_instruction:
-	mov	byte [base_code],0D9h
-	jmp	fpu_mem
-fsave_instruction:
-	mov	byte [base_code],0DDh
-      fpu_mem:
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	cmp	byte [operand_size],0
-	jne	invalid_operand_size
-	call	store_instruction
-	jmp	instruction_assembled
-fldcw_instruction:
-	mov	byte [postbyte_register],al
-	mov	byte [base_code],0D9h
-	lodsb
-	call	get_size_operator
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	or	al,al
-	jz	fldcw_mem_16bit
-	cmp	al,2
-	je	fldcw_mem_16bit
-	jmp	invalid_operand_size
-      fldcw_mem_16bit:
-	call	store_instruction
-	jmp	instruction_assembled
-fstsw_instruction:
-	mov	al,9Bh
-	stosb
-fnstsw_instruction:
-	mov	byte [base_code],0DDh
-	mov	byte [postbyte_register],7
-	lodsb
-	call	get_size_operator
-	cmp	al,10h
-	je	fstsw_reg
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	or	al,al
-	jz	fstsw_mem_16bit
-	cmp	al,2
-	je	fstsw_mem_16bit
-	jmp	invalid_operand_size
-      fstsw_mem_16bit:
-	call	store_instruction
-	jmp	instruction_assembled
-      fstsw_reg:
-	lodsb
-	cmp	al,20h
-	jne	invalid_operand
-	mov	ax,0E0DFh
-	stosw
-	jmp	instruction_assembled
-finit_instruction:
-	mov	byte [edi],9Bh
-	inc	edi
-fninit_instruction:
-	mov	ah,al
-	mov	al,0DBh
-	stosw
-	jmp	instruction_assembled
-fcomi_instruction:
-	mov	dh,0DBh
-	jmp	fcomi_streg
-fcomip_instruction:
-	mov	dh,0DFh
-      fcomi_streg:
-	mov	dl,al
-	lodsb
-	cmp	al,10h
-	jne	invalid_operand
-	lodsb
-	mov	ah,al
-	shr	al,4
-	cmp	al,0Ah
-	jne	invalid_operand
-	and	ah,111b
-	add	ah,dl
-	mov	al,dh
-	stosw
-	jmp	instruction_assembled
-
 movd_instruction:
 	lodsb
 	cmp	al,10h
@@ -13269,8 +12878,8 @@ instructions_3:
  dbw 'dec',1, inc_instruction-assembler
  dbw 'div',6, single_operand_instruction-assembler
  dbw 'end',0, end_directive-assembler
- dbw 'fld',0, fld_instruction-assembler
- dbw 'fst',2, fld_instruction-assembler
+ ;dbw 'fld',0, fld_instruction-assembler
+ ;dbw 'fst',2, fld_instruction-assembler
  dbw 'hlt',0F4h, simple_instruction-assembler
  dbw 'inc',0, inc_instruction-assembler
  dbw 'ins',0, ins_instruction-assembler
@@ -13309,7 +12918,7 @@ instructions_3:
  dbw 'org',0, org_directive-assembler
  dbw 'out',0, out_instruction-assembler
  dbw 'pop',0, pop_instruction-assembler
- dbw 'por',0EBh, mmx_instruction-assembler
+ ;dbw 'por',0EBh, mmx_instruction-assembler
  dbw 'rcl',2, sh_instruction-assembler
  dbw 'rcr',3, sh_instruction-assembler
  dbw 'rep',0F3h, prefix_instruction-assembler
@@ -13338,32 +12947,32 @@ instructions_4:
  dbw 'cwde',98h, simple_instruction_32bit-assembler
  dbw 'data',0, data_directive-assembler
  dbw 'else',0, else_directive-assembler
- dbw 'emms',77h, simple_extended_instruction-assembler
- dbw 'fabs',100001b, simple_fpu_instruction-assembler
- dbw 'fadd',0, basic_fpu_instruction-assembler
- dbw 'fbld',4, fbld_instruction-assembler
- dbw 'fchs',100000b, simple_fpu_instruction-assembler
- dbw 'fcom',2, basic_fpu_instruction-assembler
- dbw 'fcos',111111b, simple_fpu_instruction-assembler
- dbw 'fdiv',6, basic_fpu_instruction-assembler
- dbw 'fild',0, fild_instruction-assembler
- dbw 'fist',2, fild_instruction-assembler
- dbw 'fld1',101000b, simple_fpu_instruction-assembler
- dbw 'fldz',101110b, simple_fpu_instruction-assembler
- dbw 'fmul',1, basic_fpu_instruction-assembler
- dbw 'fnop',010000b, simple_fpu_instruction-assembler
- dbw 'fsin',111110b, simple_fpu_instruction-assembler
- dbw 'fstp',3, fld_instruction-assembler
- dbw 'fsub',4, basic_fpu_instruction-assembler
- dbw 'ftst',100100b, simple_fpu_instruction-assembler
- dbw 'fxam',100101b, simple_fpu_instruction-assembler
- dbw 'fxch',1, fxch_instruction-assembler
+ ;dbw 'emms',77h, simple_extended_instruction-assembler
+ ;dbw 'fabs',100001b, simple_fpu_instruction-assembler
+ ;dbw 'fadd',0, basic_fpu_instruction-assembler
+ ;dbw 'fbld',4, fbld_instruction-assembler
+ ;dbw 'fchs',100000b, simple_fpu_instruction-assembler
+ ;dbw 'fcom',2, basic_fpu_instruction-assembler
+ ;dbw 'fcos',111111b, simple_fpu_instruction-assembler
+ ;dbw 'fdiv',6, basic_fpu_instruction-assembler
+ ;dbw 'fild',0, fild_instruction-assembler
+ ;dbw 'fist',2, fild_instruction-assembler
+ ;dbw 'fld1',101000b, simple_fpu_instruction-assembler
+ ;dbw 'fldz',101110b, simple_fpu_instruction-assembler
+ ;dbw 'fmul',1, basic_fpu_instruction-assembler
+ ;dbw 'fnop',010000b, simple_fpu_instruction-assembler
+ ;dbw 'fsin',111110b, simple_fpu_instruction-assembler
+ ;dbw 'fstp',3, fld_instruction-assembler
+ ;dbw 'fsub',4, basic_fpu_instruction-assembler
+ ;dbw 'ftst',100100b, simple_fpu_instruction-assembler
+ ;dbw 'fxam',100101b, simple_fpu_instruction-assembler
+ ;dbw 'fxch',1, fxch_instruction-assembler
  dbw 'heap',0, heap_directive-assembler
  dbw 'idiv',7, single_operand_instruction-assembler
  dbw 'imul',0, imul_instruction-assembler
- dbw 'insb',6Ch, simple_instruction-assembler
- dbw 'insd',6Dh, simple_instruction_32bit-assembler
- dbw 'insw',6Dh, simple_instruction_16bit-assembler
+ ;dbw 'insb',6Ch, simple_instruction-assembler
+ ;dbw 'insd',6Dh, simple_instruction_32bit-assembler
+ ;dbw 'insw',6Dh, simple_instruction_16bit-assembler
  dbw 'int3',0CCh, simple_instruction-assembler
  dbw 'into',0CEh, simple_instruction-assembler
  dbw 'invd',8, simple_extended_instruction-assembler
@@ -13385,14 +12994,14 @@ instructions_4:
  dbw 'movd',0, movd_instruction-assembler
  dbw 'movq',0, movq_instruction-assembler
  dbw 'movs',0, movs_instruction-assembler
- dbw 'orpd',56h, sse_pd_instruction-assembler
- dbw 'orps',56h, sse_ps_instruction-assembler
+ ;dbw 'orpd',56h, sse_pd_instruction-assembler
+ ;dbw 'orps',56h, sse_ps_instruction-assembler
  dbw 'outs',0, outs_instruction-assembler
- dbw 'pand',0DBh, mmx_instruction-assembler
+ ;dbw 'pand',0DBh, mmx_instruction-assembler
  dbw 'popa',61h, simple_instruction-assembler
  dbw 'popf',9Dh, simple_instruction-assembler
  dbw 'push',0, push_instruction-assembler
- dbw 'pxor',0EFh, mmx_instruction-assembler
+ ;dbw 'pxor',0EFh, mmx_instruction-assembler
  dbw 'repe',0F3h, prefix_instruction-assembler
  dbw 'repz',0F3h, prefix_instruction-assembler
  dbw 'retd',0C2h, ret_instruction_32bit-assembler
@@ -13427,67 +13036,67 @@ instructions_4:
  dbw 'xlat',0D7h, xlat_instruction-assembler
  db 0
 instructions_5:
- dbw 'addpd',58h, sse_pd_instruction-assembler
- dbw 'addps',58h, sse_ps_instruction-assembler
- dbw 'addsd',58h, sse_sd_instruction-assembler
- dbw 'addss',58h, sse_ss_instruction-assembler
- dbw 'andpd',54h, sse_pd_instruction-assembler
- dbw 'andps',54h, sse_ps_instruction-assembler
+ ;dbw 'addpd',58h, sse_pd_instruction-assembler
+ ;dbw 'addps',58h, sse_ps_instruction-assembler
+ ;dbw 'addsd',58h, sse_sd_instruction-assembler
+ ;dbw 'addss',58h, sse_ss_instruction-assembler
+ ;dbw 'andpd',54h, sse_pd_instruction-assembler
+ ;dbw 'andps',54h, sse_ps_instruction-assembler
  dbw 'bound',0, bound_instruction-assembler
  dbw 'bswap',0, bswap_instruction-assembler
- dbw 'cmova',47h, cmov_instruction-assembler
- dbw 'cmovb',42h, cmov_instruction-assembler
- dbw 'cmovc',42h, cmov_instruction-assembler
- dbw 'cmove',44h, cmov_instruction-assembler
- dbw 'cmovg',4Fh, cmov_instruction-assembler
- dbw 'cmovl',4Ch, cmov_instruction-assembler
- dbw 'cmovo',40h, cmov_instruction-assembler
- dbw 'cmovp',4Ah, cmov_instruction-assembler
- dbw 'cmovs',48h, cmov_instruction-assembler
- dbw 'cmovz',44h, cmov_instruction-assembler
- dbw 'cmppd',0, cmppd_instruction-assembler
- dbw 'cmpps',0, cmpps_instruction-assembler
+ ;dbw 'cmova',47h, cmov_instruction-assembler
+ ;dbw 'cmovb',42h, cmov_instruction-assembler
+ ;dbw 'cmovc',42h, cmov_instruction-assembler
+ ;dbw 'cmove',44h, cmov_instruction-assembler
+ ;dbw 'cmovg',4Fh, cmov_instruction-assembler
+ ;dbw 'cmovl',4Ch, cmov_instruction-assembler
+ ;dbw 'cmovo',40h, cmov_instruction-assembler
+ ;dbw 'cmovp',4Ah, cmov_instruction-assembler
+ ;dbw 'cmovs',48h, cmov_instruction-assembler
+ ;dbw 'cmovz',44h, cmov_instruction-assembler
+ ;dbw 'cmppd',0, cmppd_instruction-assembler
+ ;dbw 'cmpps',0, cmpps_instruction-assembler
  dbw 'cmpsb',0A6h, simple_instruction-assembler
  dbw 'cmpsd',0, cmpsd_instruction-assembler
  dbw 'cmpss',0, cmpss_instruction-assembler
  dbw 'cmpsw',0A7h, simple_instruction_16bit-assembler
  dbw 'cpuid',0A2h, simple_extended_instruction-assembler
- dbw 'divpd',5Eh, sse_pd_instruction-assembler
- dbw 'divps',5Eh, sse_ps_instruction-assembler
- dbw 'divsd',5Eh, sse_sd_instruction-assembler
- dbw 'divss',5Eh, sse_ss_instruction-assembler
+ ;dbw 'divpd',5Eh, sse_pd_instruction-assembler
+ ;dbw 'divps',5Eh, sse_ps_instruction-assembler
+ ;dbw 'divsd',5Eh, sse_sd_instruction-assembler
+ ;dbw 'divss',5Eh, sse_ss_instruction-assembler
  dbw 'enter',0, enter_instruction-assembler
  dbw 'entry',0, entry_directive-assembler
- dbw 'f2xm1',110000b, simple_fpu_instruction-assembler
- dbw 'faddp',0, faddp_instruction-assembler
- dbw 'fbstp',6, fbld_instruction-assembler
- dbw 'fclex',0E2h, finit_instruction-assembler
- dbw 'fcomi',0F0h, fcomi_instruction-assembler
- dbw 'fcomp',3, basic_fpu_instruction-assembler
- dbw 'fdivp',6, faddp_instruction-assembler
- dbw 'fdivr',7, basic_fpu_instruction-assembler
- dbw 'ffree',0, ffree_instruction-assembler
- dbw 'fiadd',0, fi_instruction-assembler
- dbw 'ficom',2, fi_instruction-assembler
- dbw 'fidiv',6, fi_instruction-assembler
- dbw 'fimul',1, fi_instruction-assembler
- dbw 'finit',0E3h, finit_instruction-assembler
- dbw 'fistp',3, fild_instruction-assembler
- dbw 'fisub',4, fi_instruction-assembler
- dbw 'fldcw',5, fldcw_instruction-assembler
- dbw 'fldpi',101011b, simple_fpu_instruction-assembler
- dbw 'fmulp',1, faddp_instruction-assembler
- dbw 'fprem',111000b, simple_fpu_instruction-assembler
- dbw 'fptan',110010b, simple_fpu_instruction-assembler
- dbw 'fsave',6, fsave_instruction-assembler
- dbw 'fsqrt',111010b, simple_fpu_instruction-assembler
- dbw 'fstcw',7, fldcw_instruction-assembler
- dbw 'fstsw',0, fstsw_instruction-assembler
- dbw 'fsubp',4, faddp_instruction-assembler
- dbw 'fsubr',5, basic_fpu_instruction-assembler
- dbw 'fucom',4, ffree_instruction-assembler
+ ;dbw 'f2xm1',110000b, simple_fpu_instruction-assembler
+ ;dbw 'faddp',0, faddp_instruction-assembler
+ ;dbw 'fbstp',6, fbld_instruction-assembler
+ ;dbw 'fclex',0E2h, finit_instruction-assembler
+ ;dbw 'fcomi',0F0h, fcomi_instruction-assembler
+ ;dbw 'fcomp',3, basic_fpu_instruction-assembler
+ ;dbw 'fdivp',6, faddp_instruction-assembler
+ ;dbw 'fdivr',7, basic_fpu_instruction-assembler
+ ;dbw 'ffree',0, ffree_instruction-assembler
+ ;dbw 'fiadd',0, fi_instruction-assembler
+ ;dbw 'ficom',2, fi_instruction-assembler
+ ;dbw 'fidiv',6, fi_instruction-assembler
+ ;dbw 'fimul',1, fi_instruction-assembler
+ ;dbw 'finit',0E3h, finit_instruction-assembler
+ ;dbw 'fistp',3, fild_instruction-assembler
+ ;dbw 'fisub',4, fi_instruction-assembler
+ ;dbw 'fldcw',5, fldcw_instruction-assembler
+ ;dbw 'fldpi',101011b, simple_fpu_instruction-assembler
+ ;dbw 'fmulp',1, faddp_instruction-assembler
+ ;dbw 'fprem',111000b, simple_fpu_instruction-assembler
+ ;dbw 'fptan',110010b, simple_fpu_instruction-assembler
+ ;dbw 'fsave',6, fsave_instruction-assembler
+ ;dbw 'fsqrt',111010b, simple_fpu_instruction-assembler
+ ;dbw 'fstcw',7, fldcw_instruction-assembler
+ ;dbw 'fstsw',0, fstsw_instruction-assembler
+ ;dbw 'fsubp',4, faddp_instruction-assembler
+ ;dbw 'fsubr',5, basic_fpu_instruction-assembler
+ ;dbw 'fucom',4, ffree_instruction-assembler
  dbw 'fwait',9Bh, simple_instruction-assembler
- dbw 'fyl2x',110001b, simple_fpu_instruction-assembler
+ ;dbw 'fyl2x',110001b, simple_fpu_instruction-assembler
  dbw 'iretd',0CFh, simple_instruction_32bit-assembler
  dbw 'iretw',0CFh, simple_instruction_16bit-assembler
  dbw 'jecxz',0E3h, loop_instruction_32bit-assembler
@@ -13500,58 +13109,58 @@ instructions_5:
  dbw 'loope',0E1h, loop_instruction-assembler
  dbw 'loopw',0E2h, loop_instruction_16bit-assembler
  dbw 'loopz',0E1h, loop_instruction-assembler
- dbw 'maxpd',5Fh, sse_pd_instruction-assembler
- dbw 'maxps',5Fh, sse_ps_instruction-assembler
- dbw 'maxsd',5Fh, sse_sd_instruction-assembler
- dbw 'maxss',5Fh, sse_ss_instruction-assembler
- dbw 'minpd',5Dh, sse_pd_instruction-assembler
- dbw 'minps',5Dh, sse_ps_instruction-assembler
- dbw 'minsd',5Dh, sse_sd_instruction-assembler
- dbw 'minss',5Dh, sse_ss_instruction-assembler
+ ;dbw 'maxpd',5Fh, sse_pd_instruction-assembler
+ ;dbw 'maxps',5Fh, sse_ps_instruction-assembler
+ ;dbw 'maxsd',5Fh, sse_sd_instruction-assembler
+ ;dbw 'maxss',5Fh, sse_ss_instruction-assembler
+ ;dbw 'minpd',5Dh, sse_pd_instruction-assembler
+ ;dbw 'minps',5Dh, sse_ps_instruction-assembler
+ ;dbw 'minsd',5Dh, sse_sd_instruction-assembler
+ ;dbw 'minss',5Dh, sse_ss_instruction-assembler
  dbw 'movsb',0A4h, simple_instruction-assembler
  dbw 'movsd',0, movsd_instruction-assembler
  dbw 'movss',0, movss_instruction-assembler
  dbw 'movsw',0A5h, simple_instruction_16bit-assembler
  dbw 'movsx',0BEh, movx_instruction-assembler
  dbw 'movzx',0B6h, movx_instruction-assembler
- dbw 'mulpd',59h, sse_pd_instruction-assembler
- dbw 'mulps',59h, sse_ps_instruction-assembler
- dbw 'mulsd',59h, sse_sd_instruction-assembler
- dbw 'mulss',59h, sse_ss_instruction-assembler
- dbw 'outsb',6Eh, simple_instruction-assembler
- dbw 'outsd',6Fh, simple_instruction_32bit-assembler
- dbw 'outsw',6Fh, simple_instruction_16bit-assembler
- dbw 'paddb',0FCh, mmx_instruction-assembler
- dbw 'paddd',0FEh, mmx_instruction-assembler
- dbw 'paddq',0D4h, mmx_instruction-assembler
- dbw 'paddw',0FDh, mmx_instruction-assembler
- dbw 'pandn',0DFh, mmx_instruction-assembler
- dbw 'pause',0, pause_instruction-assembler
- dbw 'pavgb',0E0h, mmx_instruction-assembler
- dbw 'pavgw',0E3h, mmx_instruction-assembler
+ ;dbw 'mulpd',59h, sse_pd_instruction-assembler
+ ;dbw 'mulps',59h, sse_ps_instruction-assembler
+ ;dbw 'mulsd',59h, sse_sd_instruction-assembler
+ ;dbw 'mulss',59h, sse_ss_instruction-assembler
+ ;dbw 'outsb',6Eh, simple_instruction-assembler
+ ;dbw 'outsd',6Fh, simple_instruction_32bit-assembler
+ ;dbw 'outsw',6Fh, simple_instruction_16bit-assembler
+ ;dbw 'paddb',0FCh, mmx_instruction-assembler
+ ;dbw 'paddd',0FEh, mmx_instruction-assembler
+ ;dbw 'paddq',0D4h, mmx_instruction-assembler
+ ;dbw 'paddw',0FDh, mmx_instruction-assembler
+ ;dbw 'pandn',0DFh, mmx_instruction-assembler
+ ;dbw 'pause',0, pause_instruction-assembler
+ ;dbw 'pavgb',0E0h, mmx_instruction-assembler
+ ;dbw 'pavgw',0E3h, mmx_instruction-assembler
  dbw 'popad',61h, simple_instruction_32bit-assembler
  dbw 'popaw',61h, simple_instruction_16bit-assembler
  dbw 'popfd',9Dh, simple_instruction_32bit-assembler
  dbw 'popfw',9Dh, simple_instruction_16bit-assembler
- dbw 'pslld',0F2h, mmx_ps_instruction-assembler
- dbw 'psllq',0F3h, mmx_ps_instruction-assembler
- dbw 'psllw',0F1h, mmx_ps_instruction-assembler
- dbw 'psrad',0E2h, mmx_ps_instruction-assembler
- dbw 'psraw',0E1h, mmx_ps_instruction-assembler
- dbw 'psrld',0D2h, mmx_ps_instruction-assembler
- dbw 'psrlq',0D3h, mmx_ps_instruction-assembler
- dbw 'psrlw',0D1h, mmx_ps_instruction-assembler
- dbw 'psubb',0F8h, mmx_instruction-assembler
- dbw 'psubd',0FAh, mmx_instruction-assembler
- dbw 'psubq',0FBh, mmx_instruction-assembler
- dbw 'psubw',0F9h, mmx_instruction-assembler
+ ;dbw 'pslld',0F2h, mmx_ps_instruction-assembler
+ ;dbw 'psllq',0F3h, mmx_ps_instruction-assembler
+ ;dbw 'psllw',0F1h, mmx_ps_instruction-assembler
+ ;dbw 'psrad',0E2h, mmx_ps_instruction-assembler
+ ;dbw 'psraw',0E1h, mmx_ps_instruction-assembler
+ ;dbw 'psrld',0D2h, mmx_ps_instruction-assembler
+ ;dbw 'psrlq',0D3h, mmx_ps_instruction-assembler
+ ;dbw 'psrlw',0D1h, mmx_ps_instruction-assembler
+ ;dbw 'psubb',0F8h, mmx_instruction-assembler
+ ;dbw 'psubd',0FAh, mmx_instruction-assembler
+ ;dbw 'psubq',0FBh, mmx_instruction-assembler
+ ;dbw 'psubw',0F9h, mmx_instruction-assembler
  dbw 'pusha',60h, simple_instruction-assembler
  dbw 'pushf',9Ch, simple_instruction-assembler
- dbw 'rcpps',53h, sse_ps_instruction-assembler
- dbw 'rcpss',53h, sse_ss_instruction-assembler
- dbw 'rdmsr',32h, simple_extended_instruction-assembler
- dbw 'rdpmc',33h, simple_extended_instruction-assembler
- dbw 'rdtsc',31h, simple_extended_instruction-assembler
+ ;dbw 'rcpps',53h, sse_ps_instruction-assembler
+ ;dbw 'rcpss',53h, sse_ss_instruction-assembler
+ ;dbw 'rdmsr',32h, simple_extended_instruction-assembler
+ ;dbw 'rdpmc',33h, simple_extended_instruction-assembler
+ ;dbw 'rdtsc',31h, simple_extended_instruction-assembler
  dbw 'repne',0F2h, prefix_instruction-assembler
  dbw 'repnz',0F2h, prefix_instruction-assembler
  dbw 'retfd',0CAh, ret_instruction_32bit-assembler
@@ -13581,62 +13190,62 @@ instructions_5:
  dbw 'stosb',0AAh, simple_instruction-assembler
  dbw 'stosd',0ABh, simple_instruction_32bit-assembler
  dbw 'stosw',0ABh, simple_instruction_16bit-assembler
- dbw 'subpd',5Ch, sse_pd_instruction-assembler
- dbw 'subps',5Ch, sse_ps_instruction-assembler
- dbw 'subsd',5Ch, sse_sd_instruction-assembler
- dbw 'subss',5Ch, sse_ss_instruction-assembler
+ ;dbw 'subpd',5Ch, sse_pd_instruction-assembler
+ ;dbw 'subps',5Ch, sse_ps_instruction-assembler
+ ;dbw 'subsd',5Ch, sse_sd_instruction-assembler
+ ;dbw 'subss',5Ch, sse_ss_instruction-assembler
  dbw 'times',0, times_directive-assembler
- dbw 'wrmsr',30h, simple_extended_instruction-assembler
+ ;dbw 'wrmsr',30h, simple_extended_instruction-assembler
  dbw 'xlatb',0D7h, simple_instruction-assembler
- dbw 'xorpd',57h, sse_pd_instruction-assembler
- dbw 'xorps',57h, sse_ps_instruction-assembler
+ ;dbw 'xorpd',57h, sse_pd_instruction-assembler
+ ;dbw 'xorps',57h, sse_ps_instruction-assembler
  db 0
 instructions_6:
- dbw 'andnpd',55h, sse_pd_instruction-assembler
- dbw 'andnps',55h, sse_ps_instruction-assembler
- dbw 'cmovae',43h, cmov_instruction-assembler
- dbw 'cmovbe',46h, cmov_instruction-assembler
- dbw 'cmovge',4Dh, cmov_instruction-assembler
- dbw 'cmovle',4Eh, cmov_instruction-assembler
- dbw 'cmovna',46h, cmov_instruction-assembler
- dbw 'cmovnb',43h, cmov_instruction-assembler
- dbw 'cmovnc',43h, cmov_instruction-assembler
- dbw 'cmovne',45h, cmov_instruction-assembler
- dbw 'cmovng',4Eh, cmov_instruction-assembler
- dbw 'cmovnl',4Dh, cmov_instruction-assembler
- dbw 'cmovno',41h, cmov_instruction-assembler
- dbw 'cmovnp',4Bh, cmov_instruction-assembler
- dbw 'cmovns',49h, cmov_instruction-assembler
- dbw 'cmovnz',45h, cmov_instruction-assembler
- dbw 'cmovpe',4Ah, cmov_instruction-assembler
- dbw 'cmovpo',4Bh, cmov_instruction-assembler
- dbw 'comisd',2Fh, comisd_instruction-assembler
- dbw 'comiss',2Fh, comiss_instruction-assembler
- dbw 'fcomip',0F0h, fcomip_instruction-assembler
- dbw 'fcompp',0, fcompp_instruction-assembler
- dbw 'fdivrp',7, faddp_instruction-assembler
- dbw 'ficomp',3, fi_instruction-assembler
- dbw 'fidivr',7, fi_instruction-assembler
- dbw 'fisubr',5, fi_instruction-assembler
- dbw 'fldenv',4, fldenv_instruction-assembler
- dbw 'fldl2e',101010b, simple_fpu_instruction-assembler
- dbw 'fldl2t',101001b, simple_fpu_instruction-assembler
- dbw 'fldlg2',101100b, simple_fpu_instruction-assembler
- dbw 'fldln2',101101b, simple_fpu_instruction-assembler
- dbw 'fnclex',0E2h, fninit_instruction-assembler
- dbw 'fninit',0E3h, fninit_instruction-assembler
- dbw 'fnstsw',0, fnstsw_instruction-assembler
+ ;dbw 'andnpd',55h, sse_pd_instruction-assembler
+ ;dbw 'andnps',55h, sse_ps_instruction-assembler
+ ;dbw 'cmovae',43h, cmov_instruction-assembler
+ ;dbw 'cmovbe',46h, cmov_instruction-assembler
+ ;dbw 'cmovge',4Dh, cmov_instruction-assembler
+ ;dbw 'cmovle',4Eh, cmov_instruction-assembler
+ ;dbw 'cmovna',46h, cmov_instruction-assembler
+ ;dbw 'cmovnb',43h, cmov_instruction-assembler
+ ;dbw 'cmovnc',43h, cmov_instruction-assembler
+ ;dbw 'cmovne',45h, cmov_instruction-assembler
+ ;dbw 'cmovng',4Eh, cmov_instruction-assembler
+ ;dbw 'cmovnl',4Dh, cmov_instruction-assembler
+ ;dbw 'cmovno',41h, cmov_instruction-assembler
+ ;dbw 'cmovnp',4Bh, cmov_instruction-assembler
+ ;dbw 'cmovns',49h, cmov_instruction-assembler
+ ;dbw 'cmovnz',45h, cmov_instruction-assembler
+ ;dbw 'cmovpe',4Ah, cmov_instruction-assembler
+ ;dbw 'cmovpo',4Bh, cmov_instruction-assembler
+ ;dbw 'comisd',2Fh, comisd_instruction-assembler
+ ;dbw 'comiss',2Fh, comiss_instruction-assembler
+ ;dbw 'fcomip',0F0h, fcomip_instruction-assembler
+ ;dbw 'fcompp',0, fcompp_instruction-assembler
+ ;dbw 'fdivrp',7, faddp_instruction-assembler
+ ;dbw 'ficomp',3, fi_instruction-assembler
+ ;dbw 'fidivr',7, fi_instruction-assembler
+ ;dbw 'fisubr',5, fi_instruction-assembler
+ ;dbw 'fldenv',4, fldenv_instruction-assembler
+ ;dbw 'fldl2e',101010b, simple_fpu_instruction-assembler
+ ;dbw 'fldl2t',101001b, simple_fpu_instruction-assembler
+ ;dbw 'fldlg2',101100b, simple_fpu_instruction-assembler
+ ;dbw 'fldln2',101101b, simple_fpu_instruction-assembler
+ ;dbw 'fnclex',0E2h, fninit_instruction-assembler
+ ;dbw 'fninit',0E3h, fninit_instruction-assembler
+ ;dbw 'fnstsw',0, fnstsw_instruction-assembler
  dbw 'format',0, format_directive-assembler
- dbw 'fpatan',110011b, simple_fpu_instruction-assembler
- dbw 'fprem1',110101b, simple_fpu_instruction-assembler
- dbw 'frstor',4, fsave_instruction-assembler
- dbw 'fscale',111101b, simple_fpu_instruction-assembler
- dbw 'fstenv',6, fldenv_instruction-assembler
- dbw 'fsubrp',5, faddp_instruction-assembler
- dbw 'fucomi',0E8h, fcomi_instruction-assembler
- dbw 'fucomp',5, ffree_instruction-assembler
- dbw 'fxsave',0, fxsave_instruction-assembler
- dbw 'invlpg',0, invlpg_instruction-assembler
+ ;dbw 'fpatan',110011b, simple_fpu_instruction-assembler
+ ;dbw 'fprem1',110101b, simple_fpu_instruction-assembler
+ ;dbw 'frstor',4, fsave_instruction-assembler
+ ;dbw 'fscale',111101b, simple_fpu_instruction-assembler
+ ;dbw 'fstenv',6, fldenv_instruction-assembler
+ ;dbw 'fsubrp',5, faddp_instruction-assembler
+ ;dbw 'fucomi',0E8h, fcomi_instruction-assembler
+ ;dbw 'fucomp',5, ffree_instruction-assembler
+ ;dbw 'fxsave',0, fxsave_instruction-assembler
+ ;dbw 'invlpg',0, invlpg_instruction-assembler
  dbw 'lfence',0E8h, fence_instruction-assembler
  dbw 'looped',0E1h, loop_instruction_32bit-assembler
  dbw 'loopew',0E1h, loop_instruction_16bit-assembler
@@ -13644,36 +13253,36 @@ instructions_6:
  dbw 'loopnz',0E0h, loop_instruction-assembler
  dbw 'loopzd',0E1h, loop_instruction_32bit-assembler
  dbw 'loopzw',0E1h, loop_instruction_16bit-assembler
- dbw 'mfence',0F0h, fence_instruction-assembler
- dbw 'movapd',28h, movpd_instruction-assembler
- dbw 'movaps',28h, movps_instruction-assembler
- dbw 'movdqa',66h, movdq_instruction-assembler
- dbw 'movdqu',0F3h, movdq_instruction-assembler
- dbw 'movhpd',16h, movlpd_instruction-assembler
- dbw 'movhps',16h, movlps_instruction-assembler
- dbw 'movlpd',12h, movlpd_instruction-assembler
- dbw 'movlps',12h, movlps_instruction-assembler
- dbw 'movnti',0C3h, movnti_instruction-assembler
- dbw 'movntq',0E7h, movntq_instruction-assembler
- dbw 'movupd',10h, movpd_instruction-assembler
- dbw 'movups',10h, movps_instruction-assembler
- dbw 'paddsb',0ECh, mmx_instruction-assembler
- dbw 'paddsw',0EDh, mmx_instruction-assembler
- dbw 'pextrw',0C5h, pmovmskb_instruction-assembler
- dbw 'pinsrw',0C4h, pinsrw_instruction-assembler
- dbw 'pmaxsw',0EEh, mmx_instruction-assembler
- dbw 'pmaxub',0DEh, mmx_instruction-assembler
- dbw 'pminsw',0EAh, mmx_instruction-assembler
- dbw 'pminub',0DAh, mmx_instruction-assembler
- dbw 'pmulhw',0E5h, mmx_instruction-assembler
- dbw 'pmullw',0D5h, mmx_instruction-assembler
- dbw 'psadbw',0F6h, mmx_instruction-assembler
- dbw 'pshufd',66h, pshufd_instruction-assembler
- dbw 'pshufw',0, pshufw_instruction-assembler
- dbw 'pslldq',111b, ps_dq_instruction-assembler
- dbw 'psrldq',011b, ps_dq_instruction-assembler
- dbw 'psubsb',0E8h, mmx_instruction-assembler
- dbw 'psubsw',0E9h, mmx_instruction-assembler
+ ;dbw 'mfence',0F0h, fence_instruction-assembler
+ ;dbw 'movapd',28h, movpd_instruction-assembler
+ ;dbw 'movaps',28h, movps_instruction-assembler
+ ;dbw 'movdqa',66h, movdq_instruction-assembler
+ ;dbw 'movdqu',0F3h, movdq_instruction-assembler
+ ;dbw 'movhpd',16h, movlpd_instruction-assembler
+ ;dbw 'movhps',16h, movlps_instruction-assembler
+ ;dbw 'movlpd',12h, movlpd_instruction-assembler
+ ;dbw 'movlps',12h, movlps_instruction-assembler
+ ;dbw 'movnti',0C3h, movnti_instruction-assembler
+ ;dbw 'movntq',0E7h, movntq_instruction-assembler
+ ;dbw 'movupd',10h, movpd_instruction-assembler
+ ;dbw 'movups',10h, movps_instruction-assembler
+ ;dbw 'paddsb',0ECh, mmx_instruction-assembler
+ ;dbw 'paddsw',0EDh, mmx_instruction-assembler
+ ;dbw 'pextrw',0C5h, pmovmskb_instruction-assembler
+ ;dbw 'pinsrw',0C4h, pinsrw_instruction-assembler
+ ;dbw 'pmaxsw',0EEh, mmx_instruction-assembler
+ ;dbw 'pmaxub',0DEh, mmx_instruction-assembler
+ ;dbw 'pminsw',0EAh, mmx_instruction-assembler
+ ;dbw 'pminub',0DAh, mmx_instruction-assembler
+ ;dbw 'pmulhw',0E5h, mmx_instruction-assembler
+ ;dbw 'pmullw',0D5h, mmx_instruction-assembler
+ ;dbw 'psadbw',0F6h, mmx_instruction-assembler
+ ;dbw 'pshufd',66h, pshufd_instruction-assembler
+ ;dbw 'pshufw',0, pshufw_instruction-assembler
+ ;dbw 'pslldq',111b, ps_dq_instruction-assembler
+ ;dbw 'psrldq',011b, ps_dq_instruction-assembler
+ ;dbw 'psubsb',0E8h, mmx_instruction-assembler
+ ;dbw 'psubsw',0E9h, mmx_instruction-assembler
  dbw 'pushad',60h, simple_instruction_32bit-assembler
  dbw 'pushaw',60h, simple_instruction_16bit-assembler
  dbw 'pushfd',9Ch, simple_instruction_32bit-assembler
@@ -13684,155 +13293,155 @@ instructions_6:
  dbw 'setnbe',97h, set_instruction-assembler
  dbw 'setnge',9Ch, set_instruction-assembler
  dbw 'setnle',9Fh, set_instruction-assembler
- dbw 'sfence',0F8h, fence_instruction-assembler
- dbw 'shufpd',0C6h, sse_pd_instruction-assembler
- dbw 'shufps',0C6h, sse_ps_instruction-assembler
- dbw 'sqrtpd',51h, sse_pd_instruction-assembler
- dbw 'sqrtps',51h, sse_ps_instruction-assembler
- dbw 'sqrtsd',51h, sse_sd_instruction-assembler
- dbw 'sqrtss',51h, sse_ss_instruction-assembler
- dbw 'wbinvd',9, simple_extended_instruction-assembler
+ ;dbw 'sfence',0F8h, fence_instruction-assembler
+ ;dbw 'shufpd',0C6h, sse_pd_instruction-assembler
+ ;dbw 'shufps',0C6h, sse_ps_instruction-assembler
+ ;dbw 'sqrtpd',51h, sse_pd_instruction-assembler
+ ;dbw 'sqrtps',51h, sse_ps_instruction-assembler
+ ;dbw 'sqrtsd',51h, sse_sd_instruction-assembler
+ ;dbw 'sqrtss',51h, sse_ss_instruction-assembler
+ ;dbw 'wbinvd',9, simple_extended_instruction-assembler
  db 0
 instructions_7:
- dbw 'clflush',111b, fxsave_instruction-assembler
- dbw 'cmovnae',42h, cmov_instruction-assembler
- dbw 'cmovnbe',47h, cmov_instruction-assembler
- dbw 'cmovnge',4Ch, cmov_instruction-assembler
- dbw 'cmovnle',4Fh, cmov_instruction-assembler
- dbw 'cmpeqpd',0, cmp_pd_instruction-assembler
- dbw 'cmpeqps',0, cmp_ps_instruction-assembler
- dbw 'cmpeqsd',0, cmp_sd_instruction-assembler
- dbw 'cmpeqss',0, cmp_ss_instruction-assembler
- dbw 'cmplepd',2, cmp_pd_instruction-assembler
- dbw 'cmpleps',2, cmp_ps_instruction-assembler
- dbw 'cmplesd',2, cmp_sd_instruction-assembler
- dbw 'cmpless',2, cmp_ss_instruction-assembler
- dbw 'cmpltpd',1, cmp_pd_instruction-assembler
- dbw 'cmpltps',1, cmp_ps_instruction-assembler
- dbw 'cmpltsd',1, cmp_sd_instruction-assembler
- dbw 'cmpltss',1, cmp_ss_instruction-assembler
- dbw 'cmpnepd',4, cmp_pd_instruction-assembler
- dbw 'cmpneps',4, cmp_ps_instruction-assembler
- dbw 'cmpnesd',4, cmp_sd_instruction-assembler
- dbw 'cmpness',4, cmp_ss_instruction-assembler
- dbw 'cmpnlpd',5, cmp_pd_instruction-assembler
- dbw 'cmpnlps',5, cmp_ps_instruction-assembler
- dbw 'cmpnlsd',5, cmp_sd_instruction-assembler
- dbw 'cmpnlss',5, cmp_ss_instruction-assembler
- dbw 'cmpxchg',0B0h, basic_486_instruction-assembler
- dbw 'display',0, display_directive-assembler
- dbw 'fcmovnb',0C0h, fcomi_instruction-assembler
- dbw 'fcmovne',0C8h, fcomi_instruction-assembler
- dbw 'fcmovnu',0D8h, fcomi_instruction-assembler
- dbw 'fdecstp',110110b, simple_fpu_instruction-assembler
- dbw 'fincstp',110111b, simple_fpu_instruction-assembler
- dbw 'frndint',111100b, simple_fpu_instruction-assembler
- dbw 'fsincos',111011b, simple_fpu_instruction-assembler
- dbw 'fucomip',0E8h, fcomip_instruction-assembler
- dbw 'fxrstor',1, fxsave_instruction-assembler
- dbw 'fxtract',110100b, simple_fpu_instruction-assembler
- dbw 'fyl2xp1',111001b, simple_fpu_instruction-assembler
- dbw 'ldmxcsr',10b, fxsave_instruction-assembler
+ ;dbw 'clflush',111b, fxsave_instruction-assembler
+ ;dbw 'cmovnae',42h, cmov_instruction-assembler
+ ;dbw 'cmovnbe',47h, cmov_instruction-assembler
+ ;dbw 'cmovnge',4Ch, cmov_instruction-assembler
+ ;dbw 'cmovnle',4Fh, cmov_instruction-assembler
+ ;dbw 'cmpeqpd',0, cmp_pd_instruction-assembler
+ ;dbw 'cmpeqps',0, cmp_ps_instruction-assembler
+ ;dbw 'cmpeqsd',0, cmp_sd_instruction-assembler
+ ;dbw 'cmpeqss',0, cmp_ss_instruction-assembler
+ ;dbw 'cmplepd',2, cmp_pd_instruction-assembler
+ ;dbw 'cmpleps',2, cmp_ps_instruction-assembler
+ ;dbw 'cmplesd',2, cmp_sd_instruction-assembler
+ ;dbw 'cmpless',2, cmp_ss_instruction-assembler
+ ;dbw 'cmpltpd',1, cmp_pd_instruction-assembler
+ ;dbw 'cmpltps',1, cmp_ps_instruction-assembler
+ ;dbw 'cmpltsd',1, cmp_sd_instruction-assembler
+ ;dbw 'cmpltss',1, cmp_ss_instruction-assembler
+ ;dbw 'cmpnepd',4, cmp_pd_instruction-assembler
+ ;dbw 'cmpneps',4, cmp_ps_instruction-assembler
+ ;dbw 'cmpnesd',4, cmp_sd_instruction-assembler
+ ;dbw 'cmpness',4, cmp_ss_instruction-assembler
+ ;dbw 'cmpnlpd',5, cmp_pd_instruction-assembler
+ ;dbw 'cmpnlps',5, cmp_ps_instruction-assembler
+ ;dbw 'cmpnlsd',5, cmp_sd_instruction-assembler
+ ;dbw 'cmpnlss',5, cmp_ss_instruction-assembler
+ ;dbw 'cmpxchg',0B0h, basic_486_instruction-assembler
+ ;dbw 'display',0, display_directive-assembler
+ ;dbw 'fcmovnb',0C0h, fcomi_instruction-assembler
+ ;dbw 'fcmovne',0C8h, fcomi_instruction-assembler
+ ;dbw 'fcmovnu',0D8h, fcomi_instruction-assembler
+ ;dbw 'fdecstp',110110b, simple_fpu_instruction-assembler
+ ;dbw 'fincstp',110111b, simple_fpu_instruction-assembler
+ ;dbw 'frndint',111100b, simple_fpu_instruction-assembler
+ ;dbw 'fsincos',111011b, simple_fpu_instruction-assembler
+ ;dbw 'fucomip',0E8h, fcomip_instruction-assembler
+ ;dbw 'fxrstor',1, fxsave_instruction-assembler
+ ;dbw 'fxtract',110100b, simple_fpu_instruction-assembler
+ ;dbw 'fyl2xp1',111001b, simple_fpu_instruction-assembler
+ ;dbw 'ldmxcsr',10b, fxsave_instruction-assembler
  dbw 'loopned',0E0h, loop_instruction_32bit-assembler
  dbw 'loopnew',0E0h, loop_instruction_16bit-assembler
  dbw 'loopnzd',0E0h, loop_instruction_32bit-assembler
  dbw 'loopnzw',0E0h, loop_instruction_16bit-assembler
- dbw 'movdq2q',0, movdq2q_instruction-assembler
- dbw 'movhlps',12h, movhlps_instruction-assembler
- dbw 'movlhps',16h, movhlps_instruction-assembler
- dbw 'movntdq',0E7h, movntdq_instruction-assembler
- dbw 'movntpd',2Bh, movntdq_instruction-assembler
- dbw 'movntps',2Bh, movntq_instruction-assembler
- dbw 'movq2dq',0, movq2dq_instruction-assembler
- dbw 'paddusb',0DCh, mmx_instruction-assembler
- dbw 'paddusw',0DDh, mmx_instruction-assembler
- dbw 'pcmpeqb',74h, mmx_instruction-assembler
- dbw 'pcmpeqd',76h, mmx_instruction-assembler
- dbw 'pcmpeqw',75h, mmx_instruction-assembler
- dbw 'pcmpgtb',64h, mmx_instruction-assembler
- dbw 'pcmpgtd',66h, mmx_instruction-assembler
- dbw 'pcmpgtw',65h, mmx_instruction-assembler
- dbw 'pmaddwd',0F5h, mmx_instruction-assembler
- dbw 'pmulhuw',0E4h, mmx_instruction-assembler
- dbw 'pmuludq',0F4h, mmx_instruction-assembler
- dbw 'pshufhw',0F3h, pshufd_instruction-assembler
- dbw 'pshuflw',0F2h, pshufd_instruction-assembler
- dbw 'psubusb',0D8h, mmx_instruction-assembler
- dbw 'psubusw',0D9h, mmx_instruction-assembler
- dbw 'rsqrtps',52h, sse_ps_instruction-assembler
- dbw 'rsqrtss',52h, sse_ss_instruction-assembler
+ ;dbw 'movdq2q',0, movdq2q_instruction-assembler
+ ;dbw 'movhlps',12h, movhlps_instruction-assembler
+ ;dbw 'movlhps',16h, movhlps_instruction-assembler
+ ;dbw 'movntdq',0E7h, movntdq_instruction-assembler
+ ;dbw 'movntpd',2Bh, movntdq_instruction-assembler
+ ;dbw 'movntps',2Bh, movntq_instruction-assembler
+ ;dbw 'movq2dq',0, movq2dq_instruction-assembler
+ ;dbw 'paddusb',0DCh, mmx_instruction-assembler
+ ;dbw 'paddusw',0DDh, mmx_instruction-assembler
+ ;dbw 'pcmpeqb',74h, mmx_instruction-assembler
+ ;dbw 'pcmpeqd',76h, mmx_instruction-assembler
+ ;dbw 'pcmpeqw',75h, mmx_instruction-assembler
+ ;dbw 'pcmpgtb',64h, mmx_instruction-assembler
+ ;dbw 'pcmpgtd',66h, mmx_instruction-assembler
+ ;dbw 'pcmpgtw',65h, mmx_instruction-assembler
+ ;dbw 'pmaddwd',0F5h, mmx_instruction-assembler
+ ;dbw 'pmulhuw',0E4h, mmx_instruction-assembler
+ ;dbw 'pmuludq',0F4h, mmx_instruction-assembler
+ ;dbw 'pshufhw',0F3h, pshufd_instruction-assembler
+ ;dbw 'pshuflw',0F2h, pshufd_instruction-assembler
+ ;dbw 'psubusb',0D8h, mmx_instruction-assembler
+ ;dbw 'psubusw',0D9h, mmx_instruction-assembler
+ ;dbw 'rsqrtps',52h, sse_ps_instruction-assembler
+ ;dbw 'rsqrtss',52h, sse_ss_instruction-assembler
  dbw 'section',0, section_directive-assembler
  dbw 'segment',0, segment_directive-assembler
- dbw 'stmxcsr',11b, fxsave_instruction-assembler
- dbw 'sysexit',35h, simple_extended_instruction-assembler
- dbw 'ucomisd',2Eh, comisd_instruction-assembler
- dbw 'ucomiss',2Eh, comiss_instruction-assembler
+ ;dbw 'stmxcsr',11b, fxsave_instruction-assembler
+ ;dbw 'sysexit',35h, simple_extended_instruction-assembler
+ ;dbw 'ucomisd',2Eh, comisd_instruction-assembler
+ ;dbw 'ucomiss',2Eh, comiss_instruction-assembler
  dbw 'virtual',0, virtual_directive-assembler
  db 0
 instructions_8:
- dbw 'cmpnleps',6, cmp_ps_instruction-assembler
- dbw 'cmpnless',6, cmp_ss_instruction-assembler
- dbw 'cmpordps',7, cmp_ps_instruction-assembler
- dbw 'cmpordss',7, cmp_ss_instruction-assembler
- dbw 'cvtdq2pd',0E6h, cvtdq2pd_instruction-assembler
- dbw 'cvtdq2ps',5Bh, sse_ps_instruction-assembler
- dbw 'cvtpd2dq',0E6h, cvtpd2dq_instruction-assembler
- dbw 'cvtpd2pi',2Dh, cvtpd2pi_instruction-assembler
- dbw 'cvtpd2ps',5Ah, sse_pd_instruction-assembler
- dbw 'cvtpi2pd',2Ah, cvtpi2pd_instruction-assembler
- dbw 'cvtpi2ps',2Ah, cvtpi2ps_instruction-assembler
- dbw 'cvtps2dq',5Bh, sse_pd_instruction-assembler
- dbw 'cvtps2pd',5Ah, sse_ps_instruction-assembler
- dbw 'cvtps2pi',2Dh, cvtps2pi_instruction-assembler
- dbw 'cvtsd2si',2Dh, cvtsd2si_instruction-assembler
- dbw 'cvtsd2ss',5Ah, sse_sd_instruction-assembler
- dbw 'cvtsi2sd',2Ah, cvtsi2sd_instruction-assembler
- dbw 'cvtsi2ss',2Ah, cvtsi2ss_instruction-assembler
- dbw 'cvtss2sd',5Ah, sse_ss_instruction-assembler
- dbw 'cvtss2si',2Dh, cvtss2si_instruction-assembler
- dbw 'fcmovnbe',0D0h, fcomi_instruction-assembler
- dbw 'maskmovq',0, maskmovq_instruction-assembler
- dbw 'movmskpd',0, movmskpd_instruction-assembler
- dbw 'movmskps',0, movmskps_instruction-assembler
- dbw 'packssdw',6Bh, mmx_instruction-assembler
- dbw 'packsswb',63h, mmx_instruction-assembler
- dbw 'packuswb',67h, mmx_instruction-assembler
- dbw 'pmovmskb',0D7h, pmovmskb_instruction-assembler
- dbw 'sysenter',34h, simple_extended_instruction-assembler
- dbw 'unpckhpd',15h, sse_pd_instruction-assembler
- dbw 'unpckhps',15h, sse_ps_instruction-assembler
- dbw 'unpcklpd',14h, sse_pd_instruction-assembler
- dbw 'unpcklps',14h, sse_ps_instruction-assembler
+ ;dbw 'cmpnleps',6, cmp_ps_instruction-assembler
+ ;dbw 'cmpnless',6, cmp_ss_instruction-assembler
+ ;dbw 'cmpordps',7, cmp_ps_instruction-assembler
+ ;dbw 'cmpordss',7, cmp_ss_instruction-assembler
+ ;dbw 'cvtdq2pd',0E6h, cvtdq2pd_instruction-assembler
+ ;dbw 'cvtdq2ps',5Bh, sse_ps_instruction-assembler
+ ;dbw 'cvtpd2dq',0E6h, cvtpd2dq_instruction-assembler
+ ;dbw 'cvtpd2pi',2Dh, cvtpd2pi_instruction-assembler
+ ;dbw 'cvtpd2ps',5Ah, sse_pd_instruction-assembler
+ ;dbw 'cvtpi2pd',2Ah, cvtpi2pd_instruction-assembler
+ ;dbw 'cvtpi2ps',2Ah, cvtpi2ps_instruction-assembler
+ ;dbw 'cvtps2dq',5Bh, sse_pd_instruction-assembler
+ ;dbw 'cvtps2pd',5Ah, sse_ps_instruction-assembler
+ ;dbw 'cvtps2pi',2Dh, cvtps2pi_instruction-assembler
+ ;dbw 'cvtsd2si',2Dh, cvtsd2si_instruction-assembler
+ ;dbw 'cvtsd2ss',5Ah, sse_sd_instruction-assembler
+ ;dbw 'cvtsi2sd',2Ah, cvtsi2sd_instruction-assembler
+ ;dbw 'cvtsi2ss',2Ah, cvtsi2ss_instruction-assembler
+ ;dbw 'cvtss2sd',5Ah, sse_ss_instruction-assembler
+ ;dbw 'cvtss2si',2Dh, cvtss2si_instruction-assembler
+ ;dbw 'fcmovnbe',0D0h, fcomi_instruction-assembler
+ ;dbw 'maskmovq',0, maskmovq_instruction-assembler
+ ;dbw 'movmskpd',0, movmskpd_instruction-assembler
+ ;dbw 'movmskps',0, movmskps_instruction-assembler
+ ;dbw 'packssdw',6Bh, mmx_instruction-assembler
+ ;dbw 'packsswb',63h, mmx_instruction-assembler
+ ;dbw 'packuswb',67h, mmx_instruction-assembler
+ ;dbw 'pmovmskb',0D7h, pmovmskb_instruction-assembler
+ ;dbw 'sysenter',34h, simple_extended_instruction-assembler
+ ;dbw 'unpckhpd',15h, sse_pd_instruction-assembler
+ ;dbw 'unpckhps',15h, sse_ps_instruction-assembler
+ ;dbw 'unpcklpd',14h, sse_pd_instruction-assembler
+ ;dbw 'unpcklps',14h, sse_ps_instruction-assembler
  db 0
 instructions_9:
  dbw 'cmpxchg8b',0, cmpxchg8b_instruction-assembler
- dbw 'cvttpd2dq',0E6h, sse_pd_instruction-assembler
- dbw 'cvttpd2pi',2Ch, cvtpd2pi_instruction-assembler
- dbw 'cvttps2dq',5Bh, cvtdq2pd_instruction-assembler
- dbw 'cvttps2pi',2Ch, cvtps2pi_instruction-assembler
- dbw 'cvttsd2si',2Ch, cvtsd2si_instruction-assembler
- dbw 'cvttss2si',2Ch, cvtss2si_instruction-assembler
- dbw 'punpckhbw',68h, mmx_instruction-assembler
- dbw 'punpckhdq',6Ah, mmx_instruction-assembler
- dbw 'punpckhwd',69h, mmx_instruction-assembler
- dbw 'punpcklbw',60h, mmx_instruction-assembler
- dbw 'punpckldq',62h, mmx_instruction-assembler
- dbw 'punpcklwd',61h, mmx_instruction-assembler
+ ;dbw 'cvttpd2dq',0E6h, sse_pd_instruction-assembler
+ ;dbw 'cvttpd2pi',2Ch, cvtpd2pi_instruction-assembler
+ ;dbw 'cvttps2dq',5Bh, cvtdq2pd_instruction-assembler
+ ;dbw 'cvttps2pi',2Ch, cvtps2pi_instruction-assembler
+ ;dbw 'cvttsd2si',2Ch, cvtsd2si_instruction-assembler
+ ;dbw 'cvttss2si',2Ch, cvtss2si_instruction-assembler
+ ;dbw 'punpckhbw',68h, mmx_instruction-assembler
+ ;dbw 'punpckhdq',6Ah, mmx_instruction-assembler
+ ;dbw 'punpckhwd',69h, mmx_instruction-assembler
+ ;dbw 'punpcklbw',60h, mmx_instruction-assembler
+ ;dbw 'punpckldq',62h, mmx_instruction-assembler
+ ;dbw 'punpcklwd',61h, mmx_instruction-assembler
  db 0
 instructions_10:
- dbw 'cmpunordps',3, cmp_ps_instruction-assembler
- dbw 'cmpunordss',3, cmp_ss_instruction-assembler
- dbw 'loadall286',5, simple_extended_instruction-assembler
- dbw 'loadall386',7, simple_extended_instruction-assembler
- dbw 'maskmovdqu',0, maskmovdqu_instruction-assembler
- dbw 'prefetcht0',1, prefetch_instruction-assembler
- dbw 'prefetcht1',2, prefetch_instruction-assembler
- dbw 'prefetcht2',3, prefetch_instruction-assembler
- dbw 'punpckhqdq',6Dh, sse_pd_instruction-assembler
- dbw 'punpcklqdq',6Ch, sse_pd_instruction-assembler
+ ;dbw 'cmpunordps',3, cmp_ps_instruction-assembler
+ ;dbw 'cmpunordss',3, cmp_ss_instruction-assembler
+ ;dbw 'loadall286',5, simple_extended_instruction-assembler
+ ;dbw 'loadall386',7, simple_extended_instruction-assembler
+ ;dbw 'maskmovdqu',0, maskmovdqu_instruction-assembler
+ ;dbw 'prefetcht0',1, prefetch_instruction-assembler
+ ;dbw 'prefetcht1',2, prefetch_instruction-assembler
+ ;dbw 'prefetcht2',3, prefetch_instruction-assembler
+ ;dbw 'punpckhqdq',6Dh, sse_pd_instruction-assembler
+ ;dbw 'punpcklqdq',6Ch, sse_pd_instruction-assembler
  db 0
 instructions_11:
- dbw 'prefetchnta',0, prefetch_instruction-assembler
+ ;dbw 'prefetchnta',0, prefetch_instruction-assembler
  db 0
 
 
