@@ -5,6 +5,7 @@
 ; Compile with: nasm-0.98.39 -O999999999 -w+orphan-labels -f bin -o fnasm fasm.asm && chmod +x fnasm
 ;
 ; !! It may not work (untested).
+; !! Fix output file permissions in open(2).
 ;
 	cpu 386
 	bits 32
@@ -495,7 +496,7 @@ line_data_start db ':',0xA,0
 ; cannot simply be copied and put under another distribution licence
 ; (including the GNU Public Licence).
 
-VERSION_STRING equ "1.30"
+%define VERSION_STRING '1.30'
 
 VERSION_MAJOR equ 1
 VERSION_MINOR equ 30
