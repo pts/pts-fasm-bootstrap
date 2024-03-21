@@ -3,21 +3,19 @@
 set -ex
 
 test "${0%/*}" = "$0" || cd "${0%/*}"
-comrade=../comrade
-regular=../regular
 
-test -f "$comrade/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.asm and system.inc from fasm 1.37.
-#test -f "$comrade/fasm130.zip"  # 2002-01-18 (file timestamps are wrong, they indicate 2001-01-18).
-#test -f "$comrade/fasm137.zip"  # 2002-06-12 fasm 1.37 is the first with a Linux source or binary. It's UPX-compressed and it doesn't work, because it tries to use sysinfo.freeram and interpret it as bytes (too few). 
-#test -f "$comrade/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
-test -f "$regular/fasm-1.73.32.tgz"  # 2023-12-04
+test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.asm and system.inc from fasm 1.37.
+#test -f "orig/fasm130.zip"  # 2002-01-18 (file timestamps are wrong, they indicate 2001-01-18).
+#test -f "orig/fasm137.zip"  # 2002-06-12 fasm 1.37 is the first with a Linux source or binary. It's UPX-compressed and it doesn't work, because it tries to use sysinfo.freeram and interpret it as bytes (too few).
+#test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
+test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
 rm -f fasm-orig-* fasm-pass?-* fasm-re-*
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
 mkdir tmp
-(cd tmp && unzip ../"$comrade/fasm120.zip")
+(cd tmp && unzip ../"orig/fasm120.zip")
 rm -rf tmp/SOURCE/DOS
 mv tmp/SOURCE/ASSEMBLE.INC tmp/SOURCE/assemble.inc
 mv tmp/SOURCE/ERRORS.INC tmp/SOURCE/errors.inc
@@ -35,7 +33,7 @@ cp -a fasm-patch-1.20/Linux/fasm.asm fasm-patch-1.20/Linux/system.inc fasm-src-1
 
 rm -rf tmp
 mkdir tmp
-(cd tmp && tar xzvf ../"$regular/fasm-1.73.32.tgz" fasm/fasm fasm/source) || exit "$?"
+(cd tmp && tar xzvf ../"orig/fasm-1.73.32.tgz" fasm/fasm fasm/source) || exit "$?"
 mv tmp/fasm/fasm fasm-orig-1.73.32
 chmod 755 fasm-orig-1.73.32  # Not needed.
 cp -a tmp/fasm/source fasm-src-1.73.32
@@ -74,7 +72,7 @@ compile() {
   chmod 755 fasm-pass2-"$2"
   (cd fasm-src-"$2"/Linux && ../../fasm-pass2-"$2" fasm.asm ../../fasm-re-"$2") || exit "$?"
   chmod 755 fasm-re-"$2"
-  cmp fasm-pass2-"$2" fasm-re-"$2"  
+  cmp fasm-pass2-"$2" fasm-re-"$2"
   rm -f fasm-pass2-"$2"
   if test -f fasm-golden-"$2"; then
     cmp fasm-golden-"$2" fasm-re-"$2"
