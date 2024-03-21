@@ -13222,1199 +13222,617 @@ instructions:
  dw instructions_10-instructions
  dw instructions_11-instructions
 
+%macro dbw 3
+ db %1, %2
+ dw %3
+%endm
+
 instructions_2:
- db 'bt',4
- dw bt_instruction-assembler
- db 'if',0
- dw if_directive-assembler
- db 'in',0
- dw in_instruction-assembler
- db 'ja',77h
- dw conditional_jump-assembler
- db 'jb',72h
- dw conditional_jump-assembler
- db 'jc',72h
- dw conditional_jump-assembler
- db 'je',74h
- dw conditional_jump-assembler
- db 'jg',7Fh
- dw conditional_jump-assembler
- db 'jl',7Ch
- dw conditional_jump-assembler
- db 'jo',70h
- dw conditional_jump-assembler
- db 'jp',7Ah
- dw conditional_jump-assembler
- db 'js',78h
- dw conditional_jump-assembler
- db 'jz',74h
- dw conditional_jump-assembler
- db 'or',08h
- dw basic_instruction-assembler
+ dbw 'bt',4, bt_instruction-assembler
+ dbw 'if',0, if_directive-assembler
+ dbw 'in',0, in_instruction-assembler
+ dbw 'ja',77h, conditional_jump-assembler
+ dbw 'jb',72h, conditional_jump-assembler
+ dbw 'jc',72h, conditional_jump-assembler
+ dbw 'je',74h, conditional_jump-assembler
+ dbw 'jg',7Fh, conditional_jump-assembler
+ dbw 'jl',7Ch, conditional_jump-assembler
+ dbw 'jo',70h, conditional_jump-assembler
+ dbw 'jp',7Ah, conditional_jump-assembler
+ dbw 'js',78h, conditional_jump-assembler
+ dbw 'jz',74h, conditional_jump-assembler
+ dbw 'or',08h, basic_instruction-assembler
  db 0
 instructions_3:
- db 'aaa',37h
- dw simple_instruction-assembler
- db 'aad',0D5h
- dw aa_instruction-assembler
- db 'aam',0D4h
- dw aa_instruction-assembler
- db 'aas',3Fh
- dw simple_instruction-assembler
- db 'adc',10h
- dw basic_instruction-assembler
- db 'add',00h
- dw basic_instruction-assembler
- db 'and',20h
- dw basic_instruction-assembler
- db 'bsf',0BCh
- dw bs_instruction-assembler
- db 'bsr',0BDh
- dw bs_instruction-assembler
- db 'btc',7
- dw bt_instruction-assembler
- db 'btr',6
- dw bt_instruction-assembler
- db 'bts',5
- dw bt_instruction-assembler
- db 'cbw',98h
- dw simple_instruction_16bit-assembler
- db 'cdq',99h
- dw simple_instruction_32bit-assembler
- db 'clc',0F8h
- dw simple_instruction-assembler
- db 'cld',0FCh
- dw simple_instruction-assembler
- db 'cli',0FAh
- dw simple_instruction-assembler
- db 'cmc',0F5h
- dw simple_instruction-assembler
- db 'cmp',38h
- dw basic_instruction-assembler
- db 'cwd',99h
- dw simple_instruction_16bit-assembler
- db 'daa',27h
- dw simple_instruction-assembler
- db 'das',2Fh
- dw simple_instruction-assembler
- db 'dec',1
- dw inc_instruction-assembler
- db 'div',6
- dw single_operand_instruction-assembler
- db 'end',0
- dw end_directive-assembler
- db 'fld',0
- dw fld_instruction-assembler
- db 'fst',2
- dw fld_instruction-assembler
- db 'hlt',0F4h
- dw simple_instruction-assembler
- db 'inc',0
- dw inc_instruction-assembler
- db 'ins',0
- dw ins_instruction-assembler
- db 'int',0CDh
- dw int_instruction-assembler
- db 'jae',73h
- dw conditional_jump-assembler
- db 'jbe',76h
- dw conditional_jump-assembler
- db 'jge',7Dh
- dw conditional_jump-assembler
- db 'jle',7Eh
- dw conditional_jump-assembler
- db 'jmp',0
- dw jmp_instruction-assembler
- db 'jna',76h
- dw conditional_jump-assembler
- db 'jnb',73h
- dw conditional_jump-assembler
- db 'jnc',73h
- dw conditional_jump-assembler
- db 'jne',75h
- dw conditional_jump-assembler
- db 'jng',7Eh
- dw conditional_jump-assembler
- db 'jnl',7Dh
- dw conditional_jump-assembler
- db 'jno',71h
- dw conditional_jump-assembler
- db 'jnp',7Bh
- dw conditional_jump-assembler
- db 'jns',79h
- dw conditional_jump-assembler
- db 'jnz',75h
- dw conditional_jump-assembler
- db 'jpe',7Ah
- dw conditional_jump-assembler
- db 'jpo',7Bh
- dw conditional_jump-assembler
- db 'lar',2
- dw lar_instruction-assembler
- db 'lds',3
- dw ls_instruction-assembler
- db 'lea',0
- dw lea_instruction-assembler
- db 'les',0
- dw ls_instruction-assembler
- db 'lfs',4
- dw ls_instruction-assembler
- db 'lgs',5
- dw ls_instruction-assembler
- db 'lsl',3
- dw lar_instruction-assembler
- db 'lss',2
- dw ls_instruction-assembler
- db 'ltr',3
- dw pm_word_instruction-assembler
- db 'mov',0
- dw mov_instruction-assembler
- db 'mul',4
- dw single_operand_instruction-assembler
- db 'neg',3
- dw single_operand_instruction-assembler
- db 'nop',90h
- dw simple_instruction-assembler
- db 'not',2
- dw single_operand_instruction-assembler
- db 'org',0
- dw org_directive-assembler
- db 'out',0
- dw out_instruction-assembler
- db 'pop',0
- dw pop_instruction-assembler
- db 'por',0EBh
- dw mmx_instruction-assembler
- db 'rcl',2
- dw sh_instruction-assembler
- db 'rcr',3
- dw sh_instruction-assembler
- db 'rep',0F3h
- dw prefix_instruction-assembler
- db 'ret',0C2h
- dw ret_instruction-assembler
- db 'rol',0
- dw sh_instruction-assembler
- db 'ror',1
- dw sh_instruction-assembler
- db 'rsm',0AAh
- dw simple_extended_instruction-assembler
- db 'sal',6
- dw sh_instruction-assembler
- db 'sar',7
- dw sh_instruction-assembler
- db 'sbb',18h
- dw basic_instruction-assembler
- db 'shl',4
- dw sh_instruction-assembler
- db 'shr',5
- dw sh_instruction-assembler
- db 'stc',0F9h
- dw simple_instruction-assembler
- db 'std',0FDh
- dw simple_instruction-assembler
- db 'sti',0FBh
- dw simple_instruction-assembler
- db 'str',1
- dw pm_word_instruction-assembler
- db 'sub',28h
- dw basic_instruction-assembler
- db 'ud2',0Bh
- dw simple_extended_instruction-assembler
- db 'xor',30h
- dw basic_instruction-assembler
+ dbw 'aaa',37h, simple_instruction-assembler
+ dbw 'aad',0D5h, aa_instruction-assembler
+ dbw 'aam',0D4h, aa_instruction-assembler
+ dbw 'aas',3Fh, simple_instruction-assembler
+ dbw 'adc',10h, basic_instruction-assembler
+ dbw 'add',00h, basic_instruction-assembler
+ dbw 'and',20h, basic_instruction-assembler
+ dbw 'bsf',0BCh, bs_instruction-assembler
+ dbw 'bsr',0BDh, bs_instruction-assembler
+ dbw 'btc',7, bt_instruction-assembler
+ dbw 'btr',6, bt_instruction-assembler
+ dbw 'bts',5, bt_instruction-assembler
+ dbw 'cbw',98h, simple_instruction_16bit-assembler
+ dbw 'cdq',99h, simple_instruction_32bit-assembler
+ dbw 'clc',0F8h, simple_instruction-assembler
+ dbw 'cld',0FCh, simple_instruction-assembler
+ dbw 'cli',0FAh, simple_instruction-assembler
+ dbw 'cmc',0F5h, simple_instruction-assembler
+ dbw 'cmp',38h, basic_instruction-assembler
+ dbw 'cwd',99h, simple_instruction_16bit-assembler
+ dbw 'daa',27h, simple_instruction-assembler
+ dbw 'das',2Fh, simple_instruction-assembler
+ dbw 'dec',1, inc_instruction-assembler
+ dbw 'div',6, single_operand_instruction-assembler
+ dbw 'end',0, end_directive-assembler
+ dbw 'fld',0, fld_instruction-assembler
+ dbw 'fst',2, fld_instruction-assembler
+ dbw 'hlt',0F4h, simple_instruction-assembler
+ dbw 'inc',0, inc_instruction-assembler
+ dbw 'ins',0, ins_instruction-assembler
+ dbw 'int',0CDh, int_instruction-assembler
+ dbw 'jae',73h, conditional_jump-assembler
+ dbw 'jbe',76h, conditional_jump-assembler
+ dbw 'jge',7Dh, conditional_jump-assembler
+ dbw 'jle',7Eh, conditional_jump-assembler
+ dbw 'jmp',0, jmp_instruction-assembler
+ dbw 'jna',76h, conditional_jump-assembler
+ dbw 'jnb',73h, conditional_jump-assembler
+ dbw 'jnc',73h, conditional_jump-assembler
+ dbw 'jne',75h, conditional_jump-assembler
+ dbw 'jng',7Eh, conditional_jump-assembler
+ dbw 'jnl',7Dh, conditional_jump-assembler
+ dbw 'jno',71h, conditional_jump-assembler
+ dbw 'jnp',7Bh, conditional_jump-assembler
+ dbw 'jns',79h, conditional_jump-assembler
+ dbw 'jnz',75h, conditional_jump-assembler
+ dbw 'jpe',7Ah, conditional_jump-assembler
+ dbw 'jpo',7Bh, conditional_jump-assembler
+ dbw 'lar',2, lar_instruction-assembler
+ dbw 'lds',3, ls_instruction-assembler
+ dbw 'lea',0, lea_instruction-assembler
+ dbw 'les',0, ls_instruction-assembler
+ dbw 'lfs',4, ls_instruction-assembler
+ dbw 'lgs',5, ls_instruction-assembler
+ dbw 'lsl',3, lar_instruction-assembler
+ dbw 'lss',2, ls_instruction-assembler
+ dbw 'ltr',3, pm_word_instruction-assembler
+ dbw 'mov',0, mov_instruction-assembler
+ dbw 'mul',4, single_operand_instruction-assembler
+ dbw 'neg',3, single_operand_instruction-assembler
+ dbw 'nop',90h, simple_instruction-assembler
+ dbw 'not',2, single_operand_instruction-assembler
+ dbw 'org',0, org_directive-assembler
+ dbw 'out',0, out_instruction-assembler
+ dbw 'pop',0, pop_instruction-assembler
+ dbw 'por',0EBh, mmx_instruction-assembler
+ dbw 'rcl',2, sh_instruction-assembler
+ dbw 'rcr',3, sh_instruction-assembler
+ dbw 'rep',0F3h, prefix_instruction-assembler
+ dbw 'ret',0C2h, ret_instruction-assembler
+ dbw 'rol',0, sh_instruction-assembler
+ dbw 'ror',1, sh_instruction-assembler
+ dbw 'rsm',0AAh, simple_extended_instruction-assembler
+ dbw 'sal',6, sh_instruction-assembler
+ dbw 'sar',7, sh_instruction-assembler
+ dbw 'sbb',18h, basic_instruction-assembler
+ dbw 'shl',4, sh_instruction-assembler
+ dbw 'shr',5, sh_instruction-assembler
+ dbw 'stc',0F9h, simple_instruction-assembler
+ dbw 'std',0FDh, simple_instruction-assembler
+ dbw 'sti',0FBh, simple_instruction-assembler
+ dbw 'str',1, pm_word_instruction-assembler
+ dbw 'sub',28h, basic_instruction-assembler
+ dbw 'ud2',0Bh, simple_extended_instruction-assembler
+ dbw 'xor',30h, basic_instruction-assembler
  db 0
 instructions_4:
- db 'arpl',0
- dw arpl_instruction-assembler
- db 'call',0
- dw call_instruction-assembler
- db 'clts',6
- dw simple_extended_instruction-assembler
- db 'cmps',0
- dw cmps_instruction-assembler
- db 'cwde',98h
- dw simple_instruction_32bit-assembler
- db 'data',0
- dw data_directive-assembler
- db 'else',0
- dw else_directive-assembler
- db 'emms',77h
- dw simple_extended_instruction-assembler
- db 'fabs',100001b
- dw simple_fpu_instruction-assembler
- db 'fadd',0
- dw basic_fpu_instruction-assembler
- db 'fbld',4
- dw fbld_instruction-assembler
- db 'fchs',100000b
- dw simple_fpu_instruction-assembler
- db 'fcom',2
- dw basic_fpu_instruction-assembler
- db 'fcos',111111b
- dw simple_fpu_instruction-assembler
- db 'fdiv',6
- dw basic_fpu_instruction-assembler
- db 'fild',0
- dw fild_instruction-assembler
- db 'fist',2
- dw fild_instruction-assembler
- db 'fld1',101000b
- dw simple_fpu_instruction-assembler
- db 'fldz',101110b
- dw simple_fpu_instruction-assembler
- db 'fmul',1
- dw basic_fpu_instruction-assembler
- db 'fnop',010000b
- dw simple_fpu_instruction-assembler
- db 'fsin',111110b
- dw simple_fpu_instruction-assembler
- db 'fstp',3
- dw fld_instruction-assembler
- db 'fsub',4
- dw basic_fpu_instruction-assembler
- db 'ftst',100100b
- dw simple_fpu_instruction-assembler
- db 'fxam',100101b
- dw simple_fpu_instruction-assembler
- db 'fxch',1
- dw fxch_instruction-assembler
- db 'heap',0
- dw heap_directive-assembler
- db 'idiv',7
- dw single_operand_instruction-assembler
- db 'imul',0
- dw imul_instruction-assembler
- db 'insb',6Ch
- dw simple_instruction-assembler
- db 'insd',6Dh
- dw simple_instruction_32bit-assembler
- db 'insw',6Dh
- dw simple_instruction_16bit-assembler
- db 'int3',0CCh
- dw simple_instruction-assembler
- db 'into',0CEh
- dw simple_instruction-assembler
- db 'invd',8
- dw simple_extended_instruction-assembler
- db 'iret',0CFh
- dw simple_instruction-assembler
- db 'jcxz',0E3h
- dw loop_instruction_16bit-assembler
- db 'jnae',72h
- dw conditional_jump-assembler
- db 'jnbe',77h
- dw conditional_jump-assembler
- db 'jnge',7Ch
- dw conditional_jump-assembler
- db 'jnle',7Fh
- dw conditional_jump-assembler
- db 'lahf',9Fh
- dw simple_instruction-assembler
- db 'lgdt',2
- dw pm_pword_instruction-assembler
- db 'lidt',3
- dw pm_pword_instruction-assembler
- db 'lldt',2
- dw pm_word_instruction-assembler
- db 'lmsw',16h
- dw pm_word_instruction-assembler
- db 'load',0
- dw load_directive-assembler
- db 'lock',0F0h
- dw prefix_instruction-assembler
- db 'lods',0
- dw lods_instruction-assembler
- db 'loop',0E2h
- dw loop_instruction-assembler
- db 'movd',0
- dw movd_instruction-assembler
- db 'movq',0
- dw movq_instruction-assembler
- db 'movs',0
- dw movs_instruction-assembler
- db 'orpd',56h
- dw sse_pd_instruction-assembler
- db 'orps',56h
- dw sse_ps_instruction-assembler
- db 'outs',0
- dw outs_instruction-assembler
- db 'pand',0DBh
- dw mmx_instruction-assembler
- db 'popa',61h
- dw simple_instruction-assembler
- db 'popf',9Dh
- dw simple_instruction-assembler
- db 'push',0
- dw push_instruction-assembler
- db 'pxor',0EFh
- dw mmx_instruction-assembler
- db 'repe',0F3h
- dw prefix_instruction-assembler
- db 'repz',0F3h
- dw prefix_instruction-assembler
- db 'retd',0C2h
- dw ret_instruction_32bit-assembler
- db 'retf',0CAh
- dw ret_instruction-assembler
- db 'retn',0C2h
- dw ret_instruction-assembler
- db 'retw',0C2h
- dw ret_instruction_16bit-assembler
- db 'sahf',9Eh
- dw simple_instruction-assembler
- db 'scas',0AEh
- dw stos_instruction-assembler
- db 'seta',97h
- dw set_instruction-assembler
- db 'setb',92h
- dw set_instruction-assembler
- db 'setc',92h
- dw set_instruction-assembler
- db 'sete',94h
- dw set_instruction-assembler
- db 'setg',9Fh
- dw set_instruction-assembler
- db 'setl',9Ch
- dw set_instruction-assembler
- db 'seto',90h
- dw set_instruction-assembler
- db 'setp',9Ah
- dw set_instruction-assembler
- db 'sets',98h
- dw set_instruction-assembler
- db 'setz',94h
- dw set_instruction-assembler
- db 'sgdt',0
- dw pm_pword_instruction-assembler
- db 'shld',0A4h
- dw shd_instruction-assembler
- db 'shrd',0ACh
- dw shd_instruction-assembler
- db 'sidt',1
- dw pm_pword_instruction-assembler
- db 'sldt',0
- dw pm_word_instruction-assembler
- db 'smsw',14h
- dw pm_word_instruction-assembler
- db 'stos',0AAh
- dw stos_instruction-assembler
- db 'test',0
- dw test_instruction-assembler
- db 'verr',4
- dw pm_word_instruction-assembler
- db 'verw',5
- dw pm_word_instruction-assembler
- db 'wait',9Bh
- dw simple_instruction-assembler
- db 'xadd',0C0h
- dw basic_486_instruction-assembler
- db 'xchg',0
- dw xchg_instruction-assembler
- db 'xlat',0D7h
- dw xlat_instruction-assembler
+ dbw 'arpl',0, arpl_instruction-assembler
+ dbw 'call',0, call_instruction-assembler
+ dbw 'clts',6, simple_extended_instruction-assembler
+ dbw 'cmps',0, cmps_instruction-assembler
+ dbw 'cwde',98h, simple_instruction_32bit-assembler
+ dbw 'data',0, data_directive-assembler
+ dbw 'else',0, else_directive-assembler
+ dbw 'emms',77h, simple_extended_instruction-assembler
+ dbw 'fabs',100001b, simple_fpu_instruction-assembler
+ dbw 'fadd',0, basic_fpu_instruction-assembler
+ dbw 'fbld',4, fbld_instruction-assembler
+ dbw 'fchs',100000b, simple_fpu_instruction-assembler
+ dbw 'fcom',2, basic_fpu_instruction-assembler
+ dbw 'fcos',111111b, simple_fpu_instruction-assembler
+ dbw 'fdiv',6, basic_fpu_instruction-assembler
+ dbw 'fild',0, fild_instruction-assembler
+ dbw 'fist',2, fild_instruction-assembler
+ dbw 'fld1',101000b, simple_fpu_instruction-assembler
+ dbw 'fldz',101110b, simple_fpu_instruction-assembler
+ dbw 'fmul',1, basic_fpu_instruction-assembler
+ dbw 'fnop',010000b, simple_fpu_instruction-assembler
+ dbw 'fsin',111110b, simple_fpu_instruction-assembler
+ dbw 'fstp',3, fld_instruction-assembler
+ dbw 'fsub',4, basic_fpu_instruction-assembler
+ dbw 'ftst',100100b, simple_fpu_instruction-assembler
+ dbw 'fxam',100101b, simple_fpu_instruction-assembler
+ dbw 'fxch',1, fxch_instruction-assembler
+ dbw 'heap',0, heap_directive-assembler
+ dbw 'idiv',7, single_operand_instruction-assembler
+ dbw 'imul',0, imul_instruction-assembler
+ dbw 'insb',6Ch, simple_instruction-assembler
+ dbw 'insd',6Dh, simple_instruction_32bit-assembler
+ dbw 'insw',6Dh, simple_instruction_16bit-assembler
+ dbw 'int3',0CCh, simple_instruction-assembler
+ dbw 'into',0CEh, simple_instruction-assembler
+ dbw 'invd',8, simple_extended_instruction-assembler
+ dbw 'iret',0CFh, simple_instruction-assembler
+ dbw 'jcxz',0E3h, loop_instruction_16bit-assembler
+ dbw 'jnae',72h, conditional_jump-assembler
+ dbw 'jnbe',77h, conditional_jump-assembler
+ dbw 'jnge',7Ch, conditional_jump-assembler
+ dbw 'jnle',7Fh, conditional_jump-assembler
+ dbw 'lahf',9Fh, simple_instruction-assembler
+ dbw 'lgdt',2, pm_pword_instruction-assembler
+ dbw 'lidt',3, pm_pword_instruction-assembler
+ dbw 'lldt',2, pm_word_instruction-assembler
+ dbw 'lmsw',16h, pm_word_instruction-assembler
+ dbw 'load',0, load_directive-assembler
+ dbw 'lock',0F0h, prefix_instruction-assembler
+ dbw 'lods',0, lods_instruction-assembler
+ dbw 'loop',0E2h, loop_instruction-assembler
+ dbw 'movd',0, movd_instruction-assembler
+ dbw 'movq',0, movq_instruction-assembler
+ dbw 'movs',0, movs_instruction-assembler
+ dbw 'orpd',56h, sse_pd_instruction-assembler
+ dbw 'orps',56h, sse_ps_instruction-assembler
+ dbw 'outs',0, outs_instruction-assembler
+ dbw 'pand',0DBh, mmx_instruction-assembler
+ dbw 'popa',61h, simple_instruction-assembler
+ dbw 'popf',9Dh, simple_instruction-assembler
+ dbw 'push',0, push_instruction-assembler
+ dbw 'pxor',0EFh, mmx_instruction-assembler
+ dbw 'repe',0F3h, prefix_instruction-assembler
+ dbw 'repz',0F3h, prefix_instruction-assembler
+ dbw 'retd',0C2h, ret_instruction_32bit-assembler
+ dbw 'retf',0CAh, ret_instruction-assembler
+ dbw 'retn',0C2h, ret_instruction-assembler
+ dbw 'retw',0C2h, ret_instruction_16bit-assembler
+ dbw 'sahf',9Eh, simple_instruction-assembler
+ dbw 'scas',0AEh, stos_instruction-assembler
+ dbw 'seta',97h, set_instruction-assembler
+ dbw 'setb',92h, set_instruction-assembler
+ dbw 'setc',92h, set_instruction-assembler
+ dbw 'sete',94h, set_instruction-assembler
+ dbw 'setg',9Fh, set_instruction-assembler
+ dbw 'setl',9Ch, set_instruction-assembler
+ dbw 'seto',90h, set_instruction-assembler
+ dbw 'setp',9Ah, set_instruction-assembler
+ dbw 'sets',98h, set_instruction-assembler
+ dbw 'setz',94h, set_instruction-assembler
+ dbw 'sgdt',0, pm_pword_instruction-assembler
+ dbw 'shld',0A4h, shd_instruction-assembler
+ dbw 'shrd',0ACh, shd_instruction-assembler
+ dbw 'sidt',1, pm_pword_instruction-assembler
+ dbw 'sldt',0, pm_word_instruction-assembler
+ dbw 'smsw',14h, pm_word_instruction-assembler
+ dbw 'stos',0AAh, stos_instruction-assembler
+ dbw 'test',0, test_instruction-assembler
+ dbw 'verr',4, pm_word_instruction-assembler
+ dbw 'verw',5, pm_word_instruction-assembler
+ dbw 'wait',9Bh, simple_instruction-assembler
+ dbw 'xadd',0C0h, basic_486_instruction-assembler
+ dbw 'xchg',0, xchg_instruction-assembler
+ dbw 'xlat',0D7h, xlat_instruction-assembler
  db 0
 instructions_5:
- db 'addpd',58h
- dw sse_pd_instruction-assembler
- db 'addps',58h
- dw sse_ps_instruction-assembler
- db 'addsd',58h
- dw sse_sd_instruction-assembler
- db 'addss',58h
- dw sse_ss_instruction-assembler
- db 'andpd',54h
- dw sse_pd_instruction-assembler
- db 'andps',54h
- dw sse_ps_instruction-assembler
- db 'bound',0
- dw bound_instruction-assembler
- db 'bswap',0
- dw bswap_instruction-assembler
- db 'cmova',47h
- dw cmov_instruction-assembler
- db 'cmovb',42h
- dw cmov_instruction-assembler
- db 'cmovc',42h
- dw cmov_instruction-assembler
- db 'cmove',44h
- dw cmov_instruction-assembler
- db 'cmovg',4Fh
- dw cmov_instruction-assembler
- db 'cmovl',4Ch
- dw cmov_instruction-assembler
- db 'cmovo',40h
- dw cmov_instruction-assembler
- db 'cmovp',4Ah
- dw cmov_instruction-assembler
- db 'cmovs',48h
- dw cmov_instruction-assembler
- db 'cmovz',44h
- dw cmov_instruction-assembler
- db 'cmppd',0
- dw cmppd_instruction-assembler
- db 'cmpps',0
- dw cmpps_instruction-assembler
- db 'cmpsb',0A6h
- dw simple_instruction-assembler
- db 'cmpsd',0
- dw cmpsd_instruction-assembler
- db 'cmpss',0
- dw cmpss_instruction-assembler
- db 'cmpsw',0A7h
- dw simple_instruction_16bit-assembler
- db 'cpuid',0A2h
- dw simple_extended_instruction-assembler
- db 'divpd',5Eh
- dw sse_pd_instruction-assembler
- db 'divps',5Eh
- dw sse_ps_instruction-assembler
- db 'divsd',5Eh
- dw sse_sd_instruction-assembler
- db 'divss',5Eh
- dw sse_ss_instruction-assembler
- db 'enter',0
- dw enter_instruction-assembler
- db 'entry',0
- dw entry_directive-assembler
- db 'f2xm1',110000b
- dw simple_fpu_instruction-assembler
- db 'faddp',0
- dw faddp_instruction-assembler
- db 'fbstp',6
- dw fbld_instruction-assembler
- db 'fclex',0E2h
- dw finit_instruction-assembler
- db 'fcomi',0F0h
- dw fcomi_instruction-assembler
- db 'fcomp',3
- dw basic_fpu_instruction-assembler
- db 'fdivp',6
- dw faddp_instruction-assembler
- db 'fdivr',7
- dw basic_fpu_instruction-assembler
- db 'ffree',0
- dw ffree_instruction-assembler
- db 'fiadd',0
- dw fi_instruction-assembler
- db 'ficom',2
- dw fi_instruction-assembler
- db 'fidiv',6
- dw fi_instruction-assembler
- db 'fimul',1
- dw fi_instruction-assembler
- db 'finit',0E3h
- dw finit_instruction-assembler
- db 'fistp',3
- dw fild_instruction-assembler
- db 'fisub',4
- dw fi_instruction-assembler
- db 'fldcw',5
- dw fldcw_instruction-assembler
- db 'fldpi',101011b
- dw simple_fpu_instruction-assembler
- db 'fmulp',1
- dw faddp_instruction-assembler
- db 'fprem',111000b
- dw simple_fpu_instruction-assembler
- db 'fptan',110010b
- dw simple_fpu_instruction-assembler
- db 'fsave',6
- dw fsave_instruction-assembler
- db 'fsqrt',111010b
- dw simple_fpu_instruction-assembler
- db 'fstcw',7
- dw fldcw_instruction-assembler
- db 'fstsw',0
- dw fstsw_instruction-assembler
- db 'fsubp',4
- dw faddp_instruction-assembler
- db 'fsubr',5
- dw basic_fpu_instruction-assembler
- db 'fucom',4
- dw ffree_instruction-assembler
- db 'fwait',9Bh
- dw simple_instruction-assembler
- db 'fyl2x',110001b
- dw simple_fpu_instruction-assembler
- db 'iretd',0CFh
- dw simple_instruction_32bit-assembler
- db 'iretw',0CFh
- dw simple_instruction_16bit-assembler
- db 'jecxz',0E3h
- dw loop_instruction_32bit-assembler
- db 'label',0
- dw label_directive-assembler
- db 'leave',0C9h
- dw simple_instruction-assembler
- db 'lodsb',0ACh
- dw simple_instruction-assembler
- db 'lodsd',0ADh
- dw simple_instruction_32bit-assembler
- db 'lodsw',0ADh
- dw simple_instruction_16bit-assembler
- db 'loopd',0E2h
- dw loop_instruction_32bit-assembler
- db 'loope',0E1h
- dw loop_instruction-assembler
- db 'loopw',0E2h
- dw loop_instruction_16bit-assembler
- db 'loopz',0E1h
- dw loop_instruction-assembler
- db 'maxpd',5Fh
- dw sse_pd_instruction-assembler
- db 'maxps',5Fh
- dw sse_ps_instruction-assembler
- db 'maxsd',5Fh
- dw sse_sd_instruction-assembler
- db 'maxss',5Fh
- dw sse_ss_instruction-assembler
- db 'minpd',5Dh
- dw sse_pd_instruction-assembler
- db 'minps',5Dh
- dw sse_ps_instruction-assembler
- db 'minsd',5Dh
- dw sse_sd_instruction-assembler
- db 'minss',5Dh
- dw sse_ss_instruction-assembler
- db 'movsb',0A4h
- dw simple_instruction-assembler
- db 'movsd',0
- dw movsd_instruction-assembler
- db 'movss',0
- dw movss_instruction-assembler
- db 'movsw',0A5h
- dw simple_instruction_16bit-assembler
- db 'movsx',0BEh
- dw movx_instruction-assembler
- db 'movzx',0B6h
- dw movx_instruction-assembler
- db 'mulpd',59h
- dw sse_pd_instruction-assembler
- db 'mulps',59h
- dw sse_ps_instruction-assembler
- db 'mulsd',59h
- dw sse_sd_instruction-assembler
- db 'mulss',59h
- dw sse_ss_instruction-assembler
- db 'outsb',6Eh
- dw simple_instruction-assembler
- db 'outsd',6Fh
- dw simple_instruction_32bit-assembler
- db 'outsw',6Fh
- dw simple_instruction_16bit-assembler
- db 'paddb',0FCh
- dw mmx_instruction-assembler
- db 'paddd',0FEh
- dw mmx_instruction-assembler
- db 'paddq',0D4h
- dw mmx_instruction-assembler
- db 'paddw',0FDh
- dw mmx_instruction-assembler
- db 'pandn',0DFh
- dw mmx_instruction-assembler
- db 'pause',0
- dw pause_instruction-assembler
- db 'pavgb',0E0h
- dw mmx_instruction-assembler
- db 'pavgw',0E3h
- dw mmx_instruction-assembler
- db 'popad',61h
- dw simple_instruction_32bit-assembler
- db 'popaw',61h
- dw simple_instruction_16bit-assembler
- db 'popfd',9Dh
- dw simple_instruction_32bit-assembler
- db 'popfw',9Dh
- dw simple_instruction_16bit-assembler
- db 'pslld',0F2h
- dw mmx_ps_instruction-assembler
- db 'psllq',0F3h
- dw mmx_ps_instruction-assembler
- db 'psllw',0F1h
- dw mmx_ps_instruction-assembler
- db 'psrad',0E2h
- dw mmx_ps_instruction-assembler
- db 'psraw',0E1h
- dw mmx_ps_instruction-assembler
- db 'psrld',0D2h
- dw mmx_ps_instruction-assembler
- db 'psrlq',0D3h
- dw mmx_ps_instruction-assembler
- db 'psrlw',0D1h
- dw mmx_ps_instruction-assembler
- db 'psubb',0F8h
- dw mmx_instruction-assembler
- db 'psubd',0FAh
- dw mmx_instruction-assembler
- db 'psubq',0FBh
- dw mmx_instruction-assembler
- db 'psubw',0F9h
- dw mmx_instruction-assembler
- db 'pusha',60h
- dw simple_instruction-assembler
- db 'pushf',9Ch
- dw simple_instruction-assembler
- db 'rcpps',53h
- dw sse_ps_instruction-assembler
- db 'rcpss',53h
- dw sse_ss_instruction-assembler
- db 'rdmsr',32h
- dw simple_extended_instruction-assembler
- db 'rdpmc',33h
- dw simple_extended_instruction-assembler
- db 'rdtsc',31h
- dw simple_extended_instruction-assembler
- db 'repne',0F2h
- dw prefix_instruction-assembler
- db 'repnz',0F2h
- dw prefix_instruction-assembler
- db 'retfd',0CAh
- dw ret_instruction_32bit-assembler
- db 'retfw',0CAh
- dw ret_instruction_16bit-assembler
- db 'retnd',0C2h
- dw ret_instruction_32bit-assembler
- db 'retnw',0C2h
- dw ret_instruction_16bit-assembler
- db 'scasb',0AEh
- dw simple_instruction-assembler
- db 'scasd',0AFh
- dw simple_instruction_32bit-assembler
- db 'scasw',0AFh
- dw simple_instruction_16bit-assembler
- db 'setae',93h
- dw set_instruction-assembler
- db 'setbe',96h
- dw set_instruction-assembler
- db 'setge',9Dh
- dw set_instruction-assembler
- db 'setle',9Eh
- dw set_instruction-assembler
- db 'setna',96h
- dw set_instruction-assembler
- db 'setnb',93h
- dw set_instruction-assembler
- db 'setnc',93h
- dw set_instruction-assembler
- db 'setne',95h
- dw set_instruction-assembler
- db 'setng',9Eh
- dw set_instruction-assembler
- db 'setnl',9Dh
- dw set_instruction-assembler
- db 'setno',91h
- dw set_instruction-assembler
- db 'setnp',9Bh
- dw set_instruction-assembler
- db 'setns',99h
- dw set_instruction-assembler
- db 'setnz',95h
- dw set_instruction-assembler
- db 'setpe',9Ah
- dw set_instruction-assembler
- db 'setpo',9Bh
- dw set_instruction-assembler
- db 'stack',0
- dw stack_directive-assembler
- db 'stosb',0AAh
- dw simple_instruction-assembler
- db 'stosd',0ABh
- dw simple_instruction_32bit-assembler
- db 'stosw',0ABh
- dw simple_instruction_16bit-assembler
- db 'subpd',5Ch
- dw sse_pd_instruction-assembler
- db 'subps',5Ch
- dw sse_ps_instruction-assembler
- db 'subsd',5Ch
- dw sse_sd_instruction-assembler
- db 'subss',5Ch
- dw sse_ss_instruction-assembler
- db 'times',0
- dw times_directive-assembler
- db 'wrmsr',30h
- dw simple_extended_instruction-assembler
- db 'xlatb',0D7h
- dw simple_instruction-assembler
- db 'xorpd',57h
- dw sse_pd_instruction-assembler
- db 'xorps',57h
- dw sse_ps_instruction-assembler
+ dbw 'addpd',58h, sse_pd_instruction-assembler
+ dbw 'addps',58h, sse_ps_instruction-assembler
+ dbw 'addsd',58h, sse_sd_instruction-assembler
+ dbw 'addss',58h, sse_ss_instruction-assembler
+ dbw 'andpd',54h, sse_pd_instruction-assembler
+ dbw 'andps',54h, sse_ps_instruction-assembler
+ dbw 'bound',0, bound_instruction-assembler
+ dbw 'bswap',0, bswap_instruction-assembler
+ dbw 'cmova',47h, cmov_instruction-assembler
+ dbw 'cmovb',42h, cmov_instruction-assembler
+ dbw 'cmovc',42h, cmov_instruction-assembler
+ dbw 'cmove',44h, cmov_instruction-assembler
+ dbw 'cmovg',4Fh, cmov_instruction-assembler
+ dbw 'cmovl',4Ch, cmov_instruction-assembler
+ dbw 'cmovo',40h, cmov_instruction-assembler
+ dbw 'cmovp',4Ah, cmov_instruction-assembler
+ dbw 'cmovs',48h, cmov_instruction-assembler
+ dbw 'cmovz',44h, cmov_instruction-assembler
+ dbw 'cmppd',0, cmppd_instruction-assembler
+ dbw 'cmpps',0, cmpps_instruction-assembler
+ dbw 'cmpsb',0A6h, simple_instruction-assembler
+ dbw 'cmpsd',0, cmpsd_instruction-assembler
+ dbw 'cmpss',0, cmpss_instruction-assembler
+ dbw 'cmpsw',0A7h, simple_instruction_16bit-assembler
+ dbw 'cpuid',0A2h, simple_extended_instruction-assembler
+ dbw 'divpd',5Eh, sse_pd_instruction-assembler
+ dbw 'divps',5Eh, sse_ps_instruction-assembler
+ dbw 'divsd',5Eh, sse_sd_instruction-assembler
+ dbw 'divss',5Eh, sse_ss_instruction-assembler
+ dbw 'enter',0, enter_instruction-assembler
+ dbw 'entry',0, entry_directive-assembler
+ dbw 'f2xm1',110000b, simple_fpu_instruction-assembler
+ dbw 'faddp',0, faddp_instruction-assembler
+ dbw 'fbstp',6, fbld_instruction-assembler
+ dbw 'fclex',0E2h, finit_instruction-assembler
+ dbw 'fcomi',0F0h, fcomi_instruction-assembler
+ dbw 'fcomp',3, basic_fpu_instruction-assembler
+ dbw 'fdivp',6, faddp_instruction-assembler
+ dbw 'fdivr',7, basic_fpu_instruction-assembler
+ dbw 'ffree',0, ffree_instruction-assembler
+ dbw 'fiadd',0, fi_instruction-assembler
+ dbw 'ficom',2, fi_instruction-assembler
+ dbw 'fidiv',6, fi_instruction-assembler
+ dbw 'fimul',1, fi_instruction-assembler
+ dbw 'finit',0E3h, finit_instruction-assembler
+ dbw 'fistp',3, fild_instruction-assembler
+ dbw 'fisub',4, fi_instruction-assembler
+ dbw 'fldcw',5, fldcw_instruction-assembler
+ dbw 'fldpi',101011b, simple_fpu_instruction-assembler
+ dbw 'fmulp',1, faddp_instruction-assembler
+ dbw 'fprem',111000b, simple_fpu_instruction-assembler
+ dbw 'fptan',110010b, simple_fpu_instruction-assembler
+ dbw 'fsave',6, fsave_instruction-assembler
+ dbw 'fsqrt',111010b, simple_fpu_instruction-assembler
+ dbw 'fstcw',7, fldcw_instruction-assembler
+ dbw 'fstsw',0, fstsw_instruction-assembler
+ dbw 'fsubp',4, faddp_instruction-assembler
+ dbw 'fsubr',5, basic_fpu_instruction-assembler
+ dbw 'fucom',4, ffree_instruction-assembler
+ dbw 'fwait',9Bh, simple_instruction-assembler
+ dbw 'fyl2x',110001b, simple_fpu_instruction-assembler
+ dbw 'iretd',0CFh, simple_instruction_32bit-assembler
+ dbw 'iretw',0CFh, simple_instruction_16bit-assembler
+ dbw 'jecxz',0E3h, loop_instruction_32bit-assembler
+ dbw 'label',0, label_directive-assembler
+ dbw 'leave',0C9h, simple_instruction-assembler
+ dbw 'lodsb',0ACh, simple_instruction-assembler
+ dbw 'lodsd',0ADh, simple_instruction_32bit-assembler
+ dbw 'lodsw',0ADh, simple_instruction_16bit-assembler
+ dbw 'loopd',0E2h, loop_instruction_32bit-assembler
+ dbw 'loope',0E1h, loop_instruction-assembler
+ dbw 'loopw',0E2h, loop_instruction_16bit-assembler
+ dbw 'loopz',0E1h, loop_instruction-assembler
+ dbw 'maxpd',5Fh, sse_pd_instruction-assembler
+ dbw 'maxps',5Fh, sse_ps_instruction-assembler
+ dbw 'maxsd',5Fh, sse_sd_instruction-assembler
+ dbw 'maxss',5Fh, sse_ss_instruction-assembler
+ dbw 'minpd',5Dh, sse_pd_instruction-assembler
+ dbw 'minps',5Dh, sse_ps_instruction-assembler
+ dbw 'minsd',5Dh, sse_sd_instruction-assembler
+ dbw 'minss',5Dh, sse_ss_instruction-assembler
+ dbw 'movsb',0A4h, simple_instruction-assembler
+ dbw 'movsd',0, movsd_instruction-assembler
+ dbw 'movss',0, movss_instruction-assembler
+ dbw 'movsw',0A5h, simple_instruction_16bit-assembler
+ dbw 'movsx',0BEh, movx_instruction-assembler
+ dbw 'movzx',0B6h, movx_instruction-assembler
+ dbw 'mulpd',59h, sse_pd_instruction-assembler
+ dbw 'mulps',59h, sse_ps_instruction-assembler
+ dbw 'mulsd',59h, sse_sd_instruction-assembler
+ dbw 'mulss',59h, sse_ss_instruction-assembler
+ dbw 'outsb',6Eh, simple_instruction-assembler
+ dbw 'outsd',6Fh, simple_instruction_32bit-assembler
+ dbw 'outsw',6Fh, simple_instruction_16bit-assembler
+ dbw 'paddb',0FCh, mmx_instruction-assembler
+ dbw 'paddd',0FEh, mmx_instruction-assembler
+ dbw 'paddq',0D4h, mmx_instruction-assembler
+ dbw 'paddw',0FDh, mmx_instruction-assembler
+ dbw 'pandn',0DFh, mmx_instruction-assembler
+ dbw 'pause',0, pause_instruction-assembler
+ dbw 'pavgb',0E0h, mmx_instruction-assembler
+ dbw 'pavgw',0E3h, mmx_instruction-assembler
+ dbw 'popad',61h, simple_instruction_32bit-assembler
+ dbw 'popaw',61h, simple_instruction_16bit-assembler
+ dbw 'popfd',9Dh, simple_instruction_32bit-assembler
+ dbw 'popfw',9Dh, simple_instruction_16bit-assembler
+ dbw 'pslld',0F2h, mmx_ps_instruction-assembler
+ dbw 'psllq',0F3h, mmx_ps_instruction-assembler
+ dbw 'psllw',0F1h, mmx_ps_instruction-assembler
+ dbw 'psrad',0E2h, mmx_ps_instruction-assembler
+ dbw 'psraw',0E1h, mmx_ps_instruction-assembler
+ dbw 'psrld',0D2h, mmx_ps_instruction-assembler
+ dbw 'psrlq',0D3h, mmx_ps_instruction-assembler
+ dbw 'psrlw',0D1h, mmx_ps_instruction-assembler
+ dbw 'psubb',0F8h, mmx_instruction-assembler
+ dbw 'psubd',0FAh, mmx_instruction-assembler
+ dbw 'psubq',0FBh, mmx_instruction-assembler
+ dbw 'psubw',0F9h, mmx_instruction-assembler
+ dbw 'pusha',60h, simple_instruction-assembler
+ dbw 'pushf',9Ch, simple_instruction-assembler
+ dbw 'rcpps',53h, sse_ps_instruction-assembler
+ dbw 'rcpss',53h, sse_ss_instruction-assembler
+ dbw 'rdmsr',32h, simple_extended_instruction-assembler
+ dbw 'rdpmc',33h, simple_extended_instruction-assembler
+ dbw 'rdtsc',31h, simple_extended_instruction-assembler
+ dbw 'repne',0F2h, prefix_instruction-assembler
+ dbw 'repnz',0F2h, prefix_instruction-assembler
+ dbw 'retfd',0CAh, ret_instruction_32bit-assembler
+ dbw 'retfw',0CAh, ret_instruction_16bit-assembler
+ dbw 'retnd',0C2h, ret_instruction_32bit-assembler
+ dbw 'retnw',0C2h, ret_instruction_16bit-assembler
+ dbw 'scasb',0AEh, simple_instruction-assembler
+ dbw 'scasd',0AFh, simple_instruction_32bit-assembler
+ dbw 'scasw',0AFh, simple_instruction_16bit-assembler
+ dbw 'setae',93h, set_instruction-assembler
+ dbw 'setbe',96h, set_instruction-assembler
+ dbw 'setge',9Dh, set_instruction-assembler
+ dbw 'setle',9Eh, set_instruction-assembler
+ dbw 'setna',96h, set_instruction-assembler
+ dbw 'setnb',93h, set_instruction-assembler
+ dbw 'setnc',93h, set_instruction-assembler
+ dbw 'setne',95h, set_instruction-assembler
+ dbw 'setng',9Eh, set_instruction-assembler
+ dbw 'setnl',9Dh, set_instruction-assembler
+ dbw 'setno',91h, set_instruction-assembler
+ dbw 'setnp',9Bh, set_instruction-assembler
+ dbw 'setns',99h, set_instruction-assembler
+ dbw 'setnz',95h, set_instruction-assembler
+ dbw 'setpe',9Ah, set_instruction-assembler
+ dbw 'setpo',9Bh, set_instruction-assembler
+ dbw 'stack',0, stack_directive-assembler
+ dbw 'stosb',0AAh, simple_instruction-assembler
+ dbw 'stosd',0ABh, simple_instruction_32bit-assembler
+ dbw 'stosw',0ABh, simple_instruction_16bit-assembler
+ dbw 'subpd',5Ch, sse_pd_instruction-assembler
+ dbw 'subps',5Ch, sse_ps_instruction-assembler
+ dbw 'subsd',5Ch, sse_sd_instruction-assembler
+ dbw 'subss',5Ch, sse_ss_instruction-assembler
+ dbw 'times',0, times_directive-assembler
+ dbw 'wrmsr',30h, simple_extended_instruction-assembler
+ dbw 'xlatb',0D7h, simple_instruction-assembler
+ dbw 'xorpd',57h, sse_pd_instruction-assembler
+ dbw 'xorps',57h, sse_ps_instruction-assembler
  db 0
 instructions_6:
- db 'andnpd',55h
- dw sse_pd_instruction-assembler
- db 'andnps',55h
- dw sse_ps_instruction-assembler
- db 'cmovae',43h
- dw cmov_instruction-assembler
- db 'cmovbe',46h
- dw cmov_instruction-assembler
- db 'cmovge',4Dh
- dw cmov_instruction-assembler
- db 'cmovle',4Eh
- dw cmov_instruction-assembler
- db 'cmovna',46h
- dw cmov_instruction-assembler
- db 'cmovnb',43h
- dw cmov_instruction-assembler
- db 'cmovnc',43h
- dw cmov_instruction-assembler
- db 'cmovne',45h
- dw cmov_instruction-assembler
- db 'cmovng',4Eh
- dw cmov_instruction-assembler
- db 'cmovnl',4Dh
- dw cmov_instruction-assembler
- db 'cmovno',41h
- dw cmov_instruction-assembler
- db 'cmovnp',4Bh
- dw cmov_instruction-assembler
- db 'cmovns',49h
- dw cmov_instruction-assembler
- db 'cmovnz',45h
- dw cmov_instruction-assembler
- db 'cmovpe',4Ah
- dw cmov_instruction-assembler
- db 'cmovpo',4Bh
- dw cmov_instruction-assembler
- db 'comisd',2Fh
- dw comisd_instruction-assembler
- db 'comiss',2Fh
- dw comiss_instruction-assembler
- db 'fcomip',0F0h
- dw fcomip_instruction-assembler
- db 'fcompp',0
- dw fcompp_instruction-assembler
- db 'fdivrp',7
- dw faddp_instruction-assembler
- db 'ficomp',3
- dw fi_instruction-assembler
- db 'fidivr',7
- dw fi_instruction-assembler
- db 'fisubr',5
- dw fi_instruction-assembler
- db 'fldenv',4
- dw fldenv_instruction-assembler
- db 'fldl2e',101010b
- dw simple_fpu_instruction-assembler
- db 'fldl2t',101001b
- dw simple_fpu_instruction-assembler
- db 'fldlg2',101100b
- dw simple_fpu_instruction-assembler
- db 'fldln2',101101b
- dw simple_fpu_instruction-assembler
- db 'fnclex',0E2h
- dw fninit_instruction-assembler
- db 'fninit',0E3h
- dw fninit_instruction-assembler
- db 'fnstsw',0
- dw fnstsw_instruction-assembler
- db 'format',0
- dw format_directive-assembler
- db 'fpatan',110011b
- dw simple_fpu_instruction-assembler
- db 'fprem1',110101b
- dw simple_fpu_instruction-assembler
- db 'frstor',4
- dw fsave_instruction-assembler
- db 'fscale',111101b
- dw simple_fpu_instruction-assembler
- db 'fstenv',6
- dw fldenv_instruction-assembler
- db 'fsubrp',5
- dw faddp_instruction-assembler
- db 'fucomi',0E8h
- dw fcomi_instruction-assembler
- db 'fucomp',5
- dw ffree_instruction-assembler
- db 'fxsave',0
- dw fxsave_instruction-assembler
- db 'invlpg',0
- dw invlpg_instruction-assembler
- db 'lfence',0E8h
- dw fence_instruction-assembler
- db 'looped',0E1h
- dw loop_instruction_32bit-assembler
- db 'loopew',0E1h
- dw loop_instruction_16bit-assembler
- db 'loopne',0E0h
- dw loop_instruction-assembler
- db 'loopnz',0E0h
- dw loop_instruction-assembler
- db 'loopzd',0E1h
- dw loop_instruction_32bit-assembler
- db 'loopzw',0E1h
- dw loop_instruction_16bit-assembler
- db 'mfence',0F0h
- dw fence_instruction-assembler
- db 'movapd',28h
- dw movpd_instruction-assembler
- db 'movaps',28h
- dw movps_instruction-assembler
- db 'movdqa',66h
- dw movdq_instruction-assembler
- db 'movdqu',0F3h
- dw movdq_instruction-assembler
- db 'movhpd',16h
- dw movlpd_instruction-assembler
- db 'movhps',16h
- dw movlps_instruction-assembler
- db 'movlpd',12h
- dw movlpd_instruction-assembler
- db 'movlps',12h
- dw movlps_instruction-assembler
- db 'movnti',0C3h
- dw movnti_instruction-assembler
- db 'movntq',0E7h
- dw movntq_instruction-assembler
- db 'movupd',10h
- dw movpd_instruction-assembler
- db 'movups',10h
- dw movps_instruction-assembler
- db 'paddsb',0ECh
- dw mmx_instruction-assembler
- db 'paddsw',0EDh
- dw mmx_instruction-assembler
- db 'pextrw',0C5h
- dw pmovmskb_instruction-assembler
- db 'pinsrw',0C4h
- dw pinsrw_instruction-assembler
- db 'pmaxsw',0EEh
- dw mmx_instruction-assembler
- db 'pmaxub',0DEh
- dw mmx_instruction-assembler
- db 'pminsw',0EAh
- dw mmx_instruction-assembler
- db 'pminub',0DAh
- dw mmx_instruction-assembler
- db 'pmulhw',0E5h
- dw mmx_instruction-assembler
- db 'pmullw',0D5h
- dw mmx_instruction-assembler
- db 'psadbw',0F6h
- dw mmx_instruction-assembler
- db 'pshufd',66h
- dw pshufd_instruction-assembler
- db 'pshufw',0
- dw pshufw_instruction-assembler
- db 'pslldq',111b
- dw ps_dq_instruction-assembler
- db 'psrldq',011b
- dw ps_dq_instruction-assembler
- db 'psubsb',0E8h
- dw mmx_instruction-assembler
- db 'psubsw',0E9h
- dw mmx_instruction-assembler
- db 'pushad',60h
- dw simple_instruction_32bit-assembler
- db 'pushaw',60h
- dw simple_instruction_16bit-assembler
- db 'pushfd',9Ch
- dw simple_instruction_32bit-assembler
- db 'pushfw',9Ch
- dw simple_instruction_16bit-assembler
- db 'repeat',0
- dw repeat_directive-assembler
- db 'setalc',0D6h
- dw simple_instruction-assembler
- db 'setnae',92h
- dw set_instruction-assembler
- db 'setnbe',97h
- dw set_instruction-assembler
- db 'setnge',9Ch
- dw set_instruction-assembler
- db 'setnle',9Fh
- dw set_instruction-assembler
- db 'sfence',0F8h
- dw fence_instruction-assembler
- db 'shufpd',0C6h
- dw sse_pd_instruction-assembler
- db 'shufps',0C6h
- dw sse_ps_instruction-assembler
- db 'sqrtpd',51h
- dw sse_pd_instruction-assembler
- db 'sqrtps',51h
- dw sse_ps_instruction-assembler
- db 'sqrtsd',51h
- dw sse_sd_instruction-assembler
- db 'sqrtss',51h
- dw sse_ss_instruction-assembler
- db 'wbinvd',9
- dw simple_extended_instruction-assembler
+ dbw 'andnpd',55h, sse_pd_instruction-assembler
+ dbw 'andnps',55h, sse_ps_instruction-assembler
+ dbw 'cmovae',43h, cmov_instruction-assembler
+ dbw 'cmovbe',46h, cmov_instruction-assembler
+ dbw 'cmovge',4Dh, cmov_instruction-assembler
+ dbw 'cmovle',4Eh, cmov_instruction-assembler
+ dbw 'cmovna',46h, cmov_instruction-assembler
+ dbw 'cmovnb',43h, cmov_instruction-assembler
+ dbw 'cmovnc',43h, cmov_instruction-assembler
+ dbw 'cmovne',45h, cmov_instruction-assembler
+ dbw 'cmovng',4Eh, cmov_instruction-assembler
+ dbw 'cmovnl',4Dh, cmov_instruction-assembler
+ dbw 'cmovno',41h, cmov_instruction-assembler
+ dbw 'cmovnp',4Bh, cmov_instruction-assembler
+ dbw 'cmovns',49h, cmov_instruction-assembler
+ dbw 'cmovnz',45h, cmov_instruction-assembler
+ dbw 'cmovpe',4Ah, cmov_instruction-assembler
+ dbw 'cmovpo',4Bh, cmov_instruction-assembler
+ dbw 'comisd',2Fh, comisd_instruction-assembler
+ dbw 'comiss',2Fh, comiss_instruction-assembler
+ dbw 'fcomip',0F0h, fcomip_instruction-assembler
+ dbw 'fcompp',0, fcompp_instruction-assembler
+ dbw 'fdivrp',7, faddp_instruction-assembler
+ dbw 'ficomp',3, fi_instruction-assembler
+ dbw 'fidivr',7, fi_instruction-assembler
+ dbw 'fisubr',5, fi_instruction-assembler
+ dbw 'fldenv',4, fldenv_instruction-assembler
+ dbw 'fldl2e',101010b, simple_fpu_instruction-assembler
+ dbw 'fldl2t',101001b, simple_fpu_instruction-assembler
+ dbw 'fldlg2',101100b, simple_fpu_instruction-assembler
+ dbw 'fldln2',101101b, simple_fpu_instruction-assembler
+ dbw 'fnclex',0E2h, fninit_instruction-assembler
+ dbw 'fninit',0E3h, fninit_instruction-assembler
+ dbw 'fnstsw',0, fnstsw_instruction-assembler
+ dbw 'format',0, format_directive-assembler
+ dbw 'fpatan',110011b, simple_fpu_instruction-assembler
+ dbw 'fprem1',110101b, simple_fpu_instruction-assembler
+ dbw 'frstor',4, fsave_instruction-assembler
+ dbw 'fscale',111101b, simple_fpu_instruction-assembler
+ dbw 'fstenv',6, fldenv_instruction-assembler
+ dbw 'fsubrp',5, faddp_instruction-assembler
+ dbw 'fucomi',0E8h, fcomi_instruction-assembler
+ dbw 'fucomp',5, ffree_instruction-assembler
+ dbw 'fxsave',0, fxsave_instruction-assembler
+ dbw 'invlpg',0, invlpg_instruction-assembler
+ dbw 'lfence',0E8h, fence_instruction-assembler
+ dbw 'looped',0E1h, loop_instruction_32bit-assembler
+ dbw 'loopew',0E1h, loop_instruction_16bit-assembler
+ dbw 'loopne',0E0h, loop_instruction-assembler
+ dbw 'loopnz',0E0h, loop_instruction-assembler
+ dbw 'loopzd',0E1h, loop_instruction_32bit-assembler
+ dbw 'loopzw',0E1h, loop_instruction_16bit-assembler
+ dbw 'mfence',0F0h, fence_instruction-assembler
+ dbw 'movapd',28h, movpd_instruction-assembler
+ dbw 'movaps',28h, movps_instruction-assembler
+ dbw 'movdqa',66h, movdq_instruction-assembler
+ dbw 'movdqu',0F3h, movdq_instruction-assembler
+ dbw 'movhpd',16h, movlpd_instruction-assembler
+ dbw 'movhps',16h, movlps_instruction-assembler
+ dbw 'movlpd',12h, movlpd_instruction-assembler
+ dbw 'movlps',12h, movlps_instruction-assembler
+ dbw 'movnti',0C3h, movnti_instruction-assembler
+ dbw 'movntq',0E7h, movntq_instruction-assembler
+ dbw 'movupd',10h, movpd_instruction-assembler
+ dbw 'movups',10h, movps_instruction-assembler
+ dbw 'paddsb',0ECh, mmx_instruction-assembler
+ dbw 'paddsw',0EDh, mmx_instruction-assembler
+ dbw 'pextrw',0C5h, pmovmskb_instruction-assembler
+ dbw 'pinsrw',0C4h, pinsrw_instruction-assembler
+ dbw 'pmaxsw',0EEh, mmx_instruction-assembler
+ dbw 'pmaxub',0DEh, mmx_instruction-assembler
+ dbw 'pminsw',0EAh, mmx_instruction-assembler
+ dbw 'pminub',0DAh, mmx_instruction-assembler
+ dbw 'pmulhw',0E5h, mmx_instruction-assembler
+ dbw 'pmullw',0D5h, mmx_instruction-assembler
+ dbw 'psadbw',0F6h, mmx_instruction-assembler
+ dbw 'pshufd',66h, pshufd_instruction-assembler
+ dbw 'pshufw',0, pshufw_instruction-assembler
+ dbw 'pslldq',111b, ps_dq_instruction-assembler
+ dbw 'psrldq',011b, ps_dq_instruction-assembler
+ dbw 'psubsb',0E8h, mmx_instruction-assembler
+ dbw 'psubsw',0E9h, mmx_instruction-assembler
+ dbw 'pushad',60h, simple_instruction_32bit-assembler
+ dbw 'pushaw',60h, simple_instruction_16bit-assembler
+ dbw 'pushfd',9Ch, simple_instruction_32bit-assembler
+ dbw 'pushfw',9Ch, simple_instruction_16bit-assembler
+ dbw 'repeat',0, repeat_directive-assembler
+ dbw 'setalc',0D6h, simple_instruction-assembler
+ dbw 'setnae',92h, set_instruction-assembler
+ dbw 'setnbe',97h, set_instruction-assembler
+ dbw 'setnge',9Ch, set_instruction-assembler
+ dbw 'setnle',9Fh, set_instruction-assembler
+ dbw 'sfence',0F8h, fence_instruction-assembler
+ dbw 'shufpd',0C6h, sse_pd_instruction-assembler
+ dbw 'shufps',0C6h, sse_ps_instruction-assembler
+ dbw 'sqrtpd',51h, sse_pd_instruction-assembler
+ dbw 'sqrtps',51h, sse_ps_instruction-assembler
+ dbw 'sqrtsd',51h, sse_sd_instruction-assembler
+ dbw 'sqrtss',51h, sse_ss_instruction-assembler
+ dbw 'wbinvd',9, simple_extended_instruction-assembler
  db 0
 instructions_7:
- db 'clflush',111b
- dw fxsave_instruction-assembler
- db 'cmovnae',42h
- dw cmov_instruction-assembler
- db 'cmovnbe',47h
- dw cmov_instruction-assembler
- db 'cmovnge',4Ch
- dw cmov_instruction-assembler
- db 'cmovnle',4Fh
- dw cmov_instruction-assembler
- db 'cmpeqpd',0
- dw cmp_pd_instruction-assembler
- db 'cmpeqps',0
- dw cmp_ps_instruction-assembler
- db 'cmpeqsd',0
- dw cmp_sd_instruction-assembler
- db 'cmpeqss',0
- dw cmp_ss_instruction-assembler
- db 'cmplepd',2
- dw cmp_pd_instruction-assembler
- db 'cmpleps',2
- dw cmp_ps_instruction-assembler
- db 'cmplesd',2
- dw cmp_sd_instruction-assembler
- db 'cmpless',2
- dw cmp_ss_instruction-assembler
- db 'cmpltpd',1
- dw cmp_pd_instruction-assembler
- db 'cmpltps',1
- dw cmp_ps_instruction-assembler
- db 'cmpltsd',1
- dw cmp_sd_instruction-assembler
- db 'cmpltss',1
- dw cmp_ss_instruction-assembler
- db 'cmpnepd',4
- dw cmp_pd_instruction-assembler
- db 'cmpneps',4
- dw cmp_ps_instruction-assembler
- db 'cmpnesd',4
- dw cmp_sd_instruction-assembler
- db 'cmpness',4
- dw cmp_ss_instruction-assembler
- db 'cmpnlpd',5
- dw cmp_pd_instruction-assembler
- db 'cmpnlps',5
- dw cmp_ps_instruction-assembler
- db 'cmpnlsd',5
- dw cmp_sd_instruction-assembler
- db 'cmpnlss',5
- dw cmp_ss_instruction-assembler
- db 'cmpxchg',0B0h
- dw basic_486_instruction-assembler
- db 'display',0
- dw display_directive-assembler
- db 'fcmovnb',0C0h
- dw fcomi_instruction-assembler
- db 'fcmovne',0C8h
- dw fcomi_instruction-assembler
- db 'fcmovnu',0D8h
- dw fcomi_instruction-assembler
- db 'fdecstp',110110b
- dw simple_fpu_instruction-assembler
- db 'fincstp',110111b
- dw simple_fpu_instruction-assembler
- db 'frndint',111100b
- dw simple_fpu_instruction-assembler
- db 'fsincos',111011b
- dw simple_fpu_instruction-assembler
- db 'fucomip',0E8h
- dw fcomip_instruction-assembler
- db 'fxrstor',1
- dw fxsave_instruction-assembler
- db 'fxtract',110100b
- dw simple_fpu_instruction-assembler
- db 'fyl2xp1',111001b
- dw simple_fpu_instruction-assembler
- db 'ldmxcsr',10b
- dw fxsave_instruction-assembler
- db 'loopned',0E0h
- dw loop_instruction_32bit-assembler
- db 'loopnew',0E0h
- dw loop_instruction_16bit-assembler
- db 'loopnzd',0E0h
- dw loop_instruction_32bit-assembler
- db 'loopnzw',0E0h
- dw loop_instruction_16bit-assembler
- db 'movdq2q',0
- dw movdq2q_instruction-assembler
- db 'movhlps',12h
- dw movhlps_instruction-assembler
- db 'movlhps',16h
- dw movhlps_instruction-assembler
- db 'movntdq',0E7h
- dw movntdq_instruction-assembler
- db 'movntpd',2Bh
- dw movntdq_instruction-assembler
- db 'movntps',2Bh
- dw movntq_instruction-assembler
- db 'movq2dq',0
- dw movq2dq_instruction-assembler
- db 'paddusb',0DCh
- dw mmx_instruction-assembler
- db 'paddusw',0DDh
- dw mmx_instruction-assembler
- db 'pcmpeqb',74h
- dw mmx_instruction-assembler
- db 'pcmpeqd',76h
- dw mmx_instruction-assembler
- db 'pcmpeqw',75h
- dw mmx_instruction-assembler
- db 'pcmpgtb',64h
- dw mmx_instruction-assembler
- db 'pcmpgtd',66h
- dw mmx_instruction-assembler
- db 'pcmpgtw',65h
- dw mmx_instruction-assembler
- db 'pmaddwd',0F5h
- dw mmx_instruction-assembler
- db 'pmulhuw',0E4h
- dw mmx_instruction-assembler
- db 'pmuludq',0F4h
- dw mmx_instruction-assembler
- db 'pshufhw',0F3h
- dw pshufd_instruction-assembler
- db 'pshuflw',0F2h
- dw pshufd_instruction-assembler
- db 'psubusb',0D8h
- dw mmx_instruction-assembler
- db 'psubusw',0D9h
- dw mmx_instruction-assembler
- db 'rsqrtps',52h
- dw sse_ps_instruction-assembler
- db 'rsqrtss',52h
- dw sse_ss_instruction-assembler
- db 'section',0
- dw section_directive-assembler
- db 'segment',0
- dw segment_directive-assembler
- db 'stmxcsr',11b
- dw fxsave_instruction-assembler
- db 'sysexit',35h
- dw simple_extended_instruction-assembler
- db 'ucomisd',2Eh
- dw comisd_instruction-assembler
- db 'ucomiss',2Eh
- dw comiss_instruction-assembler
- db 'virtual',0
- dw virtual_directive-assembler
+ dbw 'clflush',111b, fxsave_instruction-assembler
+ dbw 'cmovnae',42h, cmov_instruction-assembler
+ dbw 'cmovnbe',47h, cmov_instruction-assembler
+ dbw 'cmovnge',4Ch, cmov_instruction-assembler
+ dbw 'cmovnle',4Fh, cmov_instruction-assembler
+ dbw 'cmpeqpd',0, cmp_pd_instruction-assembler
+ dbw 'cmpeqps',0, cmp_ps_instruction-assembler
+ dbw 'cmpeqsd',0, cmp_sd_instruction-assembler
+ dbw 'cmpeqss',0, cmp_ss_instruction-assembler
+ dbw 'cmplepd',2, cmp_pd_instruction-assembler
+ dbw 'cmpleps',2, cmp_ps_instruction-assembler
+ dbw 'cmplesd',2, cmp_sd_instruction-assembler
+ dbw 'cmpless',2, cmp_ss_instruction-assembler
+ dbw 'cmpltpd',1, cmp_pd_instruction-assembler
+ dbw 'cmpltps',1, cmp_ps_instruction-assembler
+ dbw 'cmpltsd',1, cmp_sd_instruction-assembler
+ dbw 'cmpltss',1, cmp_ss_instruction-assembler
+ dbw 'cmpnepd',4, cmp_pd_instruction-assembler
+ dbw 'cmpneps',4, cmp_ps_instruction-assembler
+ dbw 'cmpnesd',4, cmp_sd_instruction-assembler
+ dbw 'cmpness',4, cmp_ss_instruction-assembler
+ dbw 'cmpnlpd',5, cmp_pd_instruction-assembler
+ dbw 'cmpnlps',5, cmp_ps_instruction-assembler
+ dbw 'cmpnlsd',5, cmp_sd_instruction-assembler
+ dbw 'cmpnlss',5, cmp_ss_instruction-assembler
+ dbw 'cmpxchg',0B0h, basic_486_instruction-assembler
+ dbw 'display',0, display_directive-assembler
+ dbw 'fcmovnb',0C0h, fcomi_instruction-assembler
+ dbw 'fcmovne',0C8h, fcomi_instruction-assembler
+ dbw 'fcmovnu',0D8h, fcomi_instruction-assembler
+ dbw 'fdecstp',110110b, simple_fpu_instruction-assembler
+ dbw 'fincstp',110111b, simple_fpu_instruction-assembler
+ dbw 'frndint',111100b, simple_fpu_instruction-assembler
+ dbw 'fsincos',111011b, simple_fpu_instruction-assembler
+ dbw 'fucomip',0E8h, fcomip_instruction-assembler
+ dbw 'fxrstor',1, fxsave_instruction-assembler
+ dbw 'fxtract',110100b, simple_fpu_instruction-assembler
+ dbw 'fyl2xp1',111001b, simple_fpu_instruction-assembler
+ dbw 'ldmxcsr',10b, fxsave_instruction-assembler
+ dbw 'loopned',0E0h, loop_instruction_32bit-assembler
+ dbw 'loopnew',0E0h, loop_instruction_16bit-assembler
+ dbw 'loopnzd',0E0h, loop_instruction_32bit-assembler
+ dbw 'loopnzw',0E0h, loop_instruction_16bit-assembler
+ dbw 'movdq2q',0, movdq2q_instruction-assembler
+ dbw 'movhlps',12h, movhlps_instruction-assembler
+ dbw 'movlhps',16h, movhlps_instruction-assembler
+ dbw 'movntdq',0E7h, movntdq_instruction-assembler
+ dbw 'movntpd',2Bh, movntdq_instruction-assembler
+ dbw 'movntps',2Bh, movntq_instruction-assembler
+ dbw 'movq2dq',0, movq2dq_instruction-assembler
+ dbw 'paddusb',0DCh, mmx_instruction-assembler
+ dbw 'paddusw',0DDh, mmx_instruction-assembler
+ dbw 'pcmpeqb',74h, mmx_instruction-assembler
+ dbw 'pcmpeqd',76h, mmx_instruction-assembler
+ dbw 'pcmpeqw',75h, mmx_instruction-assembler
+ dbw 'pcmpgtb',64h, mmx_instruction-assembler
+ dbw 'pcmpgtd',66h, mmx_instruction-assembler
+ dbw 'pcmpgtw',65h, mmx_instruction-assembler
+ dbw 'pmaddwd',0F5h, mmx_instruction-assembler
+ dbw 'pmulhuw',0E4h, mmx_instruction-assembler
+ dbw 'pmuludq',0F4h, mmx_instruction-assembler
+ dbw 'pshufhw',0F3h, pshufd_instruction-assembler
+ dbw 'pshuflw',0F2h, pshufd_instruction-assembler
+ dbw 'psubusb',0D8h, mmx_instruction-assembler
+ dbw 'psubusw',0D9h, mmx_instruction-assembler
+ dbw 'rsqrtps',52h, sse_ps_instruction-assembler
+ dbw 'rsqrtss',52h, sse_ss_instruction-assembler
+ dbw 'section',0, section_directive-assembler
+ dbw 'segment',0, segment_directive-assembler
+ dbw 'stmxcsr',11b, fxsave_instruction-assembler
+ dbw 'sysexit',35h, simple_extended_instruction-assembler
+ dbw 'ucomisd',2Eh, comisd_instruction-assembler
+ dbw 'ucomiss',2Eh, comiss_instruction-assembler
+ dbw 'virtual',0, virtual_directive-assembler
  db 0
 instructions_8:
- db 'cmpnleps',6
- dw cmp_ps_instruction-assembler
- db 'cmpnless',6
- dw cmp_ss_instruction-assembler
- db 'cmpordps',7
- dw cmp_ps_instruction-assembler
- db 'cmpordss',7
- dw cmp_ss_instruction-assembler
- db 'cvtdq2pd',0E6h
- dw cvtdq2pd_instruction-assembler
- db 'cvtdq2ps',5Bh
- dw sse_ps_instruction-assembler
- db 'cvtpd2dq',0E6h
- dw cvtpd2dq_instruction-assembler
- db 'cvtpd2pi',2Dh
- dw cvtpd2pi_instruction-assembler
- db 'cvtpd2ps',5Ah
- dw sse_pd_instruction-assembler
- db 'cvtpi2pd',2Ah
- dw cvtpi2pd_instruction-assembler
- db 'cvtpi2ps',2Ah
- dw cvtpi2ps_instruction-assembler
- db 'cvtps2dq',5Bh
- dw sse_pd_instruction-assembler
- db 'cvtps2pd',5Ah
- dw sse_ps_instruction-assembler
- db 'cvtps2pi',2Dh
- dw cvtps2pi_instruction-assembler
- db 'cvtsd2si',2Dh
- dw cvtsd2si_instruction-assembler
- db 'cvtsd2ss',5Ah
- dw sse_sd_instruction-assembler
- db 'cvtsi2sd',2Ah
- dw cvtsi2sd_instruction-assembler
- db 'cvtsi2ss',2Ah
- dw cvtsi2ss_instruction-assembler
- db 'cvtss2sd',5Ah
- dw sse_ss_instruction-assembler
- db 'cvtss2si',2Dh
- dw cvtss2si_instruction-assembler
- db 'fcmovnbe',0D0h
- dw fcomi_instruction-assembler
- db 'maskmovq',0
- dw maskmovq_instruction-assembler
- db 'movmskpd',0
- dw movmskpd_instruction-assembler
- db 'movmskps',0
- dw movmskps_instruction-assembler
- db 'packssdw',6Bh
- dw mmx_instruction-assembler
- db 'packsswb',63h
- dw mmx_instruction-assembler
- db 'packuswb',67h
- dw mmx_instruction-assembler
- db 'pmovmskb',0D7h
- dw pmovmskb_instruction-assembler
- db 'sysenter',34h
- dw simple_extended_instruction-assembler
- db 'unpckhpd',15h
- dw sse_pd_instruction-assembler
- db 'unpckhps',15h
- dw sse_ps_instruction-assembler
- db 'unpcklpd',14h
- dw sse_pd_instruction-assembler
- db 'unpcklps',14h
- dw sse_ps_instruction-assembler
+ dbw 'cmpnleps',6, cmp_ps_instruction-assembler
+ dbw 'cmpnless',6, cmp_ss_instruction-assembler
+ dbw 'cmpordps',7, cmp_ps_instruction-assembler
+ dbw 'cmpordss',7, cmp_ss_instruction-assembler
+ dbw 'cvtdq2pd',0E6h, cvtdq2pd_instruction-assembler
+ dbw 'cvtdq2ps',5Bh, sse_ps_instruction-assembler
+ dbw 'cvtpd2dq',0E6h, cvtpd2dq_instruction-assembler
+ dbw 'cvtpd2pi',2Dh, cvtpd2pi_instruction-assembler
+ dbw 'cvtpd2ps',5Ah, sse_pd_instruction-assembler
+ dbw 'cvtpi2pd',2Ah, cvtpi2pd_instruction-assembler
+ dbw 'cvtpi2ps',2Ah, cvtpi2ps_instruction-assembler
+ dbw 'cvtps2dq',5Bh, sse_pd_instruction-assembler
+ dbw 'cvtps2pd',5Ah, sse_ps_instruction-assembler
+ dbw 'cvtps2pi',2Dh, cvtps2pi_instruction-assembler
+ dbw 'cvtsd2si',2Dh, cvtsd2si_instruction-assembler
+ dbw 'cvtsd2ss',5Ah, sse_sd_instruction-assembler
+ dbw 'cvtsi2sd',2Ah, cvtsi2sd_instruction-assembler
+ dbw 'cvtsi2ss',2Ah, cvtsi2ss_instruction-assembler
+ dbw 'cvtss2sd',5Ah, sse_ss_instruction-assembler
+ dbw 'cvtss2si',2Dh, cvtss2si_instruction-assembler
+ dbw 'fcmovnbe',0D0h, fcomi_instruction-assembler
+ dbw 'maskmovq',0, maskmovq_instruction-assembler
+ dbw 'movmskpd',0, movmskpd_instruction-assembler
+ dbw 'movmskps',0, movmskps_instruction-assembler
+ dbw 'packssdw',6Bh, mmx_instruction-assembler
+ dbw 'packsswb',63h, mmx_instruction-assembler
+ dbw 'packuswb',67h, mmx_instruction-assembler
+ dbw 'pmovmskb',0D7h, pmovmskb_instruction-assembler
+ dbw 'sysenter',34h, simple_extended_instruction-assembler
+ dbw 'unpckhpd',15h, sse_pd_instruction-assembler
+ dbw 'unpckhps',15h, sse_ps_instruction-assembler
+ dbw 'unpcklpd',14h, sse_pd_instruction-assembler
+ dbw 'unpcklps',14h, sse_ps_instruction-assembler
  db 0
 instructions_9:
- db 'cmpxchg8b',0
- dw cmpxchg8b_instruction-assembler
- db 'cvttpd2dq',0E6h
- dw sse_pd_instruction-assembler
- db 'cvttpd2pi',2Ch
- dw cvtpd2pi_instruction-assembler
- db 'cvttps2dq',5Bh
- dw cvtdq2pd_instruction-assembler
- db 'cvttps2pi',2Ch
- dw cvtps2pi_instruction-assembler
- db 'cvttsd2si',2Ch
- dw cvtsd2si_instruction-assembler
- db 'cvttss2si',2Ch
- dw cvtss2si_instruction-assembler
- db 'punpckhbw',68h
- dw mmx_instruction-assembler
- db 'punpckhdq',6Ah
- dw mmx_instruction-assembler
- db 'punpckhwd',69h
- dw mmx_instruction-assembler
- db 'punpcklbw',60h
- dw mmx_instruction-assembler
- db 'punpckldq',62h
- dw mmx_instruction-assembler
- db 'punpcklwd',61h
- dw mmx_instruction-assembler
+ dbw 'cmpxchg8b',0, cmpxchg8b_instruction-assembler
+ dbw 'cvttpd2dq',0E6h, sse_pd_instruction-assembler
+ dbw 'cvttpd2pi',2Ch, cvtpd2pi_instruction-assembler
+ dbw 'cvttps2dq',5Bh, cvtdq2pd_instruction-assembler
+ dbw 'cvttps2pi',2Ch, cvtps2pi_instruction-assembler
+ dbw 'cvttsd2si',2Ch, cvtsd2si_instruction-assembler
+ dbw 'cvttss2si',2Ch, cvtss2si_instruction-assembler
+ dbw 'punpckhbw',68h, mmx_instruction-assembler
+ dbw 'punpckhdq',6Ah, mmx_instruction-assembler
+ dbw 'punpckhwd',69h, mmx_instruction-assembler
+ dbw 'punpcklbw',60h, mmx_instruction-assembler
+ dbw 'punpckldq',62h, mmx_instruction-assembler
+ dbw 'punpcklwd',61h, mmx_instruction-assembler
  db 0
 instructions_10:
- db 'cmpunordps',3
- dw cmp_ps_instruction-assembler
- db 'cmpunordss',3
- dw cmp_ss_instruction-assembler
- db 'loadall286',5
- dw simple_extended_instruction-assembler
- db 'loadall386',7
- dw simple_extended_instruction-assembler
- db 'maskmovdqu',0
- dw maskmovdqu_instruction-assembler
- db 'prefetcht0',1
- dw prefetch_instruction-assembler
- db 'prefetcht1',2
- dw prefetch_instruction-assembler
- db 'prefetcht2',3
- dw prefetch_instruction-assembler
- db 'punpckhqdq',6Dh
- dw sse_pd_instruction-assembler
- db 'punpcklqdq',6Ch
- dw sse_pd_instruction-assembler
+ dbw 'cmpunordps',3, cmp_ps_instruction-assembler
+ dbw 'cmpunordss',3, cmp_ss_instruction-assembler
+ dbw 'loadall286',5, simple_extended_instruction-assembler
+ dbw 'loadall386',7, simple_extended_instruction-assembler
+ dbw 'maskmovdqu',0, maskmovdqu_instruction-assembler
+ dbw 'prefetcht0',1, prefetch_instruction-assembler
+ dbw 'prefetcht1',2, prefetch_instruction-assembler
+ dbw 'prefetcht2',3, prefetch_instruction-assembler
+ dbw 'punpckhqdq',6Dh, sse_pd_instruction-assembler
+ dbw 'punpcklqdq',6Ch, sse_pd_instruction-assembler
  db 0
 instructions_11:
- db 'prefetchnta',0
- dw prefetch_instruction-assembler
+ dbw 'prefetchnta',0, prefetch_instruction-assembler
  db 0
 
 
