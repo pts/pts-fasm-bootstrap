@@ -55,7 +55,8 @@ It is a future plan to have the bootstrap assembler implemented in multiple
 programming languages, targeting Linux i386:
 
 * NASM: already implemented as `fbsasm.nasm`
-* fasm: straightforward, but defeats the purpose of bootstrapping
+* fasm: already implemented as `fbsasm.fasm`, use it with
+  `./bootstrap_fasm.sh fasm`.
 * GNU as(1) (+ GNU ld(1)): it should work with GNU Binutils on a Debian
   released before 2001-01-01 (that's Debian 2.2 Potato; the next one, Debian
   3.0 Woody was released on 2002-07-19)

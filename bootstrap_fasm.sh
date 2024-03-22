@@ -83,8 +83,22 @@ compile() {
 #cp -a ../../fasm-1.73.30/fasm fasm-re-bootstrap
 #cp -a fasm-golden-1.30 fasm-re-bootstrap
 
-# This is the bootstrap assembler, it can assemble fasm 1.30 (and probably earlier).
-nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+# Build the bootstrap assembler, it can assemble patched fasm 1.20, 1.30 and 1.73.32.
+case "$1" in
+ fasm* | --fasm*)  # Any of these below will work.
+  ./fasm-golden-1.20 fbsasm.fasm fbsasm && chmod +x fbsasm
+  #./fasm-golden-1.30 fbsasm.fasm fbsasm && chmod +x fbsasm
+  #./fasm-golden-1.73.32 fbsasm.fasm fbsasm && chmod +x fbsasm
+  ;;
+ nasm* | --nasm* | "") nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+  ;;
+ *)
+  set +x;
+  echo "Usage: $0 [<bootstrap-lang>]" >&2
+  echo "<bootstrap-lang> values: nasm (default), fasm" >&2
+  exit 1 ;;
+esac
+
 #nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
 #nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
 chmod 755 fbsasm
