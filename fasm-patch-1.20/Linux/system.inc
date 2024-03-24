@@ -141,7 +141,6 @@ lseek:  ; Imput: EBX: fd; EDX: offset; AL: whence.
 	clc
 	ret
 
-; !!
 display_string:  ; Input: EDX: string data.
 	push	ebx
 	mov	edi,edx

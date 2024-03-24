@@ -115,7 +115,7 @@ start:
 	jmp	exit_program
 
 information:
-	mov	esi,_usage
+	mov	edx,_usage
 	call	display_string
 	mov	al,1
 	jmp	exit_program
@@ -134,7 +134,7 @@ include '../tables.inc'
 _copyright db 'Copyright (c) 1999-2001, Tomasz Grysztar',0
 
 _logo db 'flat assembler  version ',VERSION,0Dh,0Ah,0
-_usage db 'usage: fasmw source output',0Dh,0Ah,0
+_usage db 'usage: fasm source output',0Dh,0Ah,0
 
 _passes_suffix db ' passes, ',0
 _seconds_suffix db ' seconds, ',0
