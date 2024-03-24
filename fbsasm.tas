@@ -33,7 +33,7 @@ macro cmp_ax_imm imm
   db 66h, 3dh  ; Avoid `Operand size conflict' warning in `cmp ax, label1-label0'.
   dw imm  ; TODO(pts): Get rid of this macro as soon as we know a better way to suppress the warning.
 endm
-macro cmp_bx_imm imm  ; !! Match lines.
+macro cmp_bx_imm imm
   db 66h, 81h, 0fbh  ; Avoid `Operand size conflict' warning in `cmp bx, label1-label0'.
   dw imm  ; TODO(pts): Get rid of this macro as soon as we know a better way to suppress the warning. https://stackoverflow.com/q/78216016/97248
 endm
