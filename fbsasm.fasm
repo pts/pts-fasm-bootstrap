@@ -30,6 +30,22 @@
 
 	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 file_header:
 	db	0x7F,'ELF',1,1,1
 	rb	file_header+0x10-$
@@ -784,7 +800,7 @@ get_number:
 	mov	dword [edi],0
 	mov	dword [edi+4],0
 	inc	esi
-	cmp	word [eax],'0x'
+	cmp	word [eax],'0x'  ; Same multibyte character constant order in fasm and NASM.
 	je	get_hex_number
 	dec	esi
 	cmp	byte [esi+1],'h'
@@ -2608,7 +2624,7 @@ preprocess_line:
 	je	preprocess_instruction
 	cmp	al,1Ah
 	jne	not_preprocessor_symbol
-	cmp	dword [esi],3+'equ' shl 8
+	cmp	dword [esi],3+'equ' shl 8  ; Same multibyte character constant order in fasm and NASM.
 	je	define_symbolic_constant
 	lods	byte [esi]
 	mov	ah,1
@@ -10634,3 +10650,4 @@ converted rb 100h
 available_memory dd ?
 
 program_end:
+; __END__

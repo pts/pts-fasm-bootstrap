@@ -63,10 +63,11 @@ programming languages, targeting Linux i386:
   bundled `nasm2as.pl` Perl script. It works with various versions of GNU
   Binutils, tested with 2.9.1 (released on 1998-05-01, part of Debian 2.1
   slink), 2.9.5, 2.22 and 2.30.
+* TASM (Turbo Assembler) + WLINK (from OpenWatcom v2): already implemented
+  as `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with the
+  last TASM 4.1 (1996), the latest Turbo Assembler which works on a DOS 8086
+  (without a DOS extender).
 * JWasm
-* TASM (Turbo Assembler) + TLINK: it should work with the last Turbo
-  Assembler which works on a DOS 8086 (without a DOS extender). It may
-  not be possible, see https://stackoverflow.com/q/78203966
 * C89 (ANSI C): it should work with GCC on Debian slink (released on
   1999-03-09), released before 2001-01-01, before fasm 1.20; how far can we
   go to the past? 1999? 1996?

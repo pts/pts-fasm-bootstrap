@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -103,8 +103,18 @@ case "$1" in  # Any of these below will work.
     "$ASPROG" -o fbsasm.o fbsasm.s
   fi
   "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o  # -N to make .text read-write-execute.
+  rm -f fbsasm.o
   ;;
- nasm* | --nasm* | "")
+ tasm* | --tasm*)
+  tasm/kvikdos tasm/tasm.exe /t fbsasm.tas  # Output file: fbsasm.obj !! Redistribute kvikdos.
+  # TODO(pts): Get program_base automatically from fbsasm.tas.
+  # TODO(pts): Make wlink generate fbsasm (without .bin).
+  # TODO(pts): Write custom linker folink (flat OMF linker) in C.
+  tasm/wlink format raw bin option offset=0x8048000 option quiet name fbsasm file fbsasm.obj
+  rm -f fbsasm.obj
+  mv fbsasm.bin fbsasm
+  ;;
+ nasm* | --nasm* | "")  # Default.
   nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   ;;
  *)
