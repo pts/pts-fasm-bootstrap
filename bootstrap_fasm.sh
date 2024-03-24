@@ -84,13 +84,28 @@ compile() {
 #cp -a fasm-golden-1.30 fasm-re-bootstrap
 
 # Build the bootstrap assembler, it can assemble patched fasm 1.20, 1.30 and 1.73.32.
-case "$1" in
- fasm* | --fasm*)  # Any of these below will work.
+case "$1" in  # Any of these below will work.
+ fasm* | --fasm*)
   ./fasm-golden-1.20 fbsasm.fasm fbsasm && chmod +x fbsasm
   #./fasm-golden-1.30 fbsasm.fasm fbsasm && chmod +x fbsasm
   #./fasm-golden-1.73.32 fbsasm.fasm fbsasm && chmod +x fbsasm
   ;;
- nasm* | --nasm* | "") nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+ as* | gas* | --as* | --gas*)  # GNU as(1) assembler and GNU ld(1) linker, from GNU Binutils. Example: --as=debian-2.1-slink/as
+  ASPROG="${1#*=}"
+  test "$ASPROG" = "$1" && ASPROG=as
+  ASPROGDIR="${ASPROG%/*}/"
+  ASPROGBASE="${ASPROG##*/}";
+  test "$ASPROGDIR" = "$ASPROG/" && ASPROGDIR=
+  LDPROG="${ASPROGDIR}ld${ASPROGBASE#*as}"
+  if "$ASPROG" --32 -march=i386 --version >/dev/null; then  # Newer GNU as(1) (tested with 2.22 and 2.30).
+    "$ASPROG" --32 -march=i386 -o fbsasm.o fbsasm.s
+  else  # Old GNU as(1) (tested with 2.9.1 and 2.9.5) for i386.
+    "$ASPROG" -o fbsasm.o fbsasm.s
+  fi
+  "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o  # -N to make .text read-write-execute.
+  ;;
+ nasm* | --nasm* | "")
+  nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   ;;
  *)
   set +x;

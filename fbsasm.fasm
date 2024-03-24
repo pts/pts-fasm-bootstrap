@@ -8,6 +8,9 @@
 ; Compile with: fasm-0.30 fbsasm.fasm fbsasm && chmod +x fbsasm
 ; Compile with: fasm-1.73.32 fbsasm.fasm fbsasm && chmod +x fbsasm
 ;
+;
+;
+;
 ; Lines in fbsasm.nasm and fbsasm.fasm correspond to each other.
 ;
 

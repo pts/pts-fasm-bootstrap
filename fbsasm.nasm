@@ -8,6 +8,9 @@
 ; Compile with: nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm
 ; Compile with: nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm
 ;
+; Compile the GNU as(1) version (fbsasm.s) with: as --32 -march=i386 -o fbsasm.o fbsasm && ld -m elf_i386 -N -s -o fbsasm fbsasm.o
+; Compile the GNU as(1) version (fbsasm.s) with earlier versions of GNU as(1) with: as -o fbsasm.o fbsasm && ld -m elf_i386 -N -s -o fbsasm fbsasm.o
+;
 ; Lines in fbsasm.nasm and fbsasm.fasm correspond to each other.
 ;
 
