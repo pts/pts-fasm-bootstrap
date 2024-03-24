@@ -2108,11 +2108,11 @@ get_logical_value:
 	je near_o0 compare_values
 	cmp	al,'<'
 	je near_o0 compare_values
-	cmp	al,'ò'
+	cmp	al,0xf2
 	je near_o0 compare_values
-	cmp	al,'ó'
+	cmp	al,0xf3
 	je near_o0 compare_values
-	cmp	al,'ö'
+	cmp	al,0xf6
 	je near_o0 compare_values
 	dec	esi
       find_eq_symbol:
@@ -2243,11 +2243,11 @@ get_logical_value:
 	je	check_greater
 	cmp	byte [compare_type],'<'
 	je	check_less
-	cmp	byte [compare_type],'ò'
+	cmp	byte [compare_type],0xf2
 	je	check_not_less
-	cmp	byte [compare_type],'ó'
+	cmp	byte [compare_type],0xf3
 	je	check_not_greater
-	cmp	byte [compare_type],'ö'
+	cmp	byte [compare_type],0xf6
 	je	check_not_equal
 	jmp	invalid_expression
       check_equal:
@@ -3665,7 +3665,7 @@ parse_line:
 	cmp	byte [esi],'='
 	jne	separator
 	inc	esi
-	mov	al,'ò'
+	mov	al,0xf2
 	jmp	separator
       less:
 	cmp	byte [edi-1],83h
@@ -3675,11 +3675,11 @@ parse_line:
 	cmp	byte [esi],'='
 	jne	separator
 	inc	esi
-	mov	al,'ó'
+	mov	al,0xf3
 	jmp	separator
       not_equal:
 	inc	esi
-	mov	al,'ö'
+	mov	al,0xf6
 	jmp	separator
       argument_parsed:
 	cmp	byte [parenthesis_stack],0
