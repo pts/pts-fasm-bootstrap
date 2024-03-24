@@ -3784,7 +3784,7 @@ assembler:
 	jmp	assembler_loop
       pass_error:
 	mov	dword [current_line],eax
-	jmp	near dword [error]
+	jmp	dword [error]
       assemble_done:
 	mov	eax,dword [error_line]
 	or	eax,eax
