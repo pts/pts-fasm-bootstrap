@@ -33,12 +33,6 @@ Both of these bootstrap chains are done by `./bootstrap_fasm.sh`:
 
 * bootstrap assembler --> patched fasm 1.20 --> patched fasm 1.73.32 --> original fasm 1.73.32
 
-The bootstrap assembler, `fbsasm.nasm` is a reimplementation of fasm 1.30
-(for Linux i386) in NASM 0.98.39 or later. It was created by concatenating
-source files from fasm 1.30 and fasm 1.37 (Linux-specific `fasm.asm` and
-`system.inc`), and manually converting it to NASM syntax (mostly doing some
-manual changes and then many regexp substitutions).
-
 ## The bootstrap assembler
 
 The bootstrap assembler is a simple, non-optimizing assembler targeting i386
@@ -49,13 +43,18 @@ a lightly patched source of all of them. `bootstrap_fasm.sh` does the
 necessary patching.
 
 Initially the bootstrap assembler was able to compile fasm 1.20 and fasm
-1.30, but then it was discovered that it can also also compile a lightly
+1.30, but then it was discovered that it can also compile a lightly
 patched fasm 1.73.32.
 
 It is a future plan to have the bootstrap assembler implemented in multiple
 programming languages, targeting Linux i386:
 
-* NASM: already implemented as `fbsasm.nasm`
+* NASM: already implemented as `fbsasm.nasm`, use it with
+  `./bootstrap_nasm.sh nasm`. It is a reimplementation of a subset of fasm
+  1.30 (for Linux i386) in NASM 0.98.39 or later. It was created by
+  concatenating source files from fasm 1.30 and fasm 1.37 (Linux-specific
+  `fasm.asm` and `system.inc`), and manually converting it to NASM syntax
+  (mostly doing some manual changes and then many regexp substitutions).
 * fasm: already implemented as `fbsasm.fasm`, use it with
   `./bootstrap_fasm.sh fasm`.
 * GNU as(1) (+ GNU ld(1)): already implemented as `fbsasm.s`, use it with
