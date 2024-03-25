@@ -2,15 +2,23 @@
 ; folink1.tas: flat OMF linker implemented in TASM 4.1 targeting DOS 8086
 ; by pts@fazekas.hu at Mon Mar 25 04:35:37 CET 2024
 ;
-; Compile with: kvikdos tasm.exe /t folink1.tas && kvikdos tlink.exe /t folink1.obj,folink1t.com
+; Compile with TASM 4.1 on Linux after copying this file to f.u00: tasm /t /q f.u00 folink1t.com
+; Compile with TASM 4.1 on Linux with kvikdos: cp -a folink1.tas f.u00 && kvikdos tasm.exe /t /q f.u00 folink1t.com
 ;
 
+; This is a hack to make the output file of TASM 4.1 valid not only as OMF
+; .obj, but also as DOS .com program. This way we don't need tlink.exe at all,
+; previously we used tlink.exe to generate the DOS .com program.
+;
+; The filename must be f.u00 in order for this hack to work, and also the
+; assembler must be TASM 4.1, other versions may not work.
 ideal
+segment _CSE_  ; The size of this segment name matters.
+assume cs:_CSE_, ds:_CSE_, es:_CSE_
+org 136h  ; Specially crafted to match the .obj header created by TASM 4.1.
+db '@@'  ; Any value is good, size must be 2.
+
 locals @@
-p386n
-model tiny
-codeseg
-org 100h
 
 ___section_startup_text:
 
@@ -446,12 +454,15 @@ flush_ledata_:
 
 fatal_msg:	db 'folink1 fatal error', 13, 10, 0
 
+; TODO(pts): Assert that the maximum file size up to this point (including
+; the db '@@' at the beginning) is 0x400.
+
 ; --- Variables initialized to 0 by _start.
 ___section_nobss_end:
 		;absolute $
 		;resb ($$-$)&1  ; align 2
 		;section .bss align=1
-udataseg
+;udataseg  ; Not needed, the ` db ?'s below are good enough.
 ___section_bss:
 		;resb (___section_startup_text-___section_nobss_end)&(2-1)  ; Align to multiple of 2. We don't do it.
 
@@ -478,4 +489,5 @@ ___section_ubss_end:
 ;___initial_sp	equ ___section_startup_text+((___section_ubss_end-___section_bss+___section_nobss_end-___section_startup_text+___stack_size+1)&~1)  ; Word-align stack for speed.
 ;___sd_top__	equ 0x10+((___initial_sp-___section_startup_text+0xf)>>4)  ; Round top of stack to next para, use para (16-byte).
 
+ends
 end _start
