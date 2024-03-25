@@ -56,7 +56,7 @@ file_header:
 
 program_header:
 	dd	1,0,program_base,0
-	dd	bss-program_base,program_end-program_base,7,0x1000
+	dd	prebss-program_base,program_end-program_base,7,0x1000
 
 start:
 
@@ -10567,10 +10567,17 @@ _bytes_suffix db ' bytes.',0xA,0
 
 _counter db 4,'0000'
 
-bss:
+prebss:
+
+
+
+
+
 
 absolute $
 alignb 4
+bss:
+
 memory_start resb 4
 memory_end resb 4
 additional_memory resb 4
