@@ -273,7 +273,7 @@ main_:
 		mov	bx,_ledata
 		add	bx,cx
 		_org equ 8048000h  ; !! Make it configurable, or read it from the ELF header.
-		add	word [bx],_org
+		add	word [bx],_org & 0xffff
 		adc	word [bx+2],_org >> 16
 		jmp	.29
 .36:
