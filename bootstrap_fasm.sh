@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj fbsasm.os1 folink1t.com folink1t.obj
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -106,13 +106,21 @@ case "$1" in  # Any of these below will work.
   rm -f fbsasm.o
   ;;
  tasm* | --tasm*)
-  tasm/kvikdos tasm/tasm.exe /t fbsasm.tas  # Output file: fbsasm.obj !! Redistribute kvikdos.
-  # TODO(pts): Get program_base automatically from fbsasm.tas.
-  # TODO(pts): Make wlink generate fbsasm (without .bin).
-  # TODO(pts): Write custom linker folink (flat OMF linker) in C.
-  tasm/wlink format raw bin option offset=0x8048000 option quiet name fbsasm file fbsasm.obj
-  rm -f fbsasm.obj
-  mv fbsasm.bin fbsasm
+  if true; then
+    tasm/kvikdos tasm/tasm.exe /t /DSEG1 fbsasm.tas, fbsasm.os1  # Output file: fbsasm.os1
+    tasm/kvikdos tasm/tasm.exe /t /m999 folink1.tas
+    # TODO(pts): Get program_base automatically from fbsasm.tas.
+    tasm/kvikdos tasm/tlink.exe /t folink1.obj,folink1t.com  # TODO(pts): Quiet tlink.
+    tasm/kvikdos folink1t.com fbsasm.os1 fbsasms1 0x8048000 <fbsasm.os1 >fbsasm
+    rm -f fbsasm.os1
+  else
+    tasm/kvikdos tasm/tasm.exe /t fbsasm.tas  # Output file: fbsasm.obj !! Redistribute kvikdos.
+    # TODO(pts): Get program_base automatically from fbsasm.tas.
+    # TODO(pts): Make wlink generate fbsasm (without .bin).
+    tasm/wlink format raw bin option offset=0x8048000 option quiet name fbsasm file fbsasm.obj
+    rm -f fbsasm.obj
+    mv fbsasm.bin fbsasm
+  fi
   ;;
  nasm* | --nasm* | "")  # Default.
   nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
