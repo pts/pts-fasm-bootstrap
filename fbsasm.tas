@@ -29,22 +29,6 @@ stack 100h  ; Dummy, to pacify TASM.
 codeseg
 
 ;	macro	align value { rb (value-1) - ($ + value-1) mod value }
-macro cmp_ax_imm imm
-  db 66h, 3dh  ; Avoid `Operand size conflict' warning in `cmp ax, label1-label0'.
-  dw imm  ; TODO(pts): Get rid of this macro as soon as we know a better way to suppress the warning.
-endm
-macro cmp_bx_imm imm
-  db 66h, 81h, 0fbh  ; Avoid `Operand size conflict' warning in `cmp bx, label1-label0'.
-  dw imm  ; TODO(pts): Get rid of this macro as soon as we know a better way to suppress the warning. https://stackoverflow.com/q/78216016/97248
-endm
-macro cmp_word_ebx_imm imm
-  db 66h, 81h, 3bh  ; Avoid `Operand size conflict' warning in `cmp [word ebx], label1-label0'.
-  dw imm  ; TODO(pts): Get rid of this macro as soon as we know a better way to suppress the warning.
-endm
-macro cmp_word_esi_1_imm imm
-  db 66h, 81h, 7eh, 01h  ; Avoid `Operand size conflict' warning in `cmp [word esi+1], label1-label0'.
-  dw imm  ; TODO(pts): Get rid of this macro as soon as we know a better way to suppress the warning.
-endm
 
 file_header:
 	db	7Fh,'ELF',1,1,1
@@ -3472,13 +3456,13 @@ parse_line:
 	stosw
 	mov	al,dl
 	stosb
-	cmp_bx_imm prefix_instruction-assembler
+	cmp	bx, small prefix_instruction-assembler  ; `small' avoids the `Operand size conflict' warning. https://stackoverflow.com/q/78216016/97248
 	je	parse_prefix_instruction
-	cmp_bx_imm end_directive-assembler
+	cmp	bx, small end_directive-assembler
 	je	parse_prefix_instruction
-	cmp_bx_imm label_directive-assembler
+	cmp	bx, small label_directive-assembler
 	je	parse_label_directive
-	cmp_bx_imm load_directive-assembler
+	cmp	bx, small load_directive-assembler
 	je	parse_label_directive
       parse_arguments:
 	lodsb
@@ -4423,14 +4407,14 @@ virtual_directive:
 	clc
 	ret
       next_structure:
-	cmp_ax_imm repeat_directive-assembler
+	cmp	ax, small repeat_directive-assembler
 	jne	if_structure_ok
-	cmp_word_ebx_imm if_directive-assembler
+	cmp	[word ebx], small if_directive-assembler
 	je	no_such_structure
       if_structure_ok:
-	cmp_ax_imm if_directive-assembler
+	cmp	ax, small if_directive-assembler
 	jne	repeat_structure_ok
-	cmp_word_ebx_imm repeat_directive-assembler
+	cmp	[word ebx], small repeat_directive-assembler
 	je	no_such_structure
       repeat_structure_ok:
 	add	ebx,10h
@@ -4512,7 +4496,7 @@ repeat_directive:
 	jmp	instruction_assembled
       find_end_repeat:
 	call	find_structure_end
-	cmp_ax_imm repeat_directive-assembler
+	cmp	ax, small repeat_directive-assembler
 	jne	unexpected_instruction
 	ret
       find_structure_end:
@@ -4531,24 +4515,24 @@ repeat_directive:
 	cmp	[byte esi],1
 	jne	find_structure_end
 	mov	ax,[esi+1]
-	cmp_ax_imm prefix_instruction-assembler
+	cmp	ax, small prefix_instruction-assembler
 	je	find_structure_end
 	add	esi,4
-	cmp_ax_imm repeat_directive-assembler
+	cmp	ax, small repeat_directive-assembler
 	je	skip_repeat
-	cmp_ax_imm if_directive-assembler
+	cmp	ax, small if_directive-assembler
 	je near_o0 skip_if
-	cmp_ax_imm else_directive-assembler
+	cmp	ax, small else_directive-assembler
 	je	structure_end
-	cmp_ax_imm end_directive-assembler
+	cmp	ax, small end_directive-assembler
 	jne	find_structure_end
 	cmp	[byte esi],1
 	jne	find_structure_end
 	mov	ax,[esi+1]
 	add	esi,4
-	cmp_ax_imm repeat_directive-assembler
+	cmp	ax, small repeat_directive-assembler
 	je	structure_end
-	cmp_ax_imm if_directive-assembler
+	cmp	ax, small if_directive-assembler
 	jne	find_structure_end
       structure_end:
 	ret
@@ -4572,7 +4556,7 @@ if_directive:
 	mov	al,[esi]
 	cmp	al,1
 	jne	else_true
-	cmp_word_esi_1_imm if_directive-assembler
+	cmp	[word esi+1], small if_directive-assembler
 	jne	else_true
 	add	esi,4
 	jmp	if_directive
@@ -4602,7 +4586,7 @@ if_directive:
 	mov	al,[esi]
 	cmp	al,1
 	jne	skip_else
-	cmp_word_esi_1_imm if_directive-assembler
+	cmp	[word esi+1], small if_directive-assembler
 	jne	skip_else
 	add	esi,4
 	call	find_else
@@ -4626,7 +4610,7 @@ if_directive:
 	jc	find_structure_end
 	cmp	[byte esi],1
 	jne	skip_after_else
-	cmp_word_esi_1_imm if_directive-assembler
+	cmp	[word esi+1], small if_directive-assembler
 	jne	skip_after_else
 	add	esi,4
 	jmp	skip_if
@@ -4635,9 +4619,9 @@ if_directive:
 	jmp	find_structure_end
       find_else:
 	call	find_structure_end
-	cmp_ax_imm else_directive-assembler
+	cmp	ax, small else_directive-assembler
 	je	else_found
-	cmp_ax_imm if_directive-assembler
+	cmp	ax, small if_directive-assembler
 	jne	unexpected_instruction
 	stc
 	ret
@@ -4646,7 +4630,7 @@ if_directive:
 	ret
       find_end_if:
 	call	find_structure_end
-	cmp_ax_imm if_directive-assembler
+	cmp	ax, small if_directive-assembler
 	jne	unexpected_instruction
 	ret
 end_directive:
@@ -4655,11 +4639,11 @@ end_directive:
 	jne	invalid_argument
 	lodsw
 	inc	esi
-	cmp_ax_imm virtual_directive-assembler
+	cmp	ax, small virtual_directive-assembler
 	je	end_virtual
-	cmp_ax_imm repeat_directive-assembler
+	cmp	ax, small repeat_directive-assembler
 	je	end_repeat
-	cmp_ax_imm if_directive-assembler
+	cmp	ax, small if_directive-assembler
 	je	end_if
 	jmp	invalid_argument
 

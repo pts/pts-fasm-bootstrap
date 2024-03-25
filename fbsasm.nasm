@@ -30,22 +30,6 @@
 
 ;	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 file_header:
 	db	0x7F,'ELF',1,1,1
 	times	file_header+0x10-$ db 0
