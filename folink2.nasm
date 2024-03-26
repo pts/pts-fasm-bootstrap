@@ -472,10 +472,8 @@ msg_usage:	db 'Usage: folink2 <in.obj> <out.bin>', 13, 10, 0
 ___section_bss:
 
 ___section_c_bss:
-_ledata:	resb 0x400
 _wrbuf:		resb 0x200
 _rdbuf:		resb 0x200
-_ledata_size:	resb 2
 _wrfd:		resb 2
 _rdfd:		resb 2
 _wri:		resb 2
