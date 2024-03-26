@@ -10488,12 +10488,6 @@ _bytes_suffix db ' bytes.',0Ah,0
 _counter db 4,'0000'
 
 prebss:
-
-
-
-
-
-
 data segment  ; Uninitialized data follows.
 even 4
 bss:
@@ -10577,4 +10571,5 @@ converted db 100h dup (?)
 available_memory dd ?
 
 program_end:
+
 ; __END__

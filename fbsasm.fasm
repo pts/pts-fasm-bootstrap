@@ -10489,12 +10489,6 @@ _counter db 4,'0000'
 
 prebss:
 
-
-
-
-
-
-
 align 4
 bss:
 
@@ -10577,4 +10571,5 @@ converted rb 100h
 available_memory dd ?
 
 program_end:
+
 ; __END__

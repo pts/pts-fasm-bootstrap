@@ -10488,13 +10488,7 @@ _bytes_suffix db ' bytes.',0xA,0
 _counter db 4,'0000'
 
 prebss:
-
-
-
-
-
-
-absolute $
+absolute $  ; Uninitialized data follows.
 alignb 4
 bss:
 
@@ -10577,4 +10571,5 @@ converted resb 100h
 available_memory resb 4
 
 program_end:
+
 ; __END__

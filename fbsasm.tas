@@ -24,9 +24,9 @@ ideal
 	near_o0 equ
 locals @@
 p386n
-model flat
-stack 100h  ; Dummy, to pacify TASM.
-codeseg
+segment _TEXT use32  ; The size of this segment name matters.
+assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
+org program_base
 
 ;	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
@@ -10488,93 +10488,88 @@ _bytes_suffix db ' bytes.',0Ah,0
 _counter db 4,'0000'
 
 prebss:
-ifdef SEG1
-  what equ 0
-  db ((file_header-$) and 3) dup (what)
-else
-  udataseg
-  ;align 4  ; Doesn't help.
-  what equ ?
-endif
+
+db ((file_header-$) and 3) dup (?)
 bss:
 
-memory_start dd what
-memory_end dd what
-additional_memory dd what
-additional_memory_end dd what
-input_file dd what
-output_file dd what
-source_start dd what
-code_start dd what
-code_size dd what
-real_code_size dd what
-start_time dd what
-written_size dd what
+memory_start dd ?
+memory_end dd ?
+additional_memory dd ?
+additional_memory_end dd ?
+input_file dd ?
+output_file dd ?
+source_start dd ?
+code_start dd ?
+code_size dd ?
+real_code_size dd ?
+start_time dd ?
+written_size dd ?
 
-current_line dd what
-macros_list dd what
-macro_constants dd what
-macro_block dd what
-macro_block_line_number dd what
-struc_name dd what
-current_locals_prefix dd what
-labels_list dd what
-label_hash dd what
-org_start dd what
-org_sib dd what
-undefined_data_start dd what
-undefined_data_end dd what
-counter dd what
-counter_limit dd what
-error_line dd what
-error dd what
-display_buffer dd what
-structures_buffer dd what
-number_start dd what
-current_offset dd what
-value db 8 dup (what)
-fp_value db 8 dup (what)
-format_flags dd what
-number_of_relocations dd what
-number_of_sections dd what
-stub_size dd what
-header_data dd what
-sections_data dd what
-current_section dd what
-machine dw what
-subsystem dw what
-subsystem_version dd what
+current_line dd ?
+macros_list dd ?
+macro_constants dd ?
+macro_block dd ?
+macro_block_line_number dd ?
+struc_name dd ?
+current_locals_prefix dd ?
+labels_list dd ?
+label_hash dd ?
+org_start dd ?
+org_sib dd ?
+undefined_data_start dd ?
+undefined_data_end dd ?
+counter dd ?
+counter_limit dd ?
+error_line dd ?
+error dd ?
+display_buffer dd ?
+structures_buffer dd ?
+number_start dd ?
+current_offset dd ?
+value db 8 dup (?)
+fp_value db 8 dup (?)
+format_flags dd ?
+number_of_relocations dd ?
+number_of_sections dd ?
+stub_size dd ?
+header_data dd ?
+sections_data dd ?
+current_section dd ?
+machine dw ?
+subsystem dw ?
+subsystem_version dd ?
 
-macro_status db what
-parenthesis_stack db what
-output_format db what
-code_type db what
-current_pass db what
-next_pass_needed db what
-reloc_labels db what
-times_working db what
-virtual_data db what
-fp_sign db what
-fp_format db what
-value_size db what
-forced_size db what
-value_type db what
-address_size db what
-compare_type db what
-base_code db what
-extended_code db what
-postbyte_register db what
-segment_register db what
-operand_size db what
-imm_sized db what
-jump_type db what
-mmx_size db what
-mmx_prefix db what
-nextbyte db what
+macro_status db ?
+parenthesis_stack db ?
+output_format db ?
+code_type db ?
+current_pass db ?
+next_pass_needed db ?
+reloc_labels db ?
+times_working db ?
+virtual_data db ?
+fp_sign db ?
+fp_format db ?
+value_size db ?
+forced_size db ?
+value_type db ?
+address_size db ?
+compare_type db ?
+base_code db ?
+extended_code db ?
+postbyte_register db ?
+segment_register db ?
+operand_size db ?
+imm_sized db ?
+jump_type db ?
+mmx_size db ?
+mmx_prefix db ?
+nextbyte db ?
 
-characters db 100h dup (what)
-converted db 100h dup (what)
-available_memory dd what
+characters db 100h dup (?)
+converted db 100h dup (?)
+available_memory dd ?
 
 program_end:
-end start  ; Dummy, to pacify TASM.
+ends
+end
