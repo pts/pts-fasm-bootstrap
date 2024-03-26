@@ -19,7 +19,7 @@
 ; Copyright (c) 1999-2002, Tomasz Grysztar
 ; All rights reserved.
 ideal
-	program_base equ 8048000h
+	program_base equ 700000h
 	;org	program_base  ; Set in compilation script instead.
 	near_o0 equ
 locals @@
