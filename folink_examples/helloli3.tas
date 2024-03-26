@@ -1,0 +1,48 @@
+;
+; helloli3.tas: example Linux i386 hello-world program with TASM
+; by pts@fazekas.hu at Tue Mar 26 05:32:54 CET 2024
+;
+; This is the assembly source code of an example Linux i386 (32-bit x86)
+; hello-world program, which can be compiled with TASM 1.0 (1988) or later.
+; For the full linking on DOS (with helloli3.bat), TASM 2.0 (1990) or later
+; is needed.
+;
+
+ideal
+program_base equ 8048000h  ; Typical Linux i386 executable program.
+p386n
+segment _TEXT use32  ; The segment name is arbitrary.
+assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
+org program_base
+
+file_header:
+Elf32_Ehdr:	OSABI_Linux equ 3
+		db 7Fh,'ELF',1,1,1,OSABI_Linux,0,0,0,0,0,0,0,0,2,0,3,0
+		dd 1,_start,Elf32_Phdr-file_header,0,0
+		dw Elf32_Phdr-file_header,20h,1,0,0,0
+Elf32_Phdr:	dd 1,0,program_base,0,prebss-program_base,mem_end-program_base,7,1000h
+
+_start:		mov eax, 4  ; SYS_read.
+		mov ebx, 1  ; STDOUT_FILENO.
+		mov ecx, offset msg
+		mov edx, msg_end-msg
+		int 80h  ; Linux i386 syscall.
+
+		mov eax, 1  ; SYS_exit.
+		xor ebx, ebx  ; EXIT_SUCCESS == 0.
+		int 80h  ; Linux i386 syscall.
+
+msg:		db 'Hello, World!', 10
+msg_end:
+
+prebss:		db ((file_header-$) and 3) dup (?)
+bss:
+
+; These variables are initialized to zero by the Linux kernel.
+; No extra bytes are generated for them.
+unused_array:	db 42 dup (?)
+unused_var:	dw ?
+
+mem_end:
+ends
+end

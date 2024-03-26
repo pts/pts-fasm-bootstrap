@@ -1,0 +1,29 @@
+;
+; helloli3.tas: example DOS 8086 hello-world .com program with TASM
+; by pts@fazekas.hu at Tue Mar 26 05:32:54 CET 2024
+;
+; This is the assembly source code of an example DOS 8086 (16-bit x86)
+; hello-world .com program, which can be compiled with TASM 1.0 (1988) or
+; later. For the full linking on DOS (with hellodcb.bat), TASM 2.0 (1990) or
+; later is needed.
+;
+
+ideal
+segment _TEXT  ; The segment name is arbitrary.
+assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
+org 100h  ; For DOS .com program.
+
+_start:		mov ah, 9
+		mov dx, offset msg
+		int 21h
+		ret  ; Exit successfully.
+
+msg:		db 'Hello, World!', 13, 10, '$'
+
+; These variables are uninitialized.
+; No extra bytes are generated for them.
+unused_array:	db 42 dup (?)
+unused_var:	dw ?
+
+ends
+end
