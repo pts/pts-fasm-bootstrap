@@ -1,5 +1,5 @@
 ;
-; folink2.tas: flat OMF linker implemented in TASM 4.1 targeting DOS 8086
+; folink2.tas: flat OMF linker implemented in TASM 2.0--4.1-- targeting DOS 8086
 ; by pts@fazekas.hu at Tue Mar 26 02:24:06 CET 2024
 ;
 ; This linker just dumps the data in the LEDATA, LEDATA386, LIDATA and
@@ -14,12 +14,13 @@
 ; folink2.obj file created by `dosmc -mt -c folink2.c'.
 ;
 
-; This is a hack to make the output file of TASM 4.1 valid not only as OMF
+; This is a hack to make the output file of TASM valid not only as OMF
 ; .obj, but also as DOS .com program. This way we don't need tlink.exe at all,
 ; previously we used tlink.exe to generate the DOS .com program.
 ;
 ; The filename must be f.u00 in order for this hack to work, and also the
-; assembler must be TASM 4.1, other versions may not work.
+; assembler must be TASM 2.0 (the first version to support the /q switch) or
+; later, tested with 2.0 (1990), 2.01, 2.51, 3.0, 3.1, 3.2, 4.0, 4.1 (1996).
 ideal
 segment _CSE_  ; The size of this segment name matters.
 assume cs:_CSE_, ds:_CSE_, es:_CSE_

@@ -62,10 +62,10 @@ programming languages, targeting Linux i386:
   bundled `nasm2as.pl` Perl script. It works with various versions of GNU
   Binutils, tested with 2.9.1 (released on 1998-05-01, part of Debian 2.1
   slink), 2.9.5, 2.22 and 2.30.
-* TASM (Turbo Assembler) + folink1 (custom linker): already implemented
-  as `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with the
-  last TASM 4.1 (1996), the latest Turbo Assembler which works on a DOS 8086
-  (without a DOS extender).
+* TASM (Turbo Assembler) + folink1 (custom linker): already implemented as
+  `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with TASM
+  2.0 (1990) and the TASM 4.1 (1996, the latest Turbo Assembler which works
+  on a DOS 8086 without a DOS extender).
 * A386 (by Eric Isaacson): already implemented
   as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).

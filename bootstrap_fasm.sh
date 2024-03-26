@@ -107,8 +107,14 @@ case "$1" in  # Any of these below will work.
   ;;
  tasm* | --tasm*)
   # Use the /m999 switch to optimize the output for size.
+  #
+  # Here TASM 2.0 (1990) works, TASM 1.0 (1988) reports this for many lines:
+  # Forward reference needs override.
+  #
+  # Tested with TASM 2.0 (1990) and 4.1 (1996, last version for DOS 8086).
   tasm/kvikdos tasm/tasm.exe /t fbsasm.tas, fbsasm.obj  # Output file: fbsasm.obj
   cp -a folink2.tas f.u00  # The TASM hack below works with TASM 4.1 and only if the filename is f.u00.
+  # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
   tasm/kvikdos tasm/tasm.exe /t /m999 /q f.u00 folink2t.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
   rm -f f.u00
   tasm/kvikdos folink2t.com fbsasm.obj fbsasm
