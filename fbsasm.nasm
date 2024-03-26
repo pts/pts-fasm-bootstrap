@@ -1,4 +1,4 @@
-; by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024
+ ; by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024
 ;
 ; This is a subset of the source code of fasm 1.30 (with some CPU instructions,
 ; `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386
@@ -514,6 +514,8 @@ line_data_start db ':',0xA,0
 ; (including the GNU Public Licence).
 
 %define VERSION_STRING '1.30-bootstrap'
+
+
 
 VERSION_MAJOR equ 1
 VERSION_MINOR equ 30
@@ -7889,7 +7891,7 @@ bs_instruction:
 	stosb
 	jmp	instruction_assembled
 
-pm_word_instruction:
+pm_word_instruction:  ; TODO(pts): Remove this and insts.
 	mov	ah,al
 	shr	ah,4
 	and	al,111b
@@ -7926,7 +7928,7 @@ pm_word_instruction:
 	or	al,11000000b
 	stosb
 	jmp	instruction_assembled
-pm_pword_instruction:
+pm_pword_instruction:  ; TODO(pts): Remove this and insts.
 	mov	byte [base_code],0Fh
 	mov	byte [extended_code],1
 	mov	byte [postbyte_register],al
@@ -10543,6 +10545,8 @@ instructions_11:
 _copyright db 'Copyright (c) 1999-2002, Tomasz Grysztar',0
 
 _logo db 'flat assembler  version ',VERSION_STRING,0xA,0
+
+
 _usage db 'usage: fasm source output',0xA,0
 
 _passes_suffix db ' passes, ',0
@@ -10619,7 +10623,7 @@ reloc_labels resb 1
 times_working resb 1
 virtual_data resb 1
 fp_sign resb 1
-fp_format resb 1
+fp_format resb 1  ; TODO(pts): Remove unused variables.
 value_size resb 1
 forced_size resb 1
 value_type resb 1

@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj fbsasm.os1 folink1t.com folink1.obj f.u00
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj fbsasm.os1 folink1t.com folink1.obj f.u00 fbsasm.und fbsasm.err fbsasm.bin
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -107,6 +107,7 @@ case "$1" in  # Any of these below will work.
   ;;
  tasm* | --tasm*)
   if true; then
+    # Use the /m999 switch to optimize the output for size.
     tasm/kvikdos tasm/tasm.exe /t /DSEG1 fbsasm.tas, fbsasm.os1  # Output file: fbsasm.os1
     cp -a folink1.tas f.u00  # The TASM hack below works with TASM 4.1 and only if the filename is f.u00.
     tasm/kvikdos tasm/tasm.exe /t /m999 /q f.u00 folink1t.com
@@ -123,8 +124,15 @@ case "$1" in  # Any of these below will work.
     mv fbsasm.bin fbsasm
   fi
   ;;
+ a386* | --a386*)
+  # A386 is a single-pass assembler, it generates suboptimal (longer)
+  # encoding for instructions with forward references.
+  tasm/kvikdos tasm/a386.com +EDSP3 fbsasm.8 fbsasm.bin
+  mv fbsasm.bin fbsasm
+  ;;
  nasm* | --nasm* | "")  # Default.
   nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+  #cp -a fbsasm fbsasm.nasm.bin
   ;;
  *)
   set +x;

@@ -515,6 +515,8 @@ macro dm string {
 
 VERSION_STRING equ "1.30-bootstrap"
 
+
+
 VERSION_MAJOR = 1
 VERSION_MINOR = 30
 
@@ -10543,6 +10545,8 @@ instructions_11:
 _copyright db 'Copyright (c) 1999-2002, Tomasz Grysztar',0
 
 _logo db 'flat assembler  version ',VERSION_STRING,0xA,0
+
+
 _usage db 'usage: fasm source output',0xA,0
 
 _passes_suffix db ' passes, ',0

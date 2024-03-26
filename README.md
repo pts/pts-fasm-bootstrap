@@ -66,6 +66,9 @@ programming languages, targeting Linux i386:
   as `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with the
   last TASM 4.1 (1996), the latest Turbo Assembler which works on a DOS 8086
   (without a DOS extender).
+* A386 (by Eric Isaacson): already implemented
+  as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
+  A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).
 * JWasm
 * C89 (ANSI C): it should work with GCC on Debian slink (released on
   1999-03-09), released before 2001-01-01, before fasm 1.20; how far can we
