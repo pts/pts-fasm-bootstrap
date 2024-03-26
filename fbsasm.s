@@ -67,7 +67,7 @@ start:
 	mov $characters+'A, %edi
 	mov $26, %ecx
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	mov $characters, %edi
 	mov $symbol_characters+1, %esi
 	movzbl -1(%esi), %ecx
@@ -314,7 +314,7 @@ display_string:
 	or $-1, %ecx
 	xor %al, %al
 	repne
-scasb %es:(%edi), %al
+	scasb %es:(%edi), %al
 	neg %ecx
 	sub $2, %ecx
 	mov $4, %eax  #  SYS_write.
@@ -1805,7 +1805,7 @@ calculate_expression:
 	stosl %eax, %es:(%edi)
 	mov %edx, %edi
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	mov %edx, %edi
 	inc %esi
 	movw $0, 8(%edi)
@@ -2164,7 +2164,7 @@ get_logical_value:
 	dec %ecx
 	sub %edi, %ecx
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	pop %edi
 	je symbols_equal
 	mov %edx, %esi
@@ -2195,7 +2195,7 @@ cmpsb %es:(%edi), %ds:(%esi)
 	push %edi
 	mov %ebx, %edi
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	pop %edi
 	pop %ecx
 	jne not_equal_in_list
@@ -2669,7 +2669,7 @@ get_macro:
 	jne check_macro
 	mov 4(%ebx), %edi
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	je macro_ok
 	mov %edx, %esi
 	jmp check_macro
@@ -2717,7 +2717,7 @@ process_symbolic_constants:
 	jne next_symbolic_constant
 	mov 4(%edx), %edi
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	je symbolic_constant_found
       next_symbolic_constant:
 	add $16, %edx
@@ -2737,13 +2737,13 @@ cmpsb %es:(%edi), %ds:(%esi)
 	shr %ecx
 	rcl %ah
 	rep
-movsl %ds:(%esi), %es:(%edi)
+	movsl %ds:(%esi), %es:(%edi)
 	mov %ah, %cl
 	rep
-movsw %ds:(%esi), %es:(%edi)
+	movsw %ds:(%esi), %es:(%edi)
 	mov %al, %cl
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	mov %edx, %esi
 	clc
 	ret
@@ -2765,20 +2765,20 @@ movsb %ds:(%esi), %es:(%edi)
 	shr %ecx
 	rcl %ah
 	rep
-movsl %ds:(%esi), %es:(%edi)
+	movsl %ds:(%esi), %es:(%edi)
 	mov %ah, %cl
 	rep
-movsw %ds:(%esi), %es:(%edi)
+	movsw %ds:(%esi), %es:(%edi)
 	mov %al, %cl
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	ret
       string_after_replaced:
 	lodsl %ds:(%esi), %eax
 	stosl %eax, %es:(%edi)
 	mov %eax, %ecx
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	jmp process_after_replaced
       symbol_after_replaced:
 	movzbl (%esi), %ecx
@@ -2789,7 +2789,7 @@ movsb %ds:(%esi), %es:(%edi)
 	mov %cl, %ah
 	stosw %ax, %es:(%edi)
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	jmp process_after_replaced
 include_file:
 	lodsb %ds:(%esi), %al
@@ -3068,7 +3068,7 @@ use_macro:
 	mov (%esi), %ecx
 	add $4, %ecx
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	jmp process_macro
       process_macro_symbol:
 	push %esi
@@ -3116,7 +3116,7 @@ movsb %ds:(%esi), %es:(%edi)
 	mov %ebp, %ecx
 	mov 4(%edx), %edi
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	je macro_constant_found
 	mov %ebx, %esi
       next_macro_constant:
@@ -3135,7 +3135,7 @@ cmpsb %es:(%edi), %ds:(%esi)
 	mov 8(%edx), %ecx
 	mov 12(%edx), %esi
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	movb $44, (%edi)
 	inc %edi
 	mov %ebx, %esi
@@ -3151,7 +3151,7 @@ movsb %ds:(%esi), %es:(%edi)
 	mov 12(%edx), %edx
 	xchg %edx, %esi
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	mov %edx, %esi
 	jmp process_macro
       not_macro_constant:
@@ -3172,12 +3172,12 @@ movsb %ds:(%esi), %es:(%edi)
 	add %cl, -1(%edi)
 	jc name_too_long
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	xchg %ebx, %esi
       copy_macro_symbol:
 	movzbl %al, %ecx
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	jmp process_macro
       macro_line_processed:
 	movb $0, (%edi)
@@ -3229,14 +3229,14 @@ movsb %ds:(%esi), %es:(%edi)
 	jae out_of_memory
 	movl %edx, additional_memory
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	mov $'?, %al
 	stosb %al, %es:(%edi)
 	movzbl _counter, %ecx
 	push %esi
 	mov $_counter+1, %esi
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	pop %esi
 	pop %ecx
 	pop %edi
@@ -3632,7 +3632,7 @@ parse_line:
 	movsw %ds:(%esi), %es:(%edi)
       string_movsw_ok:
 	rep
-movsl %ds:(%esi), %es:(%edi)
+	movsl %ds:(%esi), %es:(%edi)
 	xor %al, %al
 	stosb %al, %es:(%edi)
 	jmp argument_parsed
@@ -3800,7 +3800,7 @@ assembler:
 	shr $2, %ecx
 	xor %eax, %eax
 	rep
-stosl %eax, %es:(%edi)
+	stosl %eax, %es:(%edi)
 	movb $0, current_pass
 	movl $0, number_of_sections
 	movb $0, times_working
@@ -4280,7 +4280,7 @@ display_directive:
 	lodsl %ds:(%esi), %eax
 	mov %eax, %ecx
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	inc %esi
 	jmp display_next
       display_byte:
@@ -4315,7 +4315,7 @@ movsb %ds:(%esi), %es:(%edi)
 	movl %edi, display_buffer
 	mov %ecx, %eax
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	stosl %eax, %es:(%edi)
 	pop %edi
 	pop %esi
@@ -4507,7 +4507,7 @@ virtual_directive:
 	movl %edi, structures_buffer
 	shr $2, %ecx
 	rep
-movsl %ds:(%esi), %es:(%edi)
+	movsl %ds:(%esi), %es:(%edi)
 	pop %edi
 	pop %esi
 	jmp instruction_assembled
@@ -4761,7 +4761,7 @@ data_bytes:
 	lodsl %ds:(%esi), %eax
 	mov %eax, %ecx
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	inc %esi
 	jmp byte_ok
       undefined_data:
@@ -5123,7 +5123,7 @@ reserve_bytes:
 	stosw %ax, %es:(%edi)
       bytes_stosw_ok:
 	rep
-stosl %eax, %es:(%edi)
+	stosl %eax, %es:(%edi)
       reserved_data:
 	pop %eax
 	call undefined_data
@@ -5166,7 +5166,7 @@ reserve_words:
 	stosw %ax, %es:(%edi)
       words_stosw_ok:
 	rep
-stosl %eax, %es:(%edi)
+	stosl %eax, %es:(%edi)
 	jmp reserved_data
 reserve_dwords:
 	lodsb %ds:(%esi), %al
@@ -5197,7 +5197,7 @@ reserve_dwords:
       zero_dwords:
 	xor %eax, %eax
 	rep
-stosl %eax, %es:(%edi)
+	stosl %eax, %es:(%edi)
 	jmp reserved_data
 reserve_pwords:
 	lodsb %ds:(%esi), %al
@@ -9921,7 +9921,7 @@ get_operator:
 	cmp %ebp, %ecx
 	jne next_operator
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	je operator_found
       next_operator:
 	mov %ebx, %edi
@@ -9957,7 +9957,7 @@ get_symbol:
 	cmp %al, %cl
 	jne next_symbol
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	jb no_symbol
 	je symbol_ok
       next_symbol:
@@ -9992,7 +9992,7 @@ get_instruction:
 	mov %edi, %ebx
 	add %ecx, %ebx
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	jb no_instruction
 	je instruction_ok
       next_instruction:
@@ -10033,7 +10033,7 @@ get_label_id:
 	cmp additional_memory_end, %ebp
 	jae out_of_memory
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	pop %esi
 	pop %ecx
 	add %cl, %al
@@ -10042,7 +10042,7 @@ movsb %ds:(%esi), %es:(%edi)
 	cmp additional_memory_end, %ebp
 	jae out_of_memory
 	rep
-movsb %ds:(%esi), %es:(%edi)
+	movsb %ds:(%esi), %es:(%edi)
 	movl %edi, additional_memory
 	pop %edi
 	push %esi
@@ -10094,7 +10094,7 @@ movsb %ds:(%esi), %es:(%edi)
 	jne next_label
 	mov 4(%eax), %edi
 	repe
-cmpsb %es:(%edi), %ds:(%esi)
+	cmpsb %es:(%edi), %ds:(%esi)
 	je label_found
       next_label:
 	add $16, %eax
