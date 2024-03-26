@@ -8028,64 +8028,6 @@ bs_instruction:
 	mov %bl, %al
 	stosb %al, %es:(%edi)
 	jmp instruction_assembled
-
-pm_word_instruction:
-	mov %al, %ah
-	shr $4, %ah
-	and $7, %al
-	movb $0xf, base_code
-	movb %ah, extended_code
-	.byte 0xa2  # movb %al, postbyte_register
-	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	call get_size_operator
-	cmp $0x10, %al
-	je pm_reg
-	cmp $'[, %al
-	jne invalid_operand
-	call get_address
-	mov operand_size, %al
-	cmp $2, %al
-	je pm_word_instruction.store
-	or %al, %al
-	jnz invalid_operand_size
-      pm_word_instruction.store:
-	call store_instruction
-	jmp instruction_assembled
-      pm_reg:
-	lodsb %ds:(%esi), %al
-	call convert_register
-	cmp $2, %ah
-	jne invalid_operand_size
-	mov %al, %bl
-	mov $0xf, %al
-	mov extended_code, %ah
-	stosw %ax, %es:(%edi)
-	mov postbyte_register, %al
-	shl $3, %al
-	or %bl, %al
-	or $192, %al
-	stosb %al, %es:(%edi)
-	jmp instruction_assembled
-pm_pword_instruction:
-	movb $0xf, base_code
-	movb $1, extended_code
-	.byte 0xa2  # movb %al, postbyte_register
-	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	call get_size_operator
-	cmp $'[, %al
-	jne invalid_operand
-	call get_address
-	mov operand_size, %al
-	cmp $6, %al
-	je pm_pword_instruction.store
-	or %al, %al
-	jnz invalid_operand_size
-      pm_pword_instruction.store:
-	call store_instruction
-	jmp instruction_assembled
-
 imul_instruction:
 	movb $0xf6, base_code
 	movb $5, postbyte_register
@@ -11008,9 +10950,6 @@ instructions_3:
  .ascii "lss"
  .byte 2
  .word ls_instruction-assembler
- .ascii "ltr"
- .byte 3
- .word pm_word_instruction-assembler
  .ascii "mov"
  .byte 0
  .word mov_instruction-assembler
@@ -11080,9 +11019,6 @@ instructions_3:
  .ascii "sti"
  .byte 0xfb
  .word simple_instruction-assembler
- .ascii "str"
- .byte 1
- .word pm_word_instruction-assembler
  .ascii "sub"
  .byte 0x28
  .word basic_instruction-assembler
@@ -11151,18 +11087,6 @@ instructions_4:
  .ascii "lahf"
  .byte 0x9f
  .word simple_instruction-assembler
- .ascii "lgdt"
- .byte 2
- .word pm_pword_instruction-assembler
- .ascii "lidt"
- .byte 3
- .word pm_pword_instruction-assembler
- .ascii "lldt"
- .byte 2
- .word pm_word_instruction-assembler
- .ascii "lmsw"
- .byte 0x16
- .word pm_word_instruction-assembler
  .ascii "load"
  .byte 0
  .word load_directive-assembler
@@ -11244,36 +11168,18 @@ instructions_4:
  .ascii "setz"
  .byte 0x94
  .word set_instruction-assembler
- .ascii "sgdt"
- .byte 0
- .word pm_pword_instruction-assembler
  .ascii "shld"
  .byte 0xa4
  .word shd_instruction-assembler
  .ascii "shrd"
  .byte 0xac
  .word shd_instruction-assembler
- .ascii "sidt"
- .byte 1
- .word pm_pword_instruction-assembler
- .ascii "sldt"
- .byte 0
- .word pm_word_instruction-assembler
- .ascii "smsw"
- .byte 0x14
- .word pm_word_instruction-assembler
  .ascii "stos"
  .byte 0xaa
  .word stos_instruction-assembler
  .ascii "test"
  .byte 0
  .word test_instruction-assembler
- .ascii "verr"
- .byte 4
- .word pm_word_instruction-assembler
- .ascii "verw"
- .byte 5
- .word pm_word_instruction-assembler
  .ascii "wait"
  .byte 0x9b
  .word simple_instruction-assembler

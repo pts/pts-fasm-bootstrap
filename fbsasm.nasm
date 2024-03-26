@@ -7890,62 +7890,6 @@ bs_instruction:
 	mov	al,bl
 	stosb
 	jmp	instruction_assembled
-
-pm_word_instruction:  ; TODO(pts): Remove this and insts.
-	mov	ah,al
-	shr	ah,4
-	and	al,111b
-	mov	byte [base_code],0Fh
-	mov	byte [extended_code],ah
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,10h
-	je	pm_reg
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	cmp	al,2
-	je	.store
-	or	al,al
-	jnz	invalid_operand_size
-      .store:
-	call	store_instruction
-	jmp	instruction_assembled
-      pm_reg:
-	lodsb
-	call	convert_register
-	cmp	ah,2
-	jne	invalid_operand_size
-	mov	bl,al
-	mov	al,0Fh
-	mov	ah,byte [extended_code]
-	stosw
-	mov	al,byte [postbyte_register]
-	shl	al,3
-	or	al,bl
-	or	al,11000000b
-	stosb
-	jmp	instruction_assembled
-pm_pword_instruction:  ; TODO(pts): Remove this and insts.
-	mov	byte [base_code],0Fh
-	mov	byte [extended_code],1
-	mov	byte [postbyte_register],al
-	lodsb
-	call	get_size_operator
-	cmp	al,'['
-	jne	invalid_operand
-	call	get_address
-	mov	al,byte [operand_size]
-	cmp	al,6
-	je	.store
-	or	al,al
-	jnz	invalid_operand_size
-      .store:
-	call	store_instruction
-	jmp	instruction_assembled
-
 imul_instruction:
 	mov	byte [base_code],0F6h
 	mov	byte [postbyte_register],5
@@ -10345,7 +10289,6 @@ instructions_3:
  dbw 'lgs',5, ls_instruction-assembler
  dbw 'lsl',3, lar_instruction-assembler
  dbw 'lss',2, ls_instruction-assembler
- dbw 'ltr',3, pm_word_instruction-assembler
  dbw 'mov',0, mov_instruction-assembler
  dbw 'mul',4, single_operand_instruction-assembler
  dbw 'neg',3, single_operand_instruction-assembler
@@ -10369,7 +10312,6 @@ instructions_3:
  dbw 'stc',0F9h, simple_instruction-assembler
  dbw 'std',0FDh, simple_instruction-assembler
  dbw 'sti',0FBh, simple_instruction-assembler
- dbw 'str',1, pm_word_instruction-assembler
  dbw 'sub',28h, basic_instruction-assembler
  dbw 'ud2',0Bh, simple_extended_instruction-assembler
  dbw 'xor',30h, basic_instruction-assembler
@@ -10394,10 +10336,6 @@ instructions_4:
  dbw 'jnge',7Ch, conditional_jump-assembler
  dbw 'jnle',7Fh, conditional_jump-assembler
  dbw 'lahf',9Fh, simple_instruction-assembler
- dbw 'lgdt',2, pm_pword_instruction-assembler
- dbw 'lidt',3, pm_pword_instruction-assembler
- dbw 'lldt',2, pm_word_instruction-assembler
- dbw 'lmsw',16h, pm_word_instruction-assembler
  dbw 'load',0, load_directive-assembler
  dbw 'lock',0F0h, prefix_instruction-assembler
  dbw 'lods',0, lods_instruction-assembler
@@ -10425,16 +10363,10 @@ instructions_4:
  dbw 'setp',9Ah, set_instruction-assembler
  dbw 'sets',98h, set_instruction-assembler
  dbw 'setz',94h, set_instruction-assembler
- dbw 'sgdt',0, pm_pword_instruction-assembler
  dbw 'shld',0A4h, shd_instruction-assembler
  dbw 'shrd',0ACh, shd_instruction-assembler
- dbw 'sidt',1, pm_pword_instruction-assembler
- dbw 'sldt',0, pm_word_instruction-assembler
- dbw 'smsw',14h, pm_word_instruction-assembler
  dbw 'stos',0AAh, stos_instruction-assembler
  dbw 'test',0, test_instruction-assembler
- dbw 'verr',4, pm_word_instruction-assembler
- dbw 'verw',5, pm_word_instruction-assembler
  dbw 'wait',9Bh, simple_instruction-assembler
  dbw 'xadd',0C0h, basic_486_instruction-assembler
  dbw 'xchg',0, xchg_instruction-assembler
