@@ -22,7 +22,7 @@ Elf32_Ehdr:	OSABI_Linux equ 3
 		dw Elf32_Phdr-file_header,20h,1,0,0,0
 Elf32_Phdr:	dd 1,0,program_base,0,prebss-program_base,mem_end-program_base,7,1000h
 
-_start:		mov eax, 4  ; SYS_read.
+_start:		mov eax, 4  ; SYS_write.
 		mov ebx, 1  ; STDOUT_FILENO.
 		mov ecx, offset msg
 		mov edx, msg_end-msg
