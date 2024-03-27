@@ -56,9 +56,19 @@
 #  define O_BINARY 0
 #endif
 
+#ifndef uu
 typedef unsigned short uu;  /* At least 16 bits, unsigned. */
+#endif
 
-char rdbuf[0x200];
+#ifndef FOLINK_BUFSIZE
+#  if defined(MSDOS)
+#    define FOLINK_BUFSIZE 0x200
+#  else
+#    define FOLINK_BUFSIZE 0x2000
+#  endif
+#endif
+
+char rdbuf[FOLINK_BUFSIZE];
 uu rdi, rdlimit;
 int rdfd;
 uu rsize;  /* Record size. Number of bytes remaining from the current OMF record. */
@@ -75,7 +85,7 @@ uu r8(void) {  /* Reads a byte from the input OMF file. */
   return (unsigned char)rdbuf[rdi++];
 }
 
-char wrbuf[0x200];
+char wrbuf[FOLINK_BUFSIZE];
 uu wri;
 int wrfd;
 void wflush(void) {
@@ -125,7 +135,7 @@ int main(int argc, char **argv) {
   if ((wrfd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666)) < 0) CHECK(21, 0, "error opening output file");
   ofs = 0; is_ofs_ok = 0;
   for (;;) {
-    rsize = 3;  /* Don't trigger the record content size check in r16_le() below. */
+    rsize |= 3;  /* Don't trigger the record content size check in r16_le() below. Any value at least 3 will do. */
     rtype = r8();
 #if DEBUG
     fprintf(stderr, "info: rtype=0x%02x\n", rtype);

@@ -120,6 +120,7 @@ case "$1" in  # Any of these below will work.
   tasm/kvikdos tasm/tasm.exe /t /m999 /q f.u00 folink2t.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
   rm -f f.u00
   tasm/kvikdos folink2t.com fbsasm.obj fbsasm
+  #./folink2 fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2t.com
   ;;
  lzasm* | --lzasm*)
