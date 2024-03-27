@@ -66,6 +66,9 @@ programming languages, targeting Linux i386:
   `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with TASM
   2.0 (1990) and the TASM 4.1 (1996, the latest Turbo Assembler which works
   on a DOS 8086 without a DOS extender).
+* LZASM (Lazy Assembler) + folink1 (custom linker): already implemented as
+  `fbsasm.tas`, use it with `./bootstrap_fasm.sh lzasm`. It works with LZASM
+  0.56 (2007-10-04) and possibly earlier.
 * A386 (by Eric Isaacson): already implemented
   as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).

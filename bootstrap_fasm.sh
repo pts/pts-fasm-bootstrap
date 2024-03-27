@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2.obj f.u00 fbsasm.und fbsasm.err fbsasm.bin
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 fbsasm.und fbsasm.err fbsasm.bin
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -120,7 +120,20 @@ case "$1" in  # Any of these below will work.
   tasm/kvikdos tasm/tasm.exe /t /m999 /q f.u00 folink2t.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
   rm -f f.u00
   tasm/kvikdos folink2t.com fbsasm.obj fbsasm
-  rm -f fbsasm.obj
+  rm -f fbsasm.obj folink2t.com
+  ;;
+ lzasm* | --lzasm*)
+  # Tested with LZASM 0.56 (2007-10-04).
+  #
+  # TODO(pts): Release dosbox.nox.static.
+  # TODO(pts): Port the Win32 lzasm.exe to Linux i386. Also release the folink2l.exe.
+  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t fbsasm.tas  # Output file: fbsasm.obj  # This also works with lzasm 0.56.
+  cp -a folink2.tas f.u00  # The TASM hack below works with TASM 4.1 and only if the filename is f.u00.
+  # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
+  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t f.u00 folink2l.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
+  rm -f f.u00
+  tasm/kvikdos folink2l.com fbsasm.obj fbsasm
+  rm -f fbsasm.obj folink2l.com
   ;;
  a386* | --a386*)
   # A386 is a single-pass assembler, it generates suboptimal (longer)

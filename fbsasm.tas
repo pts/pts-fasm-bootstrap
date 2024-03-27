@@ -4,12 +4,12 @@
 ; instructions, `format MZ' and `format PE' removed), ported to TASM 4.1
 ; syntax, for Linux i386 only. It's useful for bootstrapping fasm.
 ;
-; Compile with: kvikdos tasm.exe /t fbsasm.tas && tasm/wlink format raw bin option offset=0x8048000 option quiet name fbsasm file fbsasm.obj && mv fbsasm.bin fbsasm && chmod +x fbsasm  # Fast.
+; Compile with: kvikdos tasm.exe /t fbsasm.tas && cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /m999 /q f.u00 folink2t.com && kvikdos folink2t.com fbsasm.obj fbsasm && chmod +x fbsasm
+; Compile with: dosbox.nox.static --cmd --mem-mb=3 lzasm.exe /t fbsasm.tas && cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /m999 /q f.u00 folink2t.com && kvikdos folink2t.com fbsasm.obj fbsasm && chmod +x fbsasm
 ; Disassemble for debugging: ndisasm -b 32 -e 0x54 -o 0x8048054 fbsasm
 ;
 ; Lines in fbsasm.nasm and fbsasm.tas correspond to each other.
 ;
- 
  
  
 
