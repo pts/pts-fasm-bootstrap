@@ -7,12 +7,16 @@
 ; records, it expands the repeated bytes. It fails if it encounters
 ; multiple segments or any relocations (fixupps).
 ;
-; Compile with TASM 4.1 on Linux after copying this file to f.u00: tasm /t /q f.u00 folink2t.com
-; Compile with TASM 4.1 on Linux with kvikdos: cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /q f.u00 folink2t.com
+; Compile with TASM 2.0--4.1 on Linux after copying this file to f.u00: tasm /t /m999 /q f.u00 folink2t.com
+; Compile with TASM 2.0--4.1 on Linux with kvikdos: cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /q f.u00 folink2t.com
+; Compile with LZASM --0.56 on Linux after copying this file to f.u00: lzasm /t f.u00 folink2l.com
+; Compile with LZASM --0.56 on Linux with kvikdos: cp -a folink2.tas f.u00 && dosbox.nox.static --cmd --mem-mb=3 lzasm.exe /t f.u00 folink2l.com
 ;
 ; Implementation based on folink2.c and on the disassembly of the
 ; folink2.obj file created by `dosmc -mt -c folink2.c'.
 ;
+
+ideal
 
 ; This is a hack to make the output file of TASM valid not only as OMF
 ; .obj, but also as DOS .com program. This way we don't need tlink.exe at all,
@@ -20,12 +24,18 @@
 ;
 ; The filename must be f.u00 in order for this hack to work, and also the
 ; assembler must be TASM 2.0 (the first version to support the /q switch) or
-; later, tested with 2.0 (1990), 2.01, 2.51, 3.0, 3.1, 3.2, 4.0, 4.1 (1996).
-ideal
-segment _CSE_  ; The size of this segment name matters.
-assume cs:_CSE_, ds:_CSE_, es:_CSE_
-org 136h  ; Specially crafted to match the .obj header created by TASM 4.1.
-db 'AA'  ; Any value is good, size must be 2.
+; later, tested with 2.0 (1990), 2.01, 2.51, 3.0, 3.1, 3.2, 4.0, 4.1 (1996),
+; or LZASM 0.56 (without the /q switch).
+ifdef @lzasm  ; LZASM --0.56.
+  segment C  ; The size of this segment name matters.
+  assume cs:C, ds:C, es:C
+  org 16bh  ; Specially crafted to match the .obj header created by LZASM.
+else  ; TASM 2.0--.
+  segment _CSE_  ; The size of this segment name matters.
+  assume cs:_CSE_, ds:_CSE_, es:_CSE_
+  org 136h  ; Specially crafted to match the .obj header created by TASM /q.
+  db 'AA'  ; Any value is good, size must be 2.
+endif
 
 locals @@
 
