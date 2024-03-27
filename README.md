@@ -69,6 +69,9 @@ programming languages, targeting Linux i386:
 * A386 (by Eric Isaacson): already implemented
   as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).
+* [vasm](http://sun.hasenbraten.de/vasm/) (by Volker Barthelmann): already
+  implemented as `fbsasm.vasm`, use it with `./bootstrap_fasm.sh vasm`. It
+  works with vasm 1.9a (2022-10-02) and possibly earlier.
 * JWasm
 * C89 (ANSI C): it should work with GCC on Debian slink (released on
   1999-03-09), released before 2001-01-01, before fasm 1.20; how far can we

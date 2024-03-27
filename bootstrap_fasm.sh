@@ -126,6 +126,9 @@ case "$1" in  # Any of these below will work.
   tasm/kvikdos tasm/a386.com +EDSP3 fbsasm.8 fbsasm.bin
   mv fbsasm.bin fbsasm
   ;;
+ vasm* | --vasm*)  # Also includes --vasmx86. http://www.compilers.de/vasm.html  http://sun.hasenbraten.de/vasm/
+  tasm/vasmx86 -quiet -mi386 -Fbin -o fbsasm fbsasm.vasm
+  ;;
  nasm* | --nasm* | "")  # Default.
   nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   #cp -a fbsasm fbsasm.nasm.bin
