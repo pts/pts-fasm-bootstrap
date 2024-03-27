@@ -102,6 +102,8 @@ case "$1" in  # Any of these below will work.
   else  # Old GNU as(1) (tested with 2.9.1 and 2.9.5) for i386.
     "$ASPROG" -o fbsasm.o fbsasm.s
   fi
+  # TODO(pts): Write a custom linker which can do this (supports a single
+  # ELF 32-bit .o input file with .text and .bss only).
   "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o  # -N to make .text read-write-execute.
   rm -f fbsasm.o
   ;;
