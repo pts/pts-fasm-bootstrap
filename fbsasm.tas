@@ -1,8 +1,8 @@
 ; by pts@fazekas.hu at Sun Mar 24 18:12:54 CET 2024
 ;
-; This is a subset of the source code of fasm 1.30 (with some CPU
-; instructions, `format MZ' and `format PE' removed), ported to TASM 4.1
-; syntax, for Linux i386 only. It's useful for bootstrapping fasm.
+; This is a subset of the source code of fasm 1.30 (with some CPU instructions,
+; `format MZ' and `format PE' removed), ported to TASM 2.0--4.1--5.3 syntax,
+; for Linux i386 only. It's useful for bootstrapping fasm.
 ;
 ; Compile with: kvikdos tasm.exe /t fbsasm.tas && cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /m999 /q f.u00 folink2t.com && kvikdos folink2t.com fbsasm.obj fbsasm && chmod +x fbsasm
 ; Compile with: dosbox.nox.static --cmd --mem-mb=3 lzasm.exe /t fbsasm.tas && cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /m999 /q f.u00 folink2t.com && kvikdos folink2t.com fbsasm.obj fbsasm && chmod +x fbsasm

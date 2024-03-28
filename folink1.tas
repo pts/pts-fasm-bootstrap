@@ -1,5 +1,5 @@
 ;
-; folink1.tas: flat OMF linker implemented in TASM 4.1 targeting DOS 8086
+; folink1.tas: flat OMF linker implemented in TASM 2.0--4.1--5.3 targeting DOS 8086
 ; by pts@fazekas.hu at Mon Mar 25 04:35:37 CET 2024
 ;
 ; Compile with TASM 4.1 on Linux after copying this file to f.u00: tasm /t /q f.u00 folink1t.com
