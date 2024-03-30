@@ -1966,7 +1966,7 @@ get_address:
 	movb $0, segment_register
 	movb $0, address_size
 	movb $4, value_size
-	push $address_ok
+	pushl $address_ok
 	mov (%esi), %al
 	and $240, %al
 	cmp $0x60, %al
@@ -1992,7 +1992,7 @@ get_address:
 get_address_value:
 	movb $0, address_size
 	movb $4, value_size
-	push $address_ok
+	pushl $address_ok
       calculate_address:
 	movl %edi, current_offset
 	call calculate_expression
@@ -5804,7 +5804,7 @@ mov_instruction:
 	mov $0xa2, %al
       store_mov_address32:
 	stosb %al, %es:(%edi)
-	push $instruction_assembled
+	pushl $instruction_assembled
 	jmp store_address_32bit_value
       mov_mem_address16_al:
 	call address_16bit_prefix
