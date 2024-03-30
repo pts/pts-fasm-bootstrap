@@ -158,29 +158,29 @@ information:
 ; Copyright (c) 1999-2002, Tomasz Grysztar
 ; All rights reserved.
 
-O_ACCMODE  equ 00003o
-O_RDONLY   equ 00000o
-O_WRONLY   equ 00001o
-O_RDWR	   equ 00002o
-O_CREAT    equ 00100o
-O_EXCL	   equ 00200o
-O_NOCTTY   equ 00400o
-O_TRUNC    equ 01000o
-O_APPEND   equ 02000o
-O_NONBLOCK equ 04000o
+O_ACCMODE  equ 00003q
+O_RDONLY   equ 00000q
+O_WRONLY   equ 00001q
+O_RDWR	   equ 00002q
+O_CREAT    equ 00100q
+O_EXCL	   equ 00200q
+O_NOCTTY   equ 00400q
+O_TRUNC    equ 01000q
+O_APPEND   equ 02000q
+O_NONBLOCK equ 04000q
 
-S_ISUID    equ 04000o
-S_ISGID    equ 02000o
-S_ISVTX    equ 01000o
-S_IRUSR    equ 00400o
-S_IWUSR    equ 00200o
-S_IXUSR    equ 00100o
-S_IRGRP    equ 00040o
-S_IWGRP    equ 00020o
-S_IXGRP    equ 00010o
-S_IROTH    equ 00004o
-S_IWOTH    equ 00002o
-S_IXOTH    equ 00001o
+S_ISUID    equ 04000q
+S_ISGID    equ 02000q
+S_ISVTX    equ 01000q
+S_IRUSR    equ 00400q
+S_IWUSR    equ 00200q
+S_IXUSR    equ 00100q
+S_IRGRP    equ 00040q
+S_IWGRP    equ 00020q
+S_IXGRP    equ 00010q
+S_IROTH    equ 00004q
+S_IWOTH    equ 00002q
+S_IXOTH    equ 00001q
 
 init_memory:
 	xor	ebx,ebx

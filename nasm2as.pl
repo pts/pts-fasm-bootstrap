@@ -67,7 +67,7 @@ my $last_label = "";
 
 sub fix_expr($) {
   my $expr = $_[0];
-  $expr =~ s@([0-9][0-9a-fA-F]*)[hH]|([01]+)[bB]|0[xX]([0-9a-fA-F]+)|([0-7]+)[oO]|([1-9][0-9]*|0(?!0))|'([^']{1,4})'|(byte|[dqtoyz]?word)|([_a-zA-Z][.\w]*)|([-+\[\]\s()~*]|<<|>>)|(\W+|\w+)@
+  $expr =~ s@([0-9][0-9a-fA-F]*)[hH]|([01]+)[bB]|0[xX]([0-9a-fA-F]+)|([0-7]+)[oOqQ]|([1-9][0-9]*|0(?!0))|'([^']{1,4})'|(byte|[dqtoyz]?word)|([_a-zA-Z][.\w]*)|([-+\[\]\s()~*]|<<|>>)|(\W+|\w+)@
     defined($1) ? sprintf("0x%x", hex($1)) :
     defined($2) ? parse_bin($2) :
     defined($3) ? sprintf("0x%x", hex($3)) :
