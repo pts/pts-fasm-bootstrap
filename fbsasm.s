@@ -1,3 +1,5 @@
+##  #  by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024
+##  #
 ##  #  This is a subset of the source code of fasm 1.30 (with some CPU instructions,
 ##  #  `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386
 ##  #  only. It's useful for bootstrapping fasm.
@@ -12,15 +14,15 @@
 ##  #  Lines in fbsasm.nasm and fbsasm.fasm correspond to each other.
 ##  #
 # This file is autognerated by nasm2as.pl
-##%ifndef near_o0
-##%define near_o0 near  #  For `nasm -O0'.
-##%endif
 ##
 ##  #  flat assembler 0.37 source, fasm.asm
 ##  #  Copyright (c) 1999-2002, Tomasz Grysztar
 ##  #  All rights reserved.
 ##
 	##program_base equ 0x700000
+##%ifndef near_o0
+##%define near_o0 near  #  For `nasm -O0'.
+##%endif
 ##
 	##org	program_base
 	##use32
@@ -38,7 +40,7 @@
 ##
 ##program_header:
 	##dd	1,0,program_base,0
-	##dd	bss-program_base,program_end-program_base,7,0x1000
+	##dd	prebss-program_base,program_end-program_base,7,0x1000
 ##
 .globl _start
 _start:  # Program entry point.
@@ -526,6 +528,8 @@ line_data_start:
 
 ##%define VERSION_STRING '1.30-bootstrap'
 
+
+
 VERSION_MAJOR = 1
 VERSION_MINOR = 30
 
@@ -795,7 +799,7 @@ get_number:
 	movl $0, (%edi)
 	movl $0, 4(%edi)
 	inc %esi
-	cmpw $('0|'x<<8), (%eax)
+	cmpw $('0|'x<<8), (%eax)  #  Same multibyte character constant order in fasm and NASM.
 	je get_hex_number
 	dec %esi
 	cmpb $'h, 1(%esi)
@@ -11474,6 +11478,8 @@ _logo:
 .ascii "1.30-bootstrap"
 .byte 0xa
 .byte 0
+
+
 _usage:
 .ascii "usage: fasm source output"
 .byte 0xa, 0
@@ -11492,10 +11498,11 @@ _counter:
 .byte 4
 .ascii "0000"
 
+prebss:
+.section .bss  #  Uninitialized data follows.
+.align 4
 bss:
 
-.section .bss
-.align 4
 memory_start:
 .fill 4, 1, 0
 memory_end:
@@ -11609,7 +11616,7 @@ virtual_data:
 fp_sign:
 .fill 1, 1, 0
 fp_format:
-.fill 1, 1, 0
+.fill 1, 1, 0  #  TODO(pts): Remove unused variables.
 value_size:
 .fill 1, 1, 0
 forced_size:
@@ -11649,3 +11656,5 @@ available_memory:
 .fill 4, 1, 0
 
 program_end:
+
+#  __END__
