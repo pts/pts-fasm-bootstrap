@@ -19,7 +19,7 @@
 ##  #  Copyright (c) 1999-2002, Tomasz Grysztar
 ##  #  All rights reserved.
 ##
-##%define program_base 0x700000  #  NASM 0.97 doesn't support `program_base equ 0x700000' with `org program_base'.
+##%define program_base 0x700000  #  NASM 0.95 doesn't support `program_base equ 0x700000' with `org program_base'.
 ##
 ##%ifndef near_o0
 ##%define near_o0 near  #  For `nasm -O0'.
@@ -10148,6 +10148,7 @@ get_label_id:
 	ret
 
 CASE_INSENSITIVE = 0
+CASE_SENSITIVE = 1
 
 symbol_characters:
 .byte 25
@@ -10503,7 +10504,8 @@ symbols:
  .byte 0
 
 formatter_symbols:
- .if CASE_INSENSITIVE
+ .if !CASE_SENSITIVE
+
  .byte 6
  .ascii "binary"
  .byte 0x18, 1

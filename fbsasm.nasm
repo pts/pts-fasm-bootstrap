@@ -9965,6 +9965,7 @@ get_label_id:
 	ret
 
 CASE_INSENSITIVE equ 0
+%define CASE_SENSITIVE
 
 symbol_characters db 25
  db 9,0Ah,0Dh,1Ah,20h,'+-/*:=|&~()[]<>{},;\'
@@ -10098,7 +10099,7 @@ symbols:
  db 0
 
 formatter_symbols:
- %if CASE_INSENSITIVE
+ %ifndef CASE_SENSITIVE
  db 6,'binary',18h,1
  db 4,'code',19h,5
  db 7,'console',1Bh,3

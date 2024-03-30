@@ -298,6 +298,10 @@ while (<STDIN>) {
         substr($_, 0, 0) = "$prews$label:\n$prews";
         $prews = "";
       }
+    } elsif ($_ eq "%define CASE_SENSITIVE") {
+      $_ = "CASE_SENSITIVE = 1";
+    } elsif ($_ eq "%ifndef CASE_SENSITIVE") {
+      $_ = ".if !CASE_SENSITIVE\n";
     } else {
       #print qq(.string "foo"\n); last;
       die "fatal: unsupported instruction ($.): $_\n";
