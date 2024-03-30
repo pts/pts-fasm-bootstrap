@@ -40,7 +40,7 @@ file_header:
 
 program_header:
 	dd	1,0,program_base,0
-	dd	prebss-program_base,program_end-program_base,7,0x1000
+	dd	prebss-file_header,program_end-bss+prebss-file_header,7,0x1000
 
 start:
 
@@ -10488,9 +10488,9 @@ _bytes_suffix db ' bytes.',0xA,0
 _counter db 4,'0000'
 
 prebss:
-absolute $  ; Uninitialized data follows.
-alignb 4
-bss:
+bss_align equ ($$-$)&3
+section .bss  ; We could use `absolute $' here instead, but that's broken (breaks address calculation in program_end-bss+prebss-file_header) in NASM 0.95--0.97.
+bss resb bss_align  ; Uninitialized data follows.
 
 memory_start resb 4
 memory_end resb 4

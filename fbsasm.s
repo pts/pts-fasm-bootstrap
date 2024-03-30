@@ -40,7 +40,7 @@
 ##
 ##program_header:
 	##dd	1,0,program_base,0
-	##dd	prebss-program_base,program_end-program_base,7,0x1000
+	##dd	prebss-file_header,program_end-bss+prebss-file_header,7,0x1000
 ##
 .globl _start
 _start:  # Program entry point.
@@ -11499,9 +11499,10 @@ _counter:
 .ascii "0000"
 
 prebss:
-.section .bss  #  Uninitialized data follows.
-.align 4
+# bss_align = 0
+.section .bss  #  We could use `absolute $' here instead, but that's broken (breaks address calculation in program_end-bss+prebss-file_header) in NASM 0.95--0.97.
 bss:
+# .fill bss_align, 1, 0  #  Uninitialized data follows.
 
 memory_start:
 .fill 4, 1, 0

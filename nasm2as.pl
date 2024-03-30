@@ -236,7 +236,11 @@ while (<STDIN>) {
       $_ = "$last_label$1:";
     } elsif (m@^(?:ret|clc|stc|cdq|cbw|cwde|xlatb)$@) {
     } elsif (m@(\w+)\s+equ\s+(\S.*)$@) {
-      $_ = "$1 = " . fix_expr($2);
+      if ($_ eq q(bss_align equ ($$-$)&3)) {
+        $_ = "# bss_align = 0";  # ld(1) will add proper alignment.
+      } else {
+        $_ = "$1 = " . fix_expr($2);
+      }
     } elsif (m@^((?:rep(?:n?[ez]|)\s+)?(?:lod|sto|cmp|mov|sca)s[bwd])$@) {
       # die "fatal: assert: missing whitespace after rep: $_" if ...;
       s@\s+@\n$prews@;  # Multiple lines needed by GNU as(1) 2.9.1.
@@ -281,7 +285,7 @@ while (<STDIN>) {
       $_ = "$1 " . fix_inst_arg($4) . ", \%$3, " . fix_inst_arg($2);
     } elsif (m@^\%if\s@ or $_ eq "%else" or $_ eq "%endif") {
       substr($_, 0, 1) = ".";
-    } elsif ($_ eq "absolute \$") {
+    } elsif ($_ eq "absolute \$" or $_ eq "section .bss") {
       $_ = ".section .bss";
     } elsif (m@^alignb?\s+([1248])$@) {
       $_ = ".align $1";
@@ -289,6 +293,7 @@ while (<STDIN>) {
       my $label = $1;
       $last_label = $1 if defined($1) and substr($1, 0, 1) ne ".";
       $_ = ".fill " . fix_expr($2) . ", 1, 0";
+      substr($_, 0, 0) = "# " if $2 eq "bss_align";
       if (defined($label)) {
         substr($_, 0, 0) = "$prews$label:\n$prews";
         $prews = "";
