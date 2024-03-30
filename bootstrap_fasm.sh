@@ -161,6 +161,8 @@ case "$1" in  # Any of these below will work.
   ;;
  nasm* | --nasm* | "")  # Default.
   nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+  #nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
+  #nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
   #cp -a fbsasm fbsasm.nasm.bin
   ;;
  *)
@@ -170,8 +172,6 @@ case "$1" in  # Any of these below will work.
   exit 1 ;;
 esac
 
-#nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
-#nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
 chmod 755 fbsasm
 cp -a fbsasm fasm-re-bootstrap
 if test -f fbsasm.fasm; then  # Bootstrap fbsasm from fasm source fbsasm.fasm, just for checking.
