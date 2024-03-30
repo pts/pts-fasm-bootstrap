@@ -51,7 +51,8 @@ programming languages, targeting Linux i386:
 
 * NASM: already implemented as `fbsasm.nasm`, use it with
   `./bootstrap_nasm.sh nasm`. It is a reimplementation of a subset of fasm
-  1.30 (for Linux i386) in NASM 0.98.39 or later. It was created by
+  1.30 (for Linux i386) in NASM 0.95 (1997-07-27) or later. It has been
+  tested with 0.98.39 extensively. It was created by
   concatenating source files from fasm 1.30 and fasm 1.37 (Linux-specific
   `fasm.asm` and `system.inc`), and manually converting it to NASM syntax
   (mostly doing some manual changes and then many regexp substitutions).

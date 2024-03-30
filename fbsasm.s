@@ -1,5 +1,9 @@
 ##  #  by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024
 ##  #
+##  #  Minimum NASM version required to compile: NASM 0.95 (1997-07-27). The
+##  #  nasm.exe bundled with NASM 0.95 (nasm095s.zip) precompiled for DOS 8086
+##  #  also works.
+##  #
 ##  #  This is a subset of the source code of fasm 1.30 (with some CPU instructions,
 ##  #  `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386
 ##  #  only. It's useful for bootstrapping fasm.
