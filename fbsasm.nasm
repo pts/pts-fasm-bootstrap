@@ -25,8 +25,8 @@
 %endif
 
 	org	program_base
-	use32
-	cpu 386
+	bits 32  ; NASM 0.97 supports this but ignores `use32'.
+	;cpu 386  ; True but NASM 0.97 doesn't support it.
 
 ;	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
