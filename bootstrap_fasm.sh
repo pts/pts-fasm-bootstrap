@@ -97,7 +97,7 @@ case "$1" in  # Any of these below will work.
   ASPROGBASE="${ASPROG##*/}";
   test "$ASPROGDIR" = "$ASPROG/" && ASPROGDIR=
   LDPROG="${ASPROGDIR}ld${ASPROGBASE#*as}"
-  if "$ASPROG" --32 -march=i386 --version >/dev/null; then  # Newer GNU as(1) (tested with 2.22 and 2.30).
+  if "$ASPROG" --32 -march=i386 --version >/dev/null 2>&1; then  # Newer GNU as(1) (tested with 2.22 and 2.30).
     "$ASPROG" --32 -march=i386 -o fbsasm.o fbsasm.s
   else  # Old GNU as(1) (tested with 2.9.1 and 2.9.5) for i386.
     "$ASPROG" -o fbsasm.o fbsasm.s
