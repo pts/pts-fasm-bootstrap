@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 fbsasm.und fbsasm.err fbsasm.bin
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -146,6 +146,18 @@ case "$1" in  # Any of these below will work.
   ;;
  vasm* | --vasm*)  # Also includes --vasmx86. http://www.compilers.de/vasm.html  http://sun.hasenbraten.de/vasm/
   tasm/vasmx86 -quiet -mi386 -Fbin -o fbsasm fbsasm.vasm
+  ;;
+ nasm-0.9[0-9] | --nasm-0.9[0-9] | nasm-0.9[0-9]-linux | --nasm-0.9[0-9]-linux)
+  prog="${1#--}"
+  prog="${prog%-linux}"
+  tasm/"$prog" -f bin -o fbsasm fbsasm.nasm  # Fast.
+  ;;
+ nasm-0.9[0-9]-dos | --nasm-0.9[0-9]-dos)
+  prog="${1#--}"
+  prog="${prog#nasm-0.9}"
+  prog="${prog%-dos}"
+  ln -s fbsasm.nasm fbsasm.nas
+  tasm/kvikdos tasm/nasm09"$prog".exe -f bin -o fbsasm fbsasm.nasm
   ;;
  nasm* | --nasm* | "")  # Default.
   nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
