@@ -19,7 +19,8 @@
 ; Copyright (c) 1999-2002, Tomasz Grysztar
 ; All rights reserved.
 
-	program_base equ 0x700000
+%define program_base 0x700000  ; NASM 0.95 doesn't support `program_base equ 0x700000' with `org program_base'.
+
 %ifndef near_o0
 %define near_o0 near  ; For `nasm -O0'.
 %endif
