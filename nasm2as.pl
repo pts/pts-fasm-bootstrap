@@ -273,6 +273,8 @@ while (<STDIN>) {
           ($_, $prews) = ("$prews.byte 0x66, 0x3d  # cmp \$$1, %ax\n$prews.word $1", "");
         } elsif (m@^mov \$(.*?), %ax$@) {  # Bugfix for GNU as(1) 2.9.1. It's already fixed in GNU as(1) 2.9.5.
           ($_, $prews) = ("$prews.byte 0x66, 0xb8  # mov \$$1, %ax\n$prews.word $1", "");
+        #} elsif ($_ eq "xor %al, %al") {  # Bugfix for GNU as(1) 2.6, it generates `xor %eax, %eax'. It's alrady fixed in GNU as(1) 2.9.1. There are way too many (hundreds) to fix here.
+        #  $_ = ".byte 0x30, 0xc0  # $_";
         }
       }
     } elsif (m@^(sh[lr]d)\s+([^,]+?)\s*,\s*(e(?:[abcd]x|[sd]i|[sb]p))\s*,\s*([^,]+)$@) {
