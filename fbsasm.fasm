@@ -24,6 +24,10 @@
 
 	program_base = 0x700000
 
+
+
+
+
 	org	program_base
 	use32
 
@@ -9964,6 +9968,7 @@ get_label_id:
 	ret
 
 CASE_INSENSITIVE = 0
+
 
 symbol_characters db 25
  db 9,0Ah,0Dh,1Ah,20h,'+-/*:=|&~()[]<>{},;\'

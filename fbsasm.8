@@ -15,12 +15,17 @@
 ;
 
 
+
+
+
+
 ; flat assembler 0.37 source, fasm.asm
 ; Copyright (c) 1999-2002, Tomasz Grysztar
 ; All rights reserved.
 
 	program_base equ 700000h
 	near_o0 equ long
+
 
 
 
@@ -9964,6 +9969,7 @@ get_label_id:
 	ret
 
 CASE_INSENSITIVE equ 0
+
 
 symbol_characters db 25  ; !! use offset
  db 9,0Ah,0Dh,1Ah,20h,'+-/*:=|&~()[]<>{},;\'
