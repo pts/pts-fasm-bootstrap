@@ -107,8 +107,15 @@ case "$1" in  # Any of these below will work.
   "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o  # -N to make .text read-write-execute.
   rm -f fbsasm.o
   ;;
- tasm* | --tasm*)
-  tasm=tasm/tasm.exe
+ tasm* | --tasm*)  # Example: --tasm=tasm/tasm41.exe . Example: --tasm=tasm/tasm32ps
+  tasm="${1#--}"
+  if test "${tasm#tasm=}" = "$tasm"; then
+    tasm=tasm/tasm.exe
+  else
+    tasm="${tasm#*=}"
+  fi
+  tkvikdos=tasm/kvikdos
+  test "${tasm%.exe}" = "$tasm" && tkvikdos=command
   # Use the /m999 switch to optimize the output for size. But TASM 1.01
   # doesn't support it, so we don't use it.
   #
@@ -117,19 +124,19 @@ case "$1" in  # Any of these below will work.
   # it reports this for many lines: `Forward reference needs override'.
   #
   # Alternatively, this also works with TASM 5.3: tasm/tasm32ps /t fbsasm.tas fbsasm.obj
-  tasm/kvikdos "$tasm" /t fbsasm.tas fbsasm.obj  # Output file: fbsasm.obj
-  #tasm/kvikdos "$tasm" >/dev/null #  Just print help to make sure that kvikdos and TASM work.
+  "$tkvikdos" "$tasm" /t fbsasm.tas fbsasm.obj  # Output file: fbsasm.obj
+  #"$tkvikdos" "$tasm" >/dev/null #  Just print help to make sure that kvikdos and TASM work.
   cp -a folink2.tas f.upu  # The TASM nolink-hack below works with TASM 4.1 and only if the filename is f.upu.
   # Alternatively, this also works with TASM 5.3: tasm/tasm32ps /t f.upu folink2t.com
   # This is the TASM nolink-hack: the generated OMF .obj file is a valid DOS .com program.
-  if tasm/kvikdos "$tasm" /t f.upu folink2t.com; then  # Build folink2 with TASM 2.0--.
+  if "$tkvikdos" "$tasm" /t f.upu folink2t.com; then  # Build folink2 with TASM 2.0--.
     # Needs TASM 2.0 (1990) or later, because earlier versions convert the
     # filename in the OMF THEADR record to uppercase.
     :
   else  # Build folink2 with TASM 1.01.
     cp -a folink2.tas f.t  # The TASM nolink-hack below works with TASM 1.01, TASM 4.1 and TASM 5.x and only if the filename is f.t (uppercase in TASM invocation below).
     # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
-    tasm/kvikdos "$tasm" /t /dd F.T folink2t.com  # This is the TASM nolink-hack: the generated OMF .obj file is a valid DOS .com program.
+    "$tkvikdos" "$tasm" /t /dd F.T folink2t.com  # This is the TASM nolink-hack: the generated OMF .obj file is a valid DOS .com program.
     rm -f f.t
   fi
   rm -f f.upu
