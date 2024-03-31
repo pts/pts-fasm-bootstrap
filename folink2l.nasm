@@ -261,7 +261,7 @@ wflush_:
 ; void __watcall w8(char c);  ; Writes a byte to the output raw binary file.
 w8_:
 		push edx
-		mov dl, al
+		xchg eax, edx  ; DL := AL; EAX := junk; rest of EDX := junk.
 		cmp byte [esi-bss+_wri+1], 20h  ; Same as: cmp dword [esi-bss+_wri], 2000h
 		jne .7
 		call wflush_
