@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -108,21 +108,31 @@ case "$1" in  # Any of these below will work.
   rm -f fbsasm.o
   ;;
  tasm* | --tasm*)
-  # Use the /m999 switch to optimize the output for size.
+  tasm=tasm/tasm.exe
+  # Use the /m999 switch to optimize the output for size. But TASM 1.01
+  # doesn't support it, so we don't use it.
   #
   # Tested and found working with TASM 1.01 (1989), TASM 2.0 (1990) and 4.1
   # (1996, last version for DOS 8086). It doesn't work with TASM 1.0 (1988),
   # it reports this for many lines: `Forward reference needs override'.
-  tasm/kvikdos tasm/tasm.exe /t fbsasm.tas, fbsasm.obj  # Output file: fbsasm.obj
-  # Alternatively, this also works with TASM 5.3: tasm/tasm32ps /t fbsasm.tas fbsasm.obj
-  cp -a folink2.tas f.u00  # The TASM hack below works with TASM 4.1 and only if the filename is f.u00.
-  # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
   #
-  # TODO(pts): Make it work with TASM 1.01 (1989) without the /q switch.
-  # The actual jump offsets depend on the size of the TASM version string.
-  tasm/kvikdos tasm/tasm.exe /t /m999 /q f.u00 folink2t.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
-  # Alternatively, this also works with TASM 5.3: tasm/tasm32ps /t /m999 /q f.u00 folink2t.com
-  rm -f f.u00
+  # Alternatively, this also works with TASM 5.3: tasm/tasm32ps /t fbsasm.tas fbsasm.obj
+  tasm/kvikdos "$tasm" /t fbsasm.tas fbsasm.obj  # Output file: fbsasm.obj
+  #tasm/kvikdos "$tasm" >/dev/null #  Just print help to make sure that kvikdos and TASM work.
+  cp -a folink2.tas f.upu  # The TASM nolink-hack below works with TASM 4.1 and only if the filename is f.upu.
+  # Alternatively, this also works with TASM 5.3: tasm/tasm32ps /t f.upu folink2t.com
+  # This is the TASM nolink-hack: the generated OMF .obj file is a valid DOS .com program.
+  if tasm/kvikdos "$tasm" /t f.upu folink2t.com; then  # Build folink2 with TASM 2.0--.
+    # Needs TASM 2.0 (1990) or later, because earlier versions convert the
+    # filename in the OMF THEADR record to uppercase.
+    :
+  else  # Build folink2 with TASM 1.01.
+    cp -a folink2.tas f.t  # The TASM nolink-hack below works with TASM 1.01, TASM 4.1 and TASM 5.x and only if the filename is f.t (uppercase in TASM invocation below).
+    # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
+    tasm/kvikdos "$tasm" /t /dd F.T folink2t.com  # This is the TASM nolink-hack: the generated OMF .obj file is a valid DOS .com program.
+    rm -f f.t
+  fi
+  rm -f f.upu
   tasm/kvikdos folink2t.com fbsasm.obj fbsasm
   #./folink2 fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2t.com
@@ -132,11 +142,11 @@ case "$1" in  # Any of these below will work.
   #
   # TODO(pts): Release dosbox.nox.static.
   # TODO(pts): Port the Win32 lzasm.exe to Linux i386. Also release the folink2l.exe.
-  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t fbsasm.tas  # Output file: fbsasm.obj  # This also works with lzasm 0.56.
-  cp -a folink2.tas f.u00  # The TASM hack below works with TASM 4.1 and only if the filename is f.u00.
+  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t fbsasm.tas  # Output file: fbsasm.obj  # This also works with LZASM 0.56.
+  cp -a folink2.tas f.upu  # The TASM hack below works with TASM 4.1 and only if the filename is f.upu.
   # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
-  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t f.u00 folink2l.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
-  rm -f f.u00
+  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t f.upu folink2l.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
+  rm -f f.upu
   tasm/kvikdos folink2l.com fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2l.com
   ;;

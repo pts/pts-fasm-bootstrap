@@ -65,7 +65,7 @@ The bootstrap assembler has multiple (equivalent) implementations:
   1998-05-01, part of Debian 2.1 slink), 2.9.5, 2.22 and 2.30.
 * TASM (Turbo Assembler) + folink2 (custom linker): already implemented as
   `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with TASM
-  2.0 (1990), 4.1 (1996, the latest Turbo Assembler which works
+  1.01 (1989), 2.0 (1990), 4.1 (1996, the latest Turbo Assembler which works
   on a DOS 8086 without a DOS extender) and 5.3 (2000-01-30, probably the
   last release of TASM).
 * LZASM (Lazy Assembler) + folink2 (custom linker): already implemented as

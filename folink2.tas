@@ -1,5 +1,5 @@
 ;
-; folink2.tas: flat OMF linker implemented in TASM 2.0--4.1--5.3 targeting DOS 8086
+; folink2.tas: flat OMF linker implemented in TASM 1.01--2.0--4.1--5.3 targeting DOS 8086
 ; by pts@fazekas.hu at Tue Mar 26 02:24:06 CET 2024
 ;
 ; This linker just dumps the data in the LEDATA, LEDATA386, LIDATA and
@@ -7,10 +7,12 @@
 ; records, it expands the repeated bytes. It fails if it encounters
 ; multiple segments or any relocations (fixupps).
 ;
-; Compile with TASM 2.0--4.1--5.3 on Linux after copying this file to f.u00: tasm /t /m999 /q f.u00 folink2t.com
-; Compile with TASM 2.0--4.1--5.3 on Linux with kvikdos: cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /q f.u00 folink2t.com
-; Compile with LZASM --0.56 on Linux after copying this file to f.u00: lzasm /t f.u00 folink2l.com
-; Compile with LZASM --0.56 on Linux with kvikdos: cp -a folink2.tas f.u00 && dosbox.nox.static --cmd --mem-mb=3 lzasm.exe /t f.u00 folink2l.com
+; Compile with TASM 1.01--(some) on DOS after copying this file to f.t (with uppercase filename in the command line): tasm /t /dd F.T folink2.com
+; Compile with TASM 1.01--(some) on Linux with kvikdos: cp -a folink2.tas f.t && kvikdos tasm.exe /t /dd F.T folink2.com
+; Compile with TASM 2.0--4.1--5.3 on DOS after copying this file to f.upu: tasm /t f.upu folink2t.com
+; Compile with TASM 2.0--4.1--5.3 on Linux with kvikdos: cp -a folink2.tas f.upu && kvikdos tasm.exe /t f.upu folink2t.com
+; Compile with LZASM --0.56 on DOS after copying this file to f.upu: lzasm /t f.upu folink2.com
+; Compile with LZASM --0.56 on Linux with kvikdos: cp -a folink2.tas f.upu && dosbox.nox.static --cmd --mem-mb=2 lzasm.exe /t f.upu folink2.com
 ;
 ; Implementation based on folink2.c and on the disassembly of the
 ; folink2.obj file created by `dosmc -mt -c folink2.c'.
@@ -18,24 +20,109 @@
 
 ideal
 
-; This is a hack to make the output file of TASM valid not only as OMF
+; This is the no-link hack. It makes the output file of TASM valid not only as OMF
 ; .obj, but also as DOS .com program. This way we don't need tlink.exe at all,
 ; previously we used tlink.exe to generate the DOS .com program.
 ;
-; The filename must be f.u00 in order for this hack to work, and also the
-; assembler must be TASM 2.0 (the first version to support the /q switch) or
-; later, tested with 2.0 (1990), 2.01, 2.51, 3.0, 3.1, 3.2, 4.0, 4.1 (1996),
-; 5.3 (2000-01-30) or LZASM 0.56 (without the /q switch).
-ifdef @lzasm  ; LZASM --0.56.
-  segment C  ; The size of this segment name matters.
-  assume cs:C, ds:C, es:C
-  org 16bh  ; Specially crafted to match the .obj header created by LZASM.
-else  ; TASM 2.0--.
-  segment _CSE_  ; The size of this segment name matters.
-  assume cs:_CSE_, ds:_CSE_, es:_CSE_
-  org 136h  ; Specially crafted to match the .obj header created by TASM /q.
-  db 'AA'  ; Any value is good, size must be 2.
+; There are some restrictions on the TASM source filename (e.g. f.upu or
+; F.T), the TASM version (minimum version is 1.01 (1989), see below), the
+; LZASM version (0.56 (2007) is known to work) and the use of the /q flag,
+; and uninitialized global variables must be accessed in
+; position-independent way (see @@base1 in the code below on how).
+;
+; Compilation options for DOS (with the source file named file.tas):
+;
+;   copy /b file.tas f.upu
+;   tasm f.upu file.com
+;   del f.upu
+;
+;   (Alternatively, above `tasm /q', `lzasm' and `lzasm /q` can be used instead
+;   of `tasm'.)
+;
+;   copy /b file.tas F.T
+;   tasm /dd F.T file.com
+;   del F.T
+;
+;   tasm /dt file.tas
+;   tlink /t file.obj
+;   del file.com
+ideal
+ifdef d  ; Filename: F.T (with uppercase in the command line). Compile (wituout /q): tasm /dd F.T
+  ; TASM versions supported: 1.01, 2.01, 2.02, 3.0, 3.1, 3.2i, 4.0, 4.1, 5.0, 5.2, 5.3, 5.4. Not supported: 1.0, 2.0, 2.5. Untested: 5.0r, 5.2b.
+  ; LZASM is not supported.
+  ; TASM 1.0 and 1.01 convert the source filename in the OMF THEADR record to uppercase. Other TASM versions leave it intact.
+  ; This version of hack makes the OMF .obj file start like this (with the OMF THEADR record) for TASM eariler than 3.0:
+  ;   00000100  800500            add byte [di],0x0
+  ;   00000103  03462E            add ax,[bp+0x2e]    ; 0x46 is 'F', 0x2e is '.'.
+  ;   00000106  54                push sp             ; 0x54 is 'T'.
+  ;   00000107  B088              mov al,0x88         ; 0xb0 is the checksum byte of the previous OMF THEADR record.
+  ;   00000109  2000              and [bx+si],al
+  ;   0000010B  0000              add [bx+si],al
+  ;   0000010D  54                push sp             ; 0x54 is 'T'. The string 'Turbo Assembler' starts here (not for LZASM).
+  ;   0000010E  7572              jnz 0x182
+  ; This version of hack makes the OMF .obj file start like this (with the OMF THEADR record) for TASM 3.0 and later.
+  ;   00000100  800500            add byte [di],0x0
+  ;   00000103  03462E            add ax,[bp+0x2e]    ; 0x46 is 'F', 0x2e is '.'.
+  ;   00000106  54                push sp             ; 0x54 is 'T'.
+  ;   00000107  B088              mov al,0x88         ; 0xb0 is the checksum byte of the previous OMF THEADR record.
+  ;   00000109  2000              and [bx+si],al
+  ;   0000010B  0000              add [bx+si],al
+  ;   0000010D  1C54              sbb al,0x54         ; 0x54 is 'T'. The string 'Turbo Assembler' starts here (not for LZASM).
+  ;   0000010F  7572              jnz 0x183
+  ifdef @lzasm  ; LZASM --0.56.
+    err 'LZASM not supported.  ; Because only TASM (but not LZASM) generates the bytes 'ur' (as part of `Turbo') in the first OMF COMENT record.
+  endif
+  ifdef ??version  ; TASM, but not LZASM.
+    ifndef f  ; TASM 2.0 and 2.5 create broken output (crash at DOS program startup) because of assembler version OMF COMENT record size differences.
+      if ??version eq 200h
+        err 'please use /df to force compilation with TASM 2.01 or 2.02 (but it creates broken output with TASM 2.0)'
+      endif
+      if ??version eq 205h
+        err 'please use /df to force compilation with TASM 2.51 (but it creates broken output with TASM 2.5)'
+      endif
+    endif
+  endif
+  segment A
+  db 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'  ; Harmless `inc bx'.
+  xor bx, bx
+  push bx  ; Push the return address to the `int 20h' below.
+  mov [word bx], 20cdh  ; Restore `int 20h' to the beginning to PSP.
+  mov ax, 200h
+  push ax
+  xor ax, ax
+  ret  ; Jump to 200h, somewhere before _start.
+  db 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+  ends
+  segment C
+  org 200h  ; Large enough to make to uninitialized variables (starting at ___section_bss) work. Normal base (without OMF headers) would be 100h.
+  db 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
+else  ; Filename: f.upu (with lowercase in the command line). Compile any of: tasm f.upu ;; tasm /q f.upu ;; lzasm f.upu ;; lzasm /q f.upu
+  ; TASM versions supported: 2.0 and later, i.e. 2.0, 2.01, 2.02, 2.5, 2.51, 3.0, 3.1, 3.2, 3.2i, 4.0, 4.1, 5.0, 5.0r, 5.2b, 5.2, 5.3, 5.4. Not supported: 1.0, 1.01.
+  ; LZASM versions supported: 0.56, and maybe earlier.
+  ; This version of hack makes the OMF .obj file start like this (with the OMF THEADR record):
+  ;   00000100  800700            add byte [bx],0x0
+  ;   00000103  05662E            add ax,0x2e66  ; 0x66 is 'f', 0x2e is '.'.
+  ;   00000106  7570              jnz 0x178      ; 0x75 is 'u', 0x70 is 'p'.
+  ;   00000108  75                db 0x75        ; 0x75 is 'u'. It could be any other byte.
+  ; Start file offsets of the first `db' below: with TASM /q: 32h; with LZASM 0.56 /q: 55h, TASM without /q: varies between 6ah and 6bh.
+  ifdef ??version  ; TASM, but not LZASM.
+    if ??version lt 200h  ; True for TASM 1.0 and 1.01.
+      ifndef t
+        err 'please use the /dd version instead for TASM 1.0 and 1.01'  ; Because TASM 1.x converts the filename in the OMF THEADR record to uppercase.
+      endif
+    endif
+  endif
+  segment C
+  ifdef t
+    org 100h  ; For regular compilation with TASM + TLINK to file.com: tasm /dt file.tas ;; tlink /t file.obj
+  else
+    org 200h  ; Large enough to make to uninitialized variables (starting at ___section_bss) work. Normal base (without OMF headers) would be 100h.
+    db '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'  ; Harmless `inc ax' to accommodate for OMF record size differences.
+    db '@@@@@@@@@@@@@'  ; Harmless `inc ax' to accommodate longer (possibly unknown) assembler version OMF COMENT record.
+    xor ax, ax
+  endif
 endif
+assume cs:C, ds:C, es:C, ss:C
 
 locals @@
 
@@ -132,7 +219,10 @@ main_never_returns:  ; Never returns. Takes argv in DX.
 		je @@9
 @@8:
 		mov bx, 23h
-		mov dx, offset msg_usage
+		call @@base1
+@@base1:
+		pop dx
+		add dx, msg_usage-@@base1  ; DX := offset msg_usage. The no-link hack requires such a position-independent way.
 		mov ax, 2
 		call write_
 		mov ax, 4c01h
@@ -339,7 +429,10 @@ main_never_returns:  ; Never returns. Takes argv in DX.
 fatal_:  ; Never returns.
 		mov cx, ax
 		mov bx, 15h
-		mov dx, offset msg_fatal
+		call @@base2
+@@base2:
+		pop dx
+		add dx, msg_fatal-@@base2  ; DX := offset msg_usage. The no-link hack requires such a position-independent way.
 		mov ax, 2
 		call write_
 		xchg ax, cx  ; AL := CL; AH := junk; CL := junk.
