@@ -16,6 +16,9 @@
   .set bsscur, bsscur+\size
 .endm
 
+
+
+
 #  flat assembler 0.37 source, fasm.asm
 #  Copyright (c) 1999-2002, Tomasz Grysztar
 #  All rights reserved.
@@ -25,6 +28,10 @@
 .org	program_base
 .code32
 #cpu 386   # It's not possible to set here.
+
+
+
+
 
 # 	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
@@ -525,6 +532,8 @@ line_data_start:
 #  (including the GNU Public Licence).
 
 ##%define VERSION_STRING '1.30-bootstrap'
+
+
 
 .set VERSION_MAJOR, 1
 .set VERSION_MINOR, 30
@@ -10144,6 +10153,7 @@ get_label_id:
 
 .set CASE_INSENSITIVE, 0
 
+
 symbol_characters:
 .byte 25
  .byte 9, 0xa, 0xd, 0x1a, 0x20
@@ -10499,6 +10509,7 @@ symbols:
 
 formatter_symbols:
  .if CASE_INSENSITIVE
+
  .byte 6
  .ascii "binary"
  .byte 0x18, 1
@@ -11474,6 +11485,8 @@ _logo:
 .ascii "1.30-bootstrap"
 .byte 0xa
 .byte 0
+
+
 _usage:
 .ascii "usage: fasm source output"
 .byte 0xa, 0
@@ -11493,7 +11506,9 @@ _counter:
 .ascii "0000"
 
 prebss:
+
 .set bsscur, .+((file_header-.)&3)  # .align 4
+
 .set bss, bsscur
 
 bssvar memory_start, 4
@@ -11649,3 +11664,5 @@ bssvar available_memory, 4
 
 
 .set program_end, bsscur
+
+#  __END__
