@@ -252,8 +252,7 @@ wflush_:
 		push 7
 		jmp main_.jfatal3
 .5:
-		xor eax, eax
-		mov [esi-bss+_wri], eax
+		and dword [esi-bss+_wri], 0
 .6:
 		pop edx
 		pop ebx
