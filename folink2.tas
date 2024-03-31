@@ -18,11 +18,13 @@
 ; folink2.obj file created by `dosmc -mt -c folink2.c'.
 ;
 
-ideal
-
 ; This is the no-link hack. It makes the output file of TASM valid not only as OMF
 ; .obj, but also as DOS .com program. This way we don't need tlink.exe at all,
 ; previously we used tlink.exe to generate the DOS .com program.
+;
+; This no-link hack should be put to or near the beginning of the .tas
+; source file, replacing `segment C' + `org 100h'. It works inside and
+; outside ideal mode.
 ;
 ; There are some restrictions on the TASM source filename (e.g. f.upu or
 ; F.T), the TASM version (minimum version is 1.01 (1989), see below), the
@@ -46,7 +48,6 @@ ideal
 ;   tasm /dt file.tas
 ;   tlink /t file.obj
 ;   del file.com
-ideal
 ifdef d  ; Filename: F.T (with uppercase in the command line). Compile (wituout /q): tasm /dd F.T
   ; TASM versions supported: 1.01, 2.01, 2.02, 3.0, 3.1, 3.2i, 4.0, 4.1, 5.0, 5.2, 5.3, 5.4. Not supported: 1.0, 2.0, 2.5. Untested: 5.0r, 5.2b.
   ; LZASM is not supported.
@@ -86,7 +87,9 @@ ifdef d  ; Filename: F.T (with uppercase in the command line). Compile (wituout 
   db 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC'  ; Harmless `inc bx'.
   xor bx, bx
   push bx  ; Push the return address to the `int 20h' below.
-  mov [word bx], 20cdh  ; Restore `int 20h' to the beginning to PSP.
+  ; Don't use `mov [word bx], 20cdh', because it works only in TASM ideal mode.
+  mov ax, 20cdh
+  mov [bx], ax  ; Restore `int 20h' to the beginning to PSP ([0]).
   mov ax, 200h
   push ax
   xor ax, ax
@@ -124,6 +127,7 @@ else  ; Filename: f.upu (with lowercase in the command line). Compile any of: ta
 endif
 assume cs:C, ds:C, es:C, ss:C
 
+ideal
 locals @@
 
 _start:  ; Entry point of the DOS .com program.
