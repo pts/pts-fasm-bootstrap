@@ -144,16 +144,25 @@ case "$1" in  # Any of these below will work.
   #./folink2 fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2t.com
   ;;
- lzasm* | --lzasm*)
+ lzasm* | --lzasm*)  # Example: --lzasm=tasm/lzasm.exe . Example: --tasm=tasm/lzasm
   # Tested with LZASM 0.56 (2007-10-04).
   #
   # TODO(pts): Release dosbox.nox.static.
   # TODO(pts): Port the Win32 lzasm.exe to Linux i386. Also release the folink2l.exe.
-  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t fbsasm.tas  # Output file: fbsasm.obj  # This also works with LZASM 0.56.
+  lzasm="${1#--}"
+  if test "${lzasm#lzasm=}" = "$lzasm"; then
+    lzasm=tasm/lzasm.exe
+  else
+    lzasm="${lzasm#*=}"
+  fi
+  ldosbox="dosbox.nox.static --cmd --mem-mb=3"
+  test "${lzasm%.exe}" = "$lzasm" && ldosbox=command
+  $ldosbox "$lzasm" /t fbsasm.tas  # Output file: fbsasm.obj  # This also works with LZASM 0.56.
   cp -a folink2.tas f.upu  # The TASM hack below works with TASM 4.1 and only if the filename is f.upu.
   # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
-  dosbox.nox.static --cmd --mem-mb=3 tasm/lzasm.exe /t f.upu folink2l.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
+  $ldosbox "$lzasm" /t f.upu folink2l.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
   rm -f f.upu
+  # Alternatively, built from folink2l.nasm: ./folink2 fbsasm.obj fbsasm
   tasm/kvikdos folink2l.com fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2l.com
   ;;
