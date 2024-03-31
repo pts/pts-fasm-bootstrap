@@ -32,7 +32,7 @@ Elf32_Phdr:	dd 1,0,program_base,0,prebss-program_base,mem_end-program_base,7,100
 
 _start:  ; Entry point of the Linux i386 program. Stack: top is argc, then argv[0], argv[1] etc., then NULL, then envp[0], envp[1] etc., then NULL, then ELF aux table.
 		pop eax  ; argc.
-		mov edx, esp  ; argv.
+		mov edi, esp  ; argv.
 		;push exit_  ; No need for this if main never returns.
 		; Fall through to main_.
 
@@ -40,11 +40,12 @@ _start:  ; Entry point of the Linux i386 program. Stack: top is argc, then argv[
 main_:
 		mov esi, bss  ; Use [esi+...] effective addresses throughout the program for shorter encoding.
 		xor eax, eax
-		cmp [edx+4], eax  ; argv[1] == NULL?
+		scasd  ; EDI += 4.
+		scasd  ; argv[1] == NULL?
 		je .8
-		cmp [edx+8], eax  ; argv[2] == NULL?
+		scasd  ; argv[2] == NULL?
 		je .8
-		cmp [edx+0ch], eax  ; argv[3] == NULL?
+		scasd  ; argv[3] == NULL?
 		je .9
 .8:
 		xor ebx, ebx
@@ -56,11 +57,9 @@ main_:
 		inc eax  ; EAX := 1.
 		jmp exit_
 .9:
-		push edx
-		mov eax, [edx+4]  ; argv[1].
+		mov eax, [edi-0x10+4]  ; argv[1].
 		xor edx, edx  ; O_RDONLY.
 		call open_
-		pop edx
 		mov dword [esi-bss+_rdfd], eax
 		test eax, eax
 		jge .10
@@ -68,7 +67,7 @@ main_:
 		jmp .jfatal1
 .10:
 		mov ebx, 666o
-		mov eax, [edx+8]  ; argv[2].
+		mov eax, [edi-0x10+8]  ; argv[2].
 		mov edx, 1 | 100o | 01000o  ; O_WRONLY | O_CREAT | O_TRUNC | O_BINARY.
 		call open_
 		mov dword [esi-bss+_wrfd], eax
