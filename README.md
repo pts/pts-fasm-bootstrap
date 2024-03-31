@@ -46,8 +46,7 @@ Initially the bootstrap assembler was able to compile fasm 1.20 and fasm
 1.30, but then it was discovered that it can also compile a lightly
 patched fasm 1.73.32.
 
-It is a future plan to have the bootstrap assembler implemented in multiple
-programming languages, targeting Linux i386:
+The bootstrap assembler has multiple (equivalent) implementations:
 
 * NASM: already implemented as `fbsasm.nasm`, use it with
   `./bootstrap_nasm.sh nasm`. It is a reimplementation of a subset of fasm
@@ -78,7 +77,14 @@ programming languages, targeting Linux i386:
 * [vasm](http://sun.hasenbraten.de/vasm/) (by Volker Barthelmann): already
   implemented as `fbsasm.vasm`, use it with `./bootstrap_fasm.sh vasm`. It
   works with vasm 1.9a (2022-10-02) and possibly earlier.
-* JWasm
+
+It is a future plan to have the bootstrap assembler implemented in additional
+programming languages, targeting Linux i386:
+
+* MASM (Microsoft Macro Assembler) + WLINK (Watcom Linker)
+* JWasm: with a bit of luck, the MASM port will work
+* WASM (Watcom Assembler) + WLINK (Watcom Linker): with a bit of luck, the
+  MASM port will work
 * C89 (ANSI C): it should work with GCC on Debian slink (released on
   1999-03-09), released before 2001-01-01, before fasm 1.20; how far can we
   go to the past? 1999? 1996?
