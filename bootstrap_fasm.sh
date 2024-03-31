@@ -99,7 +99,7 @@ case "$1" in  # Any of these below will work.
   LDPROG="${ASPROGDIR}ld${ASPROGBASE#*as}"
   if "$ASPROG" --32 -march=i386 --version >/dev/null 2>&1; then  # Newer GNU as(1) (tested with 2.22 and 2.30).
     "$ASPROG" --32 -march=i386 -o fbsasm.o fbsasm.s
-  else  # Old GNU as(1) (tested with 2.9.1 and 2.9.5) for i386.
+  else  # Old GNU as(1) (tested with 2.7, 2.9.1 and 2.9.5) for i386.
     "$ASPROG" -o fbsasm.o fbsasm.s
   fi
   # TODO(pts): Write a custom linker which can do this (supports a single
