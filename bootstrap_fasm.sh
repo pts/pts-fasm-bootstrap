@@ -188,7 +188,15 @@ case "$1" in  # Any of these below will work.
   tasm/kvikdos tasm/nasm09"$prog".exe -f bin -o fbsasm fbsasm.nasm
   ;;
  nasm* | --nasm* | "")  # Default.
-  nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+  nasm="${1#--}"
+  if test "${nasm#nasm=}" = "$nasm"; then
+    nasm=nasm-0.98.39  # tools/nasm-0.98.39
+  else
+    nasm="${nasm#*=}"
+  fi
+  nkvikdos=tasm/kvikdos
+  test "${nasm%.exe}" = "$nasm" && nkvikdos=command
+  $nkvikdos "$nasm" -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   #nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
   #nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
   #cp -a fbsasm fbsasm.nasm.bin
