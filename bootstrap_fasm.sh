@@ -194,10 +194,14 @@ case "$1" in  # Any of these below will work.
   else
     nasm="${nasm#*=}"
   fi
-  nkvikdos=tools/kvikdos
-  test "${nasm%.exe}" = "$nasm" && nkvikdos=command
-  # Dropping -O0 and -w+orphan-labels, because old NASM versions don't support it.
-  $nkvikdos "$nasm" -f bin -o fbsasm fbsasm.nasm  # Fast or slow, depending on the NASM defaults.
+  if test "${nasm%.exe}" = "$nasm"; then
+    # Dropping -O0 and -w+orphan-labels, because old NASM versions don't support it.
+    "$nasm" -f bin -o fbsasm fbsasm.nasm  # Fast or slow, depending on the NASM defaults.
+  else
+    ln -s fbsasm.nasm fbsasm.nas  # Workaround for DOS (and kvikdos), because they cannot open files with extension longer than 3 characters.
+    tools/kvikdos "$nasm" -f bin -o fbsasm fbsasm.nas  # Fast or slow, depending on the NASM defaults.
+    rm -f fbsasm.nas
+  fi
   #$nkvikdos "$nasm" -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   #nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
   #nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
