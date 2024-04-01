@@ -196,7 +196,9 @@ case "$1" in  # Any of these below will work.
   fi
   nkvikdos=tools/kvikdos
   test "${nasm%.exe}" = "$nasm" && nkvikdos=command
-  $nkvikdos "$nasm" -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
+  # Dropping -O0 and -w+orphan-labels, because old NASM versions don't support it.
+  $nkvikdos "$nasm" -f bin -o fbsasm fbsasm.nasm  # Fast or slow, depending on the NASM defaults.
+  #$nkvikdos "$nasm" -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   #nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
   #nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Even slower.
   #cp -a fbsasm fbsasm.nasm.bin
