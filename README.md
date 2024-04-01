@@ -55,6 +55,10 @@ The bootstrap assembler has multiple (equivalent) implementations:
   concatenating source files from fasm 1.30 and fasm 1.37 (Linux-specific
   `fasm.asm` and `system.inc`), and manually converting it to NASM syntax
   (mostly doing some manual changes and then many regexp substitutions).
+* Yasm: already implemented as `fbsasm.nasm`, use it with
+  `./bootstrap_nasm.sh nasm=yasm`. The NASM source works without changes.
+  Versions 1.2.0 (2011-10-31) and 1.3.0 (2014-09-11) are known to work.
+  Maybe older versions work as well.
 * fasm: already implemented as `fbsasm.fasm`, use it with
   `./bootstrap_fasm.sh fasm`. It needs at least fasm 1.20 (2001-11-17)
   to compile.
