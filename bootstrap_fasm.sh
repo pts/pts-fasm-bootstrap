@@ -114,7 +114,7 @@ case "$1" in  # Any of these below will work.
   else
     tasm="${tasm#*=}"
   fi
-  tkvikdos=tasm/kvikdos
+  tkvikdos=tools/kvikdos
   test "${tasm%.exe}" = "$tasm" && tkvikdos=command
   # Use the /m999 switch to optimize the output for size. But TASM 1.01
   # doesn't support it, so we don't use it.
@@ -140,7 +140,7 @@ case "$1" in  # Any of these below will work.
     rm -f f.t
   fi
   rm -f f.upu
-  tasm/kvikdos folink2t.com fbsasm.obj fbsasm
+  tools/kvikdos folink2t.com fbsasm.obj fbsasm
   #./folink2 fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2t.com
   ;;
@@ -163,13 +163,13 @@ case "$1" in  # Any of these below will work.
   $ldosbox "$lzasm" /t f.upu folink2l.com  # This is the TASM hack: the generated OMF .obj file is a valid DOS .com program.
   rm -f f.upu
   # Alternatively, built from folink2l.nasm: ./folink2 fbsasm.obj fbsasm
-  tasm/kvikdos folink2l.com fbsasm.obj fbsasm
+  tools/kvikdos folink2l.com fbsasm.obj fbsasm
   rm -f fbsasm.obj folink2l.com
   ;;
  a386* | --a386*)
   # A386 is a single-pass assembler, it generates suboptimal (longer)
   # encoding for instructions with forward references.
-  tasm/kvikdos tasm/a386.com +EDSP3 fbsasm.8 fbsasm.bin
+  tools/kvikdos tasm/a386.com +EDSP3 fbsasm.8 fbsasm.bin
   mv fbsasm.bin fbsasm
   ;;
  vasm* | --vasm*)  # Also includes --vasmx86. http://www.compilers.de/vasm.html  http://sun.hasenbraten.de/vasm/
@@ -185,7 +185,7 @@ case "$1" in  # Any of these below will work.
   prog="${prog#nasm-0.9}"
   prog="${prog%-dos}"
   ln -s fbsasm.nasm fbsasm.nas
-  tasm/kvikdos tasm/nasm09"$prog".exe -f bin -o fbsasm fbsasm.nasm
+  tools/kvikdos tasm/nasm09"$prog".exe -f bin -o fbsasm fbsasm.nasm
   ;;
  nasm* | --nasm* | "")  # Default.
   nasm="${1#--}"
@@ -194,7 +194,7 @@ case "$1" in  # Any of these below will work.
   else
     nasm="${nasm#*=}"
   fi
-  nkvikdos=tasm/kvikdos
+  nkvikdos=tools/kvikdos
   test "${nasm%.exe}" = "$nasm" && nkvikdos=command
   $nkvikdos "$nasm" -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Fast.
   #nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.nasm  # Slower.
