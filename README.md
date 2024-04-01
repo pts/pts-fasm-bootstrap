@@ -71,10 +71,12 @@ The bootstrap assembler has multiple (equivalent) implementations:
   `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with TASM
   1.01 (1989), 2.0 (1990), 4.1 (1996, the latest Turbo Assembler which works
   on a DOS 8086 without a DOS extender) and 5.3 (2000-01-30, probably the
-  last release of TASM).
+  last release of TASM). The custom linker folink2 is also included and is
+  built from source by TASM.
 * LZASM (Lazy Assembler) + folink2 (custom linker): already implemented as
   `fbsasm.tas`, use it with `./bootstrap_fasm.sh lzasm`. It works with LZASM
-  0.56 (2007-10-04, last release) and possibly earlier.
+  0.56 (2007-10-04, last release) and possibly earlier. The custom linker
+  folink2 is also included and is built from source by TASM.
 * A386 (by Eric Isaacson): already implemented
   as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).
