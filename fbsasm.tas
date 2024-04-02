@@ -6,7 +6,7 @@
 ;
 ; Compile with: kvikdos tasm.exe /t fbsasm.tas && cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /m999 /q f.u00 folink2t.com && kvikdos folink2t.com fbsasm.obj fbsasm && chmod +x fbsasm
 ; Compile with: dosbox.nox.static --cmd --mem-mb=3 lzasm.exe /t fbsasm.tas && cp -a folink2.tas f.u00 && kvikdos tasm.exe /t /m999 /q f.u00 folink2t.com && kvikdos folink2t.com fbsasm.obj fbsasm && chmod +x fbsasm
-; Disassemble for debugging: ndisasm -b 32 -e 0x54 -o 0x8048054 fbsasm
+; Disassemble for debugging: ndisasm -b 32 -e 0x54 -o 0x700000 fbsasm
 ;
 ; Lines in fbsasm.nasm and fbsasm.tas correspond to each other.
 ;
