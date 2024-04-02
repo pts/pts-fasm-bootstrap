@@ -9974,6 +9974,23 @@ CASE_INSENSITIVE = 0
 symbol_characters db 25
  db 9,0Ah,0Dh,1Ah,20h,'+-/*:=|&~()[]<>{},;\'
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 operators:
  db 1,'+',80h
  db 1,'-',81h
@@ -10223,6 +10240,7 @@ macro dbw a1, a2, a3 {
   db a1, a2
   dw a3
 }
+
 
 instructions_2:
  dbw 'bt',4, bt_instruction-assembler
@@ -10483,6 +10501,7 @@ instructions_11:
 _copyright db 'Copyright (c) 1999-2002, Tomasz Grysztar',0
 
 _logo db 'flat assembler  version ',VERSION_STRING,0xA,0
+
 
 
 _usage db 'usage: fasm source output',0xA,0

@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas fbsasm.as8 fbsasm.sym fbsasms.as8
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -89,6 +89,48 @@ case "$1" in  # Any of these below will work.
   ./fasm-golden-1.20 fbsasm.fasm fbsasm && chmod +x fbsasm
   #./fasm-golden-1.30 fbsasm.fasm fbsasm && chmod +x fbsasm
   #./fasm-golden-1.73.32 fbsasm.fasm fbsasm && chmod +x fbsasm
+  ;;
+ as86* | --as86*)  # Must come before `as' because of the prefix match.
+  as86="${1#--}"
+  if test "${as86#as86=}" = "$as86"; then
+    as86=as86  # tools/as86011.exe
+  else
+    as86="${as86#*=}"
+  fi
+  rm -f fbsasm.sym  # We don't need it, but without specifying it as86 generates binary file headers.
+  if test "${as86%.exe}" = "$as86"; then
+    # Dropping -O0 and -w+orphan-labels, because old NASM versions don't support it.
+    "$as86" -3 -s fbsasm.sym -b fbsasm fbsasm.as86  # Fast or slow, depending on the NASM defaults.
+  else
+    ln -s fbsasm.as86 fbsasm.as8  # Workaround for DOS (and kvikdos), because they cannot open files with extension longer than 3 characters.
+    case "${as86##*/}" in
+     as86016*.exe)
+      tools/kvikdos "$as86" -3 -s fbsasm.sym -b fbsasm fbsasm.as8  # Fast or slow, depending on the NASM defaults.
+      ;;
+     *) # Shorten labels to avoid the `symbol table overflow' error.
+      perl=perl
+      test -f tools/miniperl-5.004.04 && perl=tools/miniperl-5.004.04
+      "$perl" -e 'BEGIN { $^W = 1 } use integer; use strict;
+          die "fatal: error opening: $ARGV[0]\n" if !open(FIN, "< $ARGV[0]");
+          my %h; my $hi = 0;
+          while (<FIN>) {
+            if (m@^\s*([_a-zA-Z]\w*\s*):@) {
+              die "fatal: duplicate label: $1\n" if exists($h{$1});
+              $h{$1} = ++$hi;
+            }
+          }
+          my $re = join("|", map { quotemeta($_) } sort(keys(%h)));
+          die "fatal: error opening: $ARGV[0]\n" if !open(FIN, "< $ARGV[0]");
+          die "fatal: error opening for write: $ARGV[1]\n" if !open(FOUT, "> $ARGV[1]");
+          while (<FIN>) { s@(".*?")|\b($re)\b@ defined($1) ? $1 : "L$h{$2}" @goe; print FOUT $_ }
+          die if !close(FOUT);' fbsasm.as8 fbsasms.as8
+      tools/kvikdos "$as86" -3 -s fbsasm.sym -b fbsasm fbsasms.as8  # Fast or slow, depending on the NASM defaults.
+      rm -f fbsasms.as8
+      ;;
+    esac
+    rm -f fbsasm.as8
+  fi
+  rm -f fbsasm.sym
   ;;
  as* | gas* | --as* | --gas*)  # GNU as(1) assembler and GNU ld(1) linker, from GNU Binutils. Example: --as=debian-2.1-slink/as
   ASPROG="${1#*=}"
