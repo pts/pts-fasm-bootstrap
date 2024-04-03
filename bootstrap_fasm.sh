@@ -100,12 +100,12 @@ case "$1" in  # Any of these below will work.
   rm -f fbsasm.sym  # We don't need it, but without specifying it as86 generates binary file headers.
   if test "${as86%.exe}" = "$as86"; then
     # Dropping -O0 and -w+orphan-labels, because old NASM versions don't support it.
-    "$as86" -3 -s fbsasm.sym -b fbsasm fbsasm.as86  # Fast or slow, depending on the NASM defaults.
+    "$as86" -s fbsasm.sym -b fbsasm fbsasm.as86  # Fast or slow, depending on the NASM defaults.
   else
     ln -s fbsasm.as86 fbsasm.as8  # Workaround for DOS (and kvikdos), because they cannot open files with extension longer than 3 characters.
     case "${as86##*/}" in
      as86016*.exe)
-      tools/kvikdos "$as86" -3 -s fbsasm.sym -b fbsasm fbsasm.as8  # Fast or slow, depending on the NASM defaults.
+      tools/kvikdos "$as86" -s fbsasm.sym -b fbsasm fbsasm.as8  # Fast or slow, depending on the NASM defaults.
       ;;
      *) # Shorten labels to avoid the `symbol table overflow' error.
       perl=perl
@@ -124,7 +124,7 @@ case "$1" in  # Any of these below will work.
           die "fatal: error opening for write: $ARGV[1]\n" if !open(FOUT, "> $ARGV[1]");
           while (<FIN>) { s@(".*?")|\b($re)\b@ defined($1) ? $1 : "L$h{$2}" @goe; print FOUT $_ }
           die if !close(FOUT);' fbsasm.as8 fbsasms.as8
-      tools/kvikdos "$as86" -3 -s fbsasm.sym -b fbsasm fbsasms.as8  # Fast or slow, depending on the NASM defaults.
+      tools/kvikdos "$as86" -s fbsasm.sym -b fbsasm fbsasms.as8  # Fast or slow, depending on the NASM defaults.
       rm -f fbsasms.as8
       ;;
     esac

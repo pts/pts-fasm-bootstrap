@@ -1,23 +1,28 @@
 ; by pts@fazekas.hu at Tue Apr  2 04:29:06 CEST 2024
 ;
 ; This is a subset of the source code of fasm 1.30 (with some CPU instructions,
-; `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386
+; `format MZ' and `format PE' removed), ported to as86 syntax, for Linux i386
 ; only. It's useful for bootstrapping fasm.
 ;
-; Minimum as86 version required to compile: as86 0.0.11 (part of
-; Dev86-0.0.11.tar.gz and Dev86-dos-0.0.11.zip released on 1997-03-03, with
-; last change to as86 on 1997-02-01). The as86.exe bundled with dev86 0.0.11
-; precompiled for DOS 8086 also works if symbols names are shortened so that
-; the symbol table fits to 64 KiB..
+; Minimum as86 version required to compile: as86 0.0.7. The as86.exe in
+; Dev86dos-0.0.11.zip; precompiled for DOS 8086 also works if symbols names
+; are shortened so that the symbol table fits to 64 KiB..
 ;
-; Compile with: as86-0.0.11 -3 -s fbsasm.sym -b fbsasm.bs8 fbsasm.as86 && chmod +x fbsasm
-; Compile with: kvikdos as86011.exe -3 -s fbsasm.sym -b fbsasm.bs8 fbsasm.as86 && chmod +x fbsasm
+; as86 0.0.5   was released in Dev86-0.0.5.tar.gz      on 1996-03-24, with last file change to as86 on 1996-01-08; maybe the DOS version doesn't work (from the Changes file: (+ other machines where sizeof(char*) != sizeof(int))); macros are broken; command-line syntax is different (-s etc.)
+; as86 0.0.6   was released in Dev86-0.0.6.tar.gz      on 1996-05-31, with last file change to as86 on 1996-03-31; maybe the DOS version doesn't work (from the Changes file: (+ other machines where sizeof(char*) != sizeof(int))); macros are broken
+; as86 0.0.7   was released in Dev86-0.0.7.tar.gz      on 1996-09-03, with last file change to as86 on 1996-08-04; maybe the DOS version doesn't work (from the Changes file: (+ other machines where sizeof(char*) != sizeof(int)))
+; as86 0.0.8   was released in Dev86src-0.0.8.tar.gz   on 1996-11-03, with last file change to as86 on 1996-10-26; maybe the DOS version doesn't work (from the Changes file: (+ other machines where sizeof(char*) != sizeof(int)))
+; as86 0.0.9   was released in Dev86src-0.0.9.tar.gz   on 1996-12-01, with last file change to as86 on 1996-12-01; maybe the DOS version doesn't work (from the Changes file: (+ other machines where sizeof(char*) != sizeof(int)))
+; as86 0.0.10  was released in Dev86src-0.0.10.tar.gz  on 1997-01-19, with last file change to as86 on 1997-01-02
+; as86 0.0.11  was released in Dev86src-0.0.11.tar.gz  on 1997-03-03, with last file change to as86 on 1997-02-01; fbsasm.as86 also tested with the as86.exe precompiled for DOS 8086
+; as86 0.12.0  was released in Dev86src-0.12.0.tar.gz  on 1997-05-09; fbsasm.as86 also tested with the as86.exe precompiled for DOS 8086
+; as86 0.16.2  was released in Dev86dos-0.16.2.zip     on 2002-03-20; fbsasm.as86 also tested with the as86.exe precompiled for DOS 8086
+; as86 0.16.21 was released in Dev86src-0.16.21.tar.gz on 2014-03-14
+;
+; Compile with: as86 -s fbsasm.sym -b fbsasm.bs8 fbsasm.as86 && chmod +x fbsasm
+; Compile with: kvikdos as86011.exe -s fbsasm.sym -b fbsasm.bs8 fbsasm.as86 && chmod +x fbsasm
 ;
 ; Lines in fbsasm.nasm and fbsasm.as86 correspond to each other.
-;
-
-
-
 
 ; flat assembler 0.37 source, fasm.asm
 ; Copyright (c) 1999-2002, Tomasz Grysztar

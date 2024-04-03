@@ -79,7 +79,7 @@ The bootstrap assembler has multiple (equivalent) implementations:
   folink2 is also included and is built from source by LZASM.
 * as86 (part of dev86): already implemented as
   `fbsasm.as86`, use it with `./bootstrap_fasm.sh as86`. It works with as86
-  0.0.11 (1997-03-03) and possibly earlier, but not 0.0.5.
+  0.0.7 (1996-09-03) and possibly earlier, but not 0.0.5.
 * A386 (by Eric Isaacson): already implemented
   as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).
