@@ -1,0 +1,80 @@
+;
+; helloli3.mas: example Linux i386 hello-world program with MASM 5.0 or compatible
+; by pts@fazekas.hu at Wed Apr 10 16:37:15 CEST 2024
+;
+; This is the assembly source code of an example Linux i386 (32-bit x86)
+; hello-world program, which can be compiled with MASM 5.00 (1987) or later,
+; TASM 1.01 (1989) or later, WASM (Watcom Assembler), JWasm and ASMC. For
+; running a program, a linking step is necessary, which is supported with
+; WLINK, JWasm -bin and ASMC -bin. The assembler LZASM is not supported,
+; because it supports only TASM IDEAL mode (see helloli3.tas for that).
+;
+; Compile and link with: ./test_masms.sh helloli3.mas
+;
+; The interesting part (code and data) is between `_start:' and `_msg_end:',
+; the rest is boilerplate.
+;
+; This program needs an OMF linker with fixupp support, because all these
+; assemblers generate fixupps in the OMF .obj file. Even TASM adds fixupps
+; in MASM compatibility (default, non-IDEAL) mode.
+;
+
+.386p  ; WASM doesn't support .386c.
+program_base = 8048000h  ; Typical Linux i386 executable program. EQU doesn't work here in MASM.
+; MASM adds fixupps with numbers.
+; TASM adds fixupps except if (segment isn't byte and the instructions with relocations are emitted in IDEAL mode).
+; WASM adds fixupps without numbers.
+; JWasm adds fixupps without numbers.
+; MASM 6.11 doesn't add any COMENT.
+_TEXT segment byte use32  ; The segment name is arbitrary. !! adding `byte' here would add relocations in TASM
+assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
+ifdef BIN  ; `jwasm -bin -DBIN' or `asmc -bin -DBIN'.
+  org 8048000h  ; program_base; in MASM the constant must be hardcoded. This would make WLINK put tons of \0 bytes to the beginning.
+endif
+file_header: 
+Elf32_Ehdr:
+		OSABI_Linux = 3
+		db 7Fh,'ELF',1,1,1,OSABI_Linux,0,0,0,0,0,0,0,0,2,0,3,0
+		dd 1,_start,Elf32_Phdr-file_header,0,0
+		dw (Elf32_Phdr-file_header) and 0ffffh,20h,1,0,0,0
+Elf32_Phdr:  ; MASM 6.11 requires a line break here, MASM 5.00 allows it without line break.
+		dd 1,0,program_base,0,text_size,mem_size,7,1000h
+
+_start:
+		; SUXX: MASM 5.00 adds a `nop' byte in the middle of the code.. Why?
+		mov eax, 4  ; SYS_write.
+		mov ebx, 1  ; STDOUT_FILENO.
+		mov ecx, offset msg
+		mov edx, msg_end-msg
+		; MASM 5.0 has inserted a `nop' byte 90h here. Why??
+		int 80h  ; Linux i386 syscall.
+
+		mov eax, 1  ; SYS_exit.
+		xor ebx, ebx  ; EXIT_SUCCESS == 0.
+		int 80h  ; Linux i386 syscall.
+
+msg		db 'Hello, World!', 10
+msg_end:
+
+text_size = $-file_header
+bss_align = ((file_header-$) and 3)
+_TEXT ends
+
+; These variables are initialized to zero by the Linux kernel.
+; No extra bytes are generated for them.
+;
+; We introduce the _BSS segment to prevent WLINK from adding \0 bytes at the
+; end, and to prevent WASM and JWasm from adding lots and lots of these OMF
+; COMENT records (COMENT(88) bits 80h, class fdh), caused by `db ...
+; dup(?)'.
+_BSS segment DWORD 'BSS'
+bss_start = $  ; `= $' instead of `:' to pacify TASM 5.3 about missing `assume cs:_BSS'.
+unused_array	db 42 dup (?)
+;unused_var	dw ?  ; This really adds 2 \0 bytes to the OMF file in MASM 5.00.
+unused_var	db 2 dup (?)  ; No extra bytes to the OMF file in MASM 5.00.
+bss_size = $-bss_start
+_BSS ends
+mem_size = text_size+bss_align+bss_size
+_STACK segment STACK  ; This is to pacify WLINK warning. Don't name it STACK to pacify a TASM 4.1 warning.
+_STACK ends
+end _start
