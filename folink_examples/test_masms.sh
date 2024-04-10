@@ -28,6 +28,8 @@ binfile="${asmfile%.*}.bin"
 progfile="${asmfile%.*}"
 runfile="$progfile"
 test "${runfile#*}" = "$runfile" && runfile=./"$runfile"  # Make it run even if . is not on $PATH.
+org=8048000h
+test "$asmfile" != fbsasm.mas || org=700000h
 
 # Test with all methods.
 test $# != 0 || set masm500.exe masm510.exe masm510a.exe ml600b.exe tasm41.exe tasm32-5.3psg wasm jwasm-2.11a bin-jwasm-2.11a asmc-2.34.49 bin-asmc-2.34.49
@@ -52,7 +54,7 @@ for method in "$@"; do
    jwasm*) ../tools/"$method" -q -Fo"$objfile" "$asmfile" ;;
    # This is not needed: -Fo"$objfile"
    asmc*) ../tools/"$method" -q "$asmfile" ;;
-   bin-jwasm* | bin-asmc*) ../tools/"${method#*-}" -q -bin -DBIN -Fo"$binfile" "$asmfile"; mv "$binfile" "$progfile"; do_link= ;;
+   bin-jwasm* | bin-asmc*) ../tools/"${method#*-}" -q -bin -DBIN="$org" -Fo"$binfile" "$asmfile"; mv "$binfile" "$progfile"; do_link= ;;
    *) echo "fatal: unknown method: $method" >&2; exit 2 ;;
   esac
 
@@ -60,10 +62,10 @@ for method in "$@"; do
     if test "$asmfile" = helloli3.mas; then
       ../tools/dmpobj -q "$objfile"
     fi
-    #../tools/wlink output raw offset=0x8048000 option quiet option noextension file "$objfile" name "$progfile"  # Generates 4096-byte file, pads with \0s.
-    #../tools/wlink output raw offset=0x8048000 option offset=0x8048000 option quiet option noextension file "$objfile" name "$progfile"  # Generates 4096-byte file, pads with \0s. `option offset' doesn't make a difference.
-    #../tools/wlink format raw bin option offset=0x8048000 option quiet option noextension file "$objfile" name "$progfile"  # SUXX: Adds the `db ?' within the _TEXT segment as NUL bytes to the end.
-    ../tools/wlink form raw bin op off=0x8048000 op q op noext f "$objfile" n "$progfile"
+    #../tools/wlink output raw offset="$org" option quiet option noextension file "$objfile" name "$progfile"  # Generates 4096-byte file, pads with \0s.
+    #../tools/wlink output raw offset="$org" option offset="$org" option quiet option noextension file "$objfile" name "$progfile"  # Generates 4096-byte file, pads with \0s. `option offset' doesn't make a difference.
+    #../tools/wlink format raw bin option offset="$org" option quiet option noextension file "$objfile" name "$progfile"  # SUXX: Adds the `db ?' within the _TEXT segment as NUL bytes to the end.
+    ../tools/wlink form raw bin op off=0x"${org%h}" op q op noext f "$objfile" n "$progfile"
   fi
 
   chmod +x -- "$progfile"

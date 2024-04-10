@@ -20,7 +20,6 @@
 ;
 
 .386p  ; WASM doesn't support .386c.
-program_base = 8048000h  ; Typical Linux i386 executable program. EQU doesn't work here in MASM.
 ; MASM adds fixupps with numbers.
 ; TASM adds fixupps except if (segment isn't byte and the instructions with relocations are emitted in IDEAL mode).
 ; WASM adds fixupps without numbers.
@@ -29,7 +28,8 @@ program_base = 8048000h  ; Typical Linux i386 executable program. EQU doesn't wo
 _TEXT segment byte use32  ; The segment name is arbitrary. !! adding `byte' here would add relocations in TASM
 assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
 ifdef BIN  ; `jwasm -bin -DBIN' or `asmc -bin -DBIN'.
-  org 8048000h  ; program_base; in MASM the constant must be hardcoded. This would make WLINK put tons of \0 bytes to the beginning.
+  ;org 8048000h  ; Typical Linux i386 executable program.
+  org BIN  ; program_base; in MASM the constant must be hardcoded. This would make WLINK put tons of \0 bytes to the beginning.
 endif
 file_header: 
 Elf32_Ehdr:
@@ -38,7 +38,7 @@ Elf32_Ehdr:
 		dd 1,_start,Elf32_Phdr-file_header,0,0
 		dw (Elf32_Phdr-file_header) and 0ffffh,20h,1,0,0,0
 Elf32_Phdr:  ; MASM 6.11 requires a line break here, MASM 5.00 allows it without line break.
-		dd 1,0,program_base,0,text_size,mem_size,7,1000h
+		dd 1,0,file_header,0,text_size,mem_size,7,1000h
 
 _start:
 		; SUXX: MASM 5.00 adds a `nop' byte in the middle of the code.. Why?
