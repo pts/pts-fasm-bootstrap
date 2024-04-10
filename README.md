@@ -112,3 +112,4 @@ programming languages, targeting Linux i386:
   fbsasm.fasm. Maybe later it will be able to compile FASM-1.73.32 and
   fbsasm.nasm.
 * [Solaris x86 Assembler](https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eqbui/index.html), part of OpenSolaris
+* POASM from Pelle's C.
