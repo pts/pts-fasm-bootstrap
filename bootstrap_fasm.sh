@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas fbsasm.as8 fbsasm.sym fbsasms.as8
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas fbsasm.as8 fbsasm.sym fbsasms.as8 fbsasm.mws.o
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -216,6 +216,11 @@ case "$1" in  # Any of these below will work.
   ;;
  vasm* | --vasm*)  # Also includes --vasmx86. http://www.compilers.de/vasm.html  http://sun.hasenbraten.de/vasm/
   tasm/vasmx86 -quiet -mi386 -Fbin -o fbsasm fbsasm.vasm
+  ;;
+ mw* | --mw*)  # src/compile.sh src/as from https://github.com/pts/pts-mw386as-linux
+  tools/mw386as fbsasm.mws  # Creates fbsasm.mws.o.
+  tools/miniperl-5.004.04 -x tools/link3coff.pl --elf fbsasm.mws.o fbsasm 0x700000
+  rm -f fbsasm.mws.o
   ;;
  nasm-0.9[0-9] | --nasm-0.9[0-9] | nasm-0.9[0-9]-linux | --nasm-0.9[0-9]-linux)
   prog="${1#--}"
