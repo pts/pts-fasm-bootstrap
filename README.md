@@ -98,10 +98,16 @@ The bootstrap assembler has multiple (equivalent) implementations:
 It is a future plan to have the bootstrap assembler implemented in additional
 programming languages, targeting Linux i386:
 
-* MASM (Microsoft Macro Assembler) + WLINK (Watcom Linker)
-* JWasm: with a bit of luck, the MASM port will work
-* WASM (Watcom Assembler) + WLINK (Watcom Linker): with a bit of luck, the
-  MASM port will work
+* MASM (Microsoft Macro Assembler) + folink3 (custom linker)
+* JWasm: with a bit of luck, the MASM port will work. JWasm can emit binary
+  files with the `-bin' flag, the linker is not
+* WASM (Watcom Assembler) + folink3 (custom linker): with a bit of luck, the
+  MASM port will work; also maybe WLINK will work in raw binary mode
+* [ASMC](https://github.com/nidud/asmc): ASMC is a fork of JWasm, so with a
+  bit of luck, the MASM port will work
 * C89 (ANSI C): it should work with GCC on Debian slink (released on
   1999-03-09), released before 2001-01-01, before fasm 1.20; how far can we
   go to the past? 1999? 1996?
+* Perl 5.004_04 (1997-10-15). A slow but simple assembler which can compile
+  fbsasm.fasm. Maybe later it will be able to compile FASM-1.73.32 and
+  fbsasm.nasm.
