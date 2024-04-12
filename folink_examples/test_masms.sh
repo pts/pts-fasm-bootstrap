@@ -41,7 +41,7 @@ for method in "$@"; do
   rm -f -- "$objfile" "$progfile" "$binfile"
   do_link=1
   case "$method" in
-   masm*.exe) ../tools/kvikdos ../tools/"$method" /t "$asmfile" ,,nul,, ;;
+   masm*.exe) ../tools/kvikdos ../tools/"$method" /t /Ml "$asmfile" ,,nul,nul ;;
    # /Zm: MASM 5.10 compatibility in 6.00b.
    # It looks like we can't hide the `Assembling: ...' message.
    ml.exe | ml6*.exe) ../tools/kvikdos ../tools/"$method" /nologo /c /Ta"$asmfile" ;;
