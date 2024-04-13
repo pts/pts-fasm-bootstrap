@@ -48,6 +48,8 @@ patched fasm 1.73.32.
 
 The bootstrap assembler has multiple (equivalent) implementations:
 
+* The implementation for the oldest assembler is `fbsasm.mas`, which works
+  with MASM 5.00 (1987-07-31), see the details below.
 * NASM: already implemented as `fbsasm.nasm`, use it with
   `./bootstrap_nasm.sh nasm`. It is a reimplementation of a subset of fasm
   1.30 (for Linux i386) in NASM 0.95 (1997-07-27) or later. It has been
@@ -68,15 +70,22 @@ The bootstrap assembler has multiple (equivalent) implementations:
   Binutils, tested with 2.7 (released on 1996-07-15), 2.9.1 (released on
   1998-05-01, part of Debian 2.1 slink), 2.9.5, 2.22 and 2.30.
 * TASM (Turbo Assembler) + folink2 (custom linker): already implemented as
-  `fbsasm.tas`, use it with `./bootstrap_fasm.sh tasm`. It works with TASM
+  `fbsasm.tas` (TASM ideal mode),
+  use it with `./bootstrap_fasm.sh tasm`. It works with TASM
   1.01 (1989), 2.0 (1990), 4.1 (1996, the latest Turbo Assembler which works
   on a DOS 8086 without a DOS extender) and 5.3 (2000-01-30, probably the
   last release of TASM). The custom linker folink2 is also included and is
   built from source by TASM.
 * LZASM (Lazy Assembler) + folink2 (custom linker): already implemented as
-  `fbsasm.tas`, use it with `./bootstrap_fasm.sh lzasm`. It works with LZASM
+  `fbsasm.tas` (TASM ideal mode),
+  use it with `./bootstrap_fasm.sh lzasm`. It works with LZASM
   0.56 (2007-10-04, last release) and possibly earlier. The custom linker
   folink2 is also included and is built from source by LZASM.
+* MASM (Microsoft Macro Assembler) + WLINK: already implemented as
+  `fbsasm.was`, currently `bootstrap_fasm.sh` doesn't support it. It works
+  with MASM 5.00 (1987-07-31) or later, TASM 3.1 (1992-06-10) or later, WASM
+  10.5 (1995-07-11) or later, JWasm 2.11a (2013-10-19) and maybe earlier,
+  ASMC 2.34.49 (2024-030-26) and later and maybe earlier.
 * as86 (part of dev86): already implemented as
   `fbsasm.as86`, use it with `./bootstrap_fasm.sh as86`. It works with as86
   0.0.7 (1996-09-03) and possibly earlier, but not 0.0.5.
