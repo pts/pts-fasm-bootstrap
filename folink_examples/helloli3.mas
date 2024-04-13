@@ -7,7 +7,7 @@
 ; TASM 1.01 (1989) or later, WASM (Watcom Assembler), JWasm and ASMC. For
 ; running a program, a linking step is necessary, which is supported with
 ; WLINK, JWasm -bin and ASMC -bin. The assembler LZASM is not supported,
-; because it supports only TASM IDEAL mode (see helloli3.tas for that).
+; because it supports only TASM ideal mode (see helloli3.tas for that).
 ;
 ; Compile and link with: ./test_masms.sh helloli3.mas
 ;
@@ -16,20 +16,21 @@
 ;
 ; This program needs an OMF linker with fixupp support, because all these
 ; assemblers generate fixupps in the OMF .obj file. Even TASM adds fixupps
-; in MASM compatibility (default, non-IDEAL) mode.
+; in MASM compatibility (default, non-ideal) mode.
 ;
 
 .386p  ; WASM doesn't support .386c.
 ; MASM adds fixupps with numbers.
-; TASM adds fixupps except if (segment isn't byte and the instructions with relocations are emitted in IDEAL mode).
+; TASM adds fixupps except if (segment isn't byte and the instructions with relocations are emitted in ideal mode).
 ; WASM adds fixupps without numbers.
 ; JWasm adds fixupps without numbers.
 ; MASM 6.11 doesn't add any COMENT.
-_TEXT segment byte use32  ; The segment name is arbitrary. !! adding `byte' here would add relocations in TASM
+; !! `int 3' crash in TASM 3.0 when compiling even this short one. What causes the breakage here?
+_TEXT segment byte use32  ; The segment name is arbitrary.
 assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
 ifdef BIN  ; `jwasm -bin -DBIN' or `asmc -bin -DBIN'.
   ;org 8048000h  ; Typical Linux i386 executable program.
-  org BIN  ; program_base; in MASM the constant must be hardcoded. This would make WLINK put tons of \0 bytes to the beginning.
+  org (BIN)  ; program_base; in MASM the constant must be hardcoded. This would make WLINK put tons of \0 bytes to the beginning.
 endif
 file_header: 
 Elf32_Ehdr:
@@ -67,14 +68,24 @@ _TEXT ends
 ; end, and to prevent WASM and JWasm from adding lots and lots of these OMF
 ; COMENT records (COMENT(88) bits 80h, class fdh), caused by `db ...
 ; dup(?)'.
-_BSS segment DWORD 'BSS'
+ifdef ??version  ; TASM.
+  _BSS segment dword use32 'BSS'  ; Avoid TASM 1.0--2.51 warning on missing `use32'.
+else
+  _BSS segment dword 'BSS'  ; No `use32' here, because MASM 6.00 fails for it.
+endif
+ifdef BIN
+  org (BIN)+text_size+bss_align-4  ; 4 because of DWORD in the _BSS line, looks like a bug in JWasm and ASMC. Sigh.
+  prebss_size = 0
+else
+  prebss_size = 1000h  ; Adding 1000h, because WLINK raw puts the entire _BSS 1000h bytes further.  !! Report bug.
+endif
 bss_start = $  ; `= $' instead of `:' to pacify TASM 5.3 about missing `assume cs:_BSS'.
 unused_array	db 42 dup (?)
 ;unused_var	dw ?  ; This really adds 2 \0 bytes to the OMF file in MASM 5.00.
 unused_var	db 2 dup (?)  ; No extra bytes to the OMF file in MASM 5.00.
 bss_size = $-bss_start
 _BSS ends
-mem_size = text_size+bss_align+bss_size
-_STACK segment STACK  ; This is to pacify WLINK warning. Don't name it STACK to pacify a TASM 4.1 warning.
+mem_size = text_size+bss_align+prebss_size+bss_size
+_STACK segment byte use32 'STACK'  ; This is to pacify WLINK warning. Don't name it STACK to pacify a TASM 4.1 warning. Use BYTE to prevent PARA alignment of _BSS (!) with WLINK raw.
 _STACK ends
 end _start
