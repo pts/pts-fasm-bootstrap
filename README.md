@@ -111,5 +111,9 @@ programming languages, targeting Linux i386:
 * Perl 5.004_04 (1997-10-15). A slow but simple assembler which can compile
   fbsasm.fasm. Maybe later it will be able to compile FASM-1.73.32 and
   fbsasm.nasm.
-* [Solaris x86 Assembler](https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eqbui/index.html), part of OpenSolaris
+* [Solaris x86
+  Assembler](https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eqbui/index.html),
+  part of OpenSolaris.
 * POASM from Pelle's C.
+* [HLA](https://en.wikipedia.org/wiki/High_Level_Assembly) with its built-in
+* linker.
