@@ -10,6 +10,7 @@
 ; * MASM 5.00 (1987-07-31) or later, latest tested: MASM 7.10
 ; * TASM 3.1 (1992-06-10) or later, latest tested: TASM 5.3 (tasm32.exe)
 ; * WASM 10.5 (1995-07-11) or later, latest tested: OpenWatcom v2 WASM in 2023
+;   https://web.archive.org/web/20210324032528/http://wiki.openwatcom.org/index.php/Wasm
 ; * JWasm 2.11a (2013-10-19). !! Test earlier versions.
 ; * ASMC 2.34.49 (2024-030-26). !! Test earlier versions.
 ;
