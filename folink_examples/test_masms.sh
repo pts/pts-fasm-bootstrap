@@ -31,7 +31,7 @@ test "${runfile#*}" = "$runfile" && runfile=./"$runfile"  # Make it run even if 
 org=8048000h
 test "$asmfile" != fbsasm.mas || org=700000h
 
-# Test with all methods.
+# Test with all methods. Not with lzasm-0.56, because it doesn't support MASM compatibility mode (default).
 test $# != 0 || set masm500.exe masm510.exe masm510a.exe ml600b.exe tasm41.exe tasm32-5.3psg wasm jwasm-2.11a bin-jwasm-2.11a asmc-2.34.49 bin-asmc-2.34.49
 
 methodsp=methods
@@ -44,9 +44,16 @@ for method in "$@"; do
    masm*.exe) ../tools/kvikdos ../tools/"$method" /t /Ml "$asmfile" ,,nul,nul ;;
    # /Zm: MASM 5.10 compatibility in 6.00b.
    # It looks like we can't hide the `Assembling: ...' message.
-   ml.exe | ml6*.exe) ../tools/kvikdos ../tools/"$method" /nologo /c /Ta"$asmfile" ;;
+   ml.exe | ml60*.exe) ../tools/kvikdos ../tools/"$method" /nologo /c /Ta"$asmfile" ;;
+   ml61.exe | ml61[01]*.exe) dosbox.nox.static --cmd --mem-mb=2 ../tools/"$method" /nologo /c /Ta"$asmfile" ;;
+   #ml61.exe ml61[01]*.exe) wine ../tools/"$method" /nologo /c /Ta"$asmfile" ;;  # Wine also works instead of DOSBox.
+   ml61[2345]*.exe | ml[789]*.exe) wine ../tools/"$method" /nologo /c /omf /Ta"$asmfile" ;;
    tasm.exe | tasm[1234v]*.exe) ../tools/kvikdos ../tasm/"$method" /t "$asmfile" ;;
    tasm32 | tasm32-*) ../tools/"$method" /t "$asmfile" ;;
+   wasmr.exe) ../tools/kvikdos ../tools/"$method" -zq -fo=.obj "$asmfile" ;;  # From OpenWatcom. `Error: Out of Memory' for larger programs.
+   # wasm.exe is from OpenWatcom. wasm*.exe are very slow, probably because of DOSBox. It can only process fbsasm.was. wasm1[01]*.exe need w32run.exe.
+   # wasm.exe in Watcom C 10.0a (WATCOM Assembler Version 1) is bugdy, it generates incorrect output file, even the ELF-32 header is broken.
+   wasm1[01]*.exe | wasm.exe) dosbox.nox.static --cmd --mem-mb=2 ../tools/"$method" -zq -fo=.obj "$asmfile" ;;
    # Creates a 12-byte OMF `COMENT(88) bits 80h, class fdh' record for each
    # `db ?' byte in non-_BSS, even repeated ones. So we use _BSS.
    wasm*) ../tools/"$method" -zq -fo=.obj "$asmfile" ;;
