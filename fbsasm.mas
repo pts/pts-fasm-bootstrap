@@ -11,6 +11,8 @@
 ; * TASM 3.0 (1991-11-11) or later, latest tested: TASM 5.3 (tasm32.exe)
 ; * WASM 10.5 (1995-07-11) or later, latest tested: OpenWatcom v2 WASM in 2023
 ;   https://web.archive.org/web/20210324032528/http://wiki.openwatcom.org/index.php/Wasm
+;   For `org' with `-dBIN=...' to work, at least WASM in OpenWatcom 1.2
+;   (2004-01-06) is needed.
 ; * JWasm 2.11a (2013-10-19). !! Test earlier versions.
 ; * ASMC 2.34.49 (2024-030-26). !! Test earlier versions.
 ;
@@ -94,7 +96,7 @@ else
       dw arg
     endm
     cmp_s macro a1, imm2
-      cmp a1, imm2
+      cmp a1, 0ffffh and (imm2)
     endm
   else
     ifdef @Date  ; MASM >=6.00 and JWasm.
