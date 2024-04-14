@@ -64,6 +64,12 @@
 ;   perl -pe 's@\[(byte|word|dword)\s+((?!e[abcd]x|e[sd]i|e[sb]p)\S[^\]]*)\]@$1 ptr ds:$2@; s@\[(byte|word|dword)\s+((?:e[abcd]x|e[sd]i|e[sb]p)\b[^\]]*)\]@$1 ptr [$2]@'
 ;
 
+ifdef ??version  ; TASM, but not LZASM.
+  masm  ; Enable MASM compatibility mode. It's on by default anyway.
+endif
+ifdef @lzasm
+  masm  ; LZASM doesn't have MASM compatibility mode, so this will fail. Use fbsasm.tas instead.
+endif
 .386p  ; WASM doesn't support .386c.
 _TEXT segment byte use32  ; The segment name is arbitrary.
 assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
