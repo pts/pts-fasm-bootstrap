@@ -53,7 +53,7 @@ for method in "$@"; do
    wasmr.exe) ../tools/kvikdos ../tools/"$method" -zq -fo=.obj "$asmfile" ;;  # From OpenWatcom. `Error: Out of Memory' for larger programs.
    # wasm.exe is from OpenWatcom. wasm*.exe are very slow, probably because of DOSBox. It can only process fbsasm.was. wasm1[01]*.exe need w32run.exe.
    # wasm.exe in Watcom C 10.0a (WATCOM Assembler Version 1) is bugdy, it generates incorrect output file, even the ELF-32 header is broken.
-   wasm1[01]*.exe | wasm.exe) dosbox.nox.static --cmd --mem-mb=2 ../tools/"$method" -zq -fo=.obj "$asmfile" ;;
+   wasm1[0-9]*.exe | wasm.exe) dosbox.nox.static --cmd --mem-mb=2 ../tools/"$method" -zq -fo=.obj "$asmfile" ;;
    # Creates a 12-byte OMF `COMENT(88) bits 80h, class fdh' record for each
    # `db ?' byte in non-_BSS, even repeated ones. So we use _BSS.
    wasm*) ../tools/"$method" -zq -fo=.obj "$asmfile" ;;
