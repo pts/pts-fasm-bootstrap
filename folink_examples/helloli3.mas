@@ -59,7 +59,13 @@ msg_end:
 
 text_size = $-file_header
 bss_align = ((file_header-$) and 3)
-_TEXT ends
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _TEXT
+  masm
+else
+  _TEXT ends
+endif
 
 ; These variables are initialized to zero by the Linux kernel.
 ; No extra bytes are generated for them.
@@ -84,8 +90,20 @@ unused_array	db 42 dup (?)
 ;unused_var	dw ?  ; This really adds 2 \0 bytes to the OMF file in MASM 5.00.
 unused_var	db 2 dup (?)  ; No extra bytes to the OMF file in MASM 5.00.
 bss_size = $-bss_start
-_BSS ends
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _BSS
+  masm
+else
+  _BSS ends
+endif
 mem_size = text_size+bss_align+prebss_size+bss_size
 _STACK segment byte use32 'STACK'  ; This is to pacify WLINK warning. Don't name it STACK to pacify a TASM 4.1 warning. Use BYTE to prevent PARA alignment of _BSS (!) with WLINK raw.
-_STACK ends
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _STACK
+  masm
+else
+  _STACK ends
+endif
 end _start

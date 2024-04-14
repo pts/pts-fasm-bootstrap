@@ -8,7 +8,7 @@
 ; This source file works with the following assemblers:
 ;
 ; * MASM 5.00 (1987-07-31) or later, latest tested: MASM 7.10
-; * TASM 3.1 (1992-06-10) or later, latest tested: TASM 5.3 (tasm32.exe)
+; * TASM 3.0 (1991-11-11) or later, latest tested: TASM 5.3 (tasm32.exe)
 ; * WASM 10.5 (1995-07-11) or later, latest tested: OpenWatcom v2 WASM in 2023
 ;   https://web.archive.org/web/20210324032528/http://wiki.openwatcom.org/index.php/Wasm
 ; * JWasm 2.11a (2013-10-19). !! Test earlier versions.
@@ -10845,7 +10845,13 @@ _counter db 4,'0000'
 
 text_size = $-file_header
 bss_align = ((file_header-$) and 3)
-_TEXT ends
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _TEXT
+  masm
+else
+  _TEXT ends
+endif
 
 ; These variables are initialized to zero by the Linux kernel.
 ; No extra bytes are generated for them.
@@ -10947,8 +10953,20 @@ available_memory dd ?
 
 bss_size = $-bss_start
 bss_end equ $
-_BSS ends
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _BSS
+  masm
+else
+  _BSS ends
+endif
 mem_size = text_size+bss_align+prebss_size+bss_size
 _STACK segment byte use32 'STACK'  ; This is to pacify WLINK warning. Don't name it STACK to pacify a TASM 4.1 warning.
-_STACK ends
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _STACK
+  masm
+else
+  _STACK ends
+endif
 end _start

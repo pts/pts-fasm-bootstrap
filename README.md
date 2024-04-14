@@ -83,7 +83,7 @@ The bootstrap assembler has multiple (equivalent) implementations:
   folink2 is also included and is built from source by LZASM.
 * MASM (Microsoft Macro Assembler) + WLINK: already implemented as
   `fbsasm.was`, currently `bootstrap_fasm.sh` doesn't support it. It works
-  with MASM 5.00 (1987-07-31) or later, TASM 3.1 (1992-06-10) or later, WASM
+  with MASM 5.00 (1987-07-31) or later, TASM 3.0 (1991-11-11) or later, WASM
   10.5 (1995-07-11) or later, JWasm 2.11a (2013-10-19) and maybe earlier,
   ASMC 2.34.49 (2024-030-26) and later and maybe earlier.
 * as86 (part of dev86): already implemented as
