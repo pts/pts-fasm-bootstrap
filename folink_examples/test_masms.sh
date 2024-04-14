@@ -47,7 +47,7 @@ for method in "$@"; do
    ml.exe | ml60*.exe) ../tools/kvikdos ../tools/"$method" /nologo /c /Ta"$asmfile" ;;
    ml61.exe | ml61[01]*.exe) dosbox.nox.static --cmd --mem-mb=2 ../tools/"$method" /nologo /c /Ta"$asmfile" ;;
    #ml61.exe ml61[01]*.exe) wine ../tools/"$method" /nologo /c /Ta"$asmfile" ;;  # Wine also works instead of DOSBox.
-   ml61[2345]*.exe | ml[789]*.exe) wine ../tools/"$method" /nologo /c /omf /Ta"$asmfile" ;;
+   ml61[2345]*.exe | ml[789]*.exe) wine ../tools/"$method" /nologo /c /omf /Ta"$asmfile" ;;  # It doesn't work with mwperun.exe, because it doesn't contain relocations.
    tasm.exe | tasm[1234v]*.exe) ../tools/kvikdos ../tasm/"$method" /t "$asmfile" ;;
    tasm32 | tasm32-*) ../tools/"$method" /t "$asmfile" ;;
    wasmr.exe) ../tools/kvikdos ../tools/"$method" -zq -fo=.obj "$asmfile" ;;  # From OpenWatcom. `Error: Out of Memory' for larger programs.
