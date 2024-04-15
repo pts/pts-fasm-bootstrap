@@ -1,5 +1,5 @@
 ;
-; folink2.tas: flat OMF linker implemented in TASM 1.01--2.0--4.1--5.3 targeting DOS 8086
+; folink2.tas: flat OMF linker implemented in TASM 1.01--2.0--4.1--5.3 and LZASM --0.56 targeting DOS 8086
 ; by pts@fazekas.hu at Tue Mar 26 02:24:06 CET 2024
 ;
 ; This linker just dumps the data in the LEDATA, LEDATA386, LIDATA and
@@ -28,7 +28,7 @@
 ;
 ; There are some restrictions on the TASM source filename (e.g. f.upu or
 ; F.T), the TASM version (minimum version is 1.01 (1989), see below), the
-; LZASM version (0.56 (2007) is known to work) and the use of the /q flag,
+; LZASM version (0.56 (2007) is known to work),
 ; and uninitialized global variables must be accessed in
 ; position-independent way (see @@base1 in the code below on how).
 ;
