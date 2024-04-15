@@ -502,7 +502,7 @@ r8_:
 		call read_
 		mov bx, ax
 		test ax, ax
-		jge @@2
+		jg @@2
 		mov ax, 5
 		call fatal_
 @@2:

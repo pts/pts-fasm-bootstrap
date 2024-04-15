@@ -291,7 +291,7 @@ r8_:
 		call read_
 		pop ebx
 		test eax, eax
-		jge .2
+		jg .2
 		push 5
 		jmp fatal_
 .2:

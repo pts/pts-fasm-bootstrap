@@ -77,7 +77,7 @@ uu r8(void) {  /* Reads a byte from the input OMF file. */
   CHECK(3, rsize != 0, "bad record content size");
   if (rdi == rdlimit) {
     i = read(rdfd, rdbuf, sizeof(rdbuf));
-    CHECK(5, i >= 0, "unexpected EOF within record");
+    CHECK(5, i > 0, "unexpected EOF within record");
     rdlimit = i;
     rdi = 0;
   }

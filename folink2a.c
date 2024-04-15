@@ -29,7 +29,7 @@ uu r8(void) {  /* Reads a byte from the input OMF file. */
   int i;
   CHECK(3, rsize != 0, "bad record content size");
   i = getc(rf);
-  CHECK(5, i >= 0, "unexpected EOF within record");
+  CHECK(5, i > 0, "unexpected EOF within record");
   --rsize;
   return i;
 }
