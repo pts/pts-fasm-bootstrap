@@ -1,0 +1,550 @@
+;
+; folink2.mas: flat OMF linker implemented in MASM 5.00-- and TASM 2.0--4.1--5.3 targeting DOS 8086
+; by pts@fazekas.hu at Mon Apr 15 00:34:37 CEST 2024
+;
+; This linker just dumps the data in the LEDATA, LEDATA386, LIDATA and
+; LIDATA386 records in the input OMF file. For the LIDATA and LIDATA386
+; records, it expands the repeated bytes. It fails if it encounters
+; multiple segments or any relocations (fixupps).
+;
+; Compile with TASM 2.0--4.1--5.3 on DOS after copying this file to f.uau: tasm /t f.uau foli2m.com
+; Compile with MASM 5.x on DOS after copying this file to f.uau: masm /t f.uau ,foli2m.com,nul, nul
+; Compile with MASM 6.00--6.11d on DOS after copying this file to f.uau, and then move f.obj to foli2m.com: ml /nologo /c /Taf.uau
+; Compile with MASM 6.12-- on Win32 after copying this file to f.uau: ml /nologo /c /omf /Fofoli2m.com /Taf.uau
+; It's important that /Fo... comes before /Ta... , otherwise /Fo... doesn't take effect.
+; MASM 6.00b doesn't work with /Fo filename (without extension) longer than 6 bytes.
+;
+; Implementation based on folink2.c and on the disassembly of the
+; folink2.obj file created by `dosmc -mt -c folink2.c'.
+;
+
+; This is the no-link hack. It makes the output file of TASM valid not only as OMF
+; .obj, but also as DOS .com program. This way we don't need tlink.exe at all,
+; previously we used tlink.exe to generate the DOS .com program.
+;
+; This no-link hack should be put to or near the beginning of the .tas
+; source file, replacing `segment C' + `org 100h'. It works inside and
+; outside ideal mode.
+;
+; There are some restrictions on the TASM source filename (e.g. f.uau),
+; TASM version (minimum version is 2.0 (1990), see below), the
+; MASM version (minimum version is 5.00 (1987), see below),
+; and uninitialized global variables must be accessed in
+; position-independent way (see @@base1 in the code below on how).
+ifdef ??version  ; TASM, but not LZASM.
+  masm  ; Enable MASM compatibility mode. It's on by default anyway.
+endif
+ifdef @lzasm
+  masm  ; LZASM doesn't have MASM compatibility mode, so this will fail. Use folink2.tas instead.
+endif
+; !! This version of hack makes the OMF .obj file start like this (with the OMF THEADR record):
+ifdef ??version  ; TASM, but not MASM.
+  if ??version lt 200h  ; True for TASM 1.0 and 1.01.
+    ifndef t
+      err 'TASM 2.0 or later needed, or use folink2.tas instead'  ; Because TASM 1.x converts the filename in the OMF THEADR record to uppercase.
+    endif
+  endif
+endif
+CC segment byte
+ifdef t
+  org 100h  ; For regular compilation with TASM + TLINK to file.com: tasm /dt file.tas ;; tlink /t file.obj
+else
+  org 200h  ; Large enough to make to uninitialized variables (starting at ___section_bss) work. Normal base (without OMF headers) would be 100h.
+  db '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'  ; Harmless `inc ax' to accommodate for OMF record size differences.
+endif
+assume cs:CC, ds:CC, es:CC, ss:CC
+call_ macro dest  ; This version of `call' doesn't generate fixupps in MASM 5.00.
+  db 0e8h
+  dw dest-($+2)
+endm
+jmp_near macro dest  ; Some `jmp' instructions have been changed to jmp_near for MASM 5.00, to avoid fixupps. If the code is changed, these have to be changed as well.
+  db 0e9h
+  dw dest-($+2)
+endm
+
+_start:  ; Entry point of the DOS .com program.
+		cld
+		mov di, ___section_c_bss-_start+200h
+		mov cx, (___section_startup_ubss-___section_c_bss+1) shr 1
+		xor ax, ax
+		rep stosw
+		mov di, argv_bytes-_start+200h
+		mov bp, argv_pointers-_start+200h
+		push bp
+		push es
+		lds si, ds:[02ch-2]  ; Environment segment within PSP.
+		
+		xor si, si
+		lodsb
+@@next_entry:	test al, al
+		jz @@end_entries
+@@next_char:	test al, al
+		lodsb
+		jnz @@next_char
+		jmp short @@next_entry
+@@end_entries:	inc si  ; Skip over a single byte.
+		inc si  ; Skip over '\0'.
+		; Now ds:si points to the program name as an uppercase, absolute pathname with extension (e.g. .EXE or .COM). We will use it as argv.
+		
+		; Copy program name to argv[0].
+		mov [bp], di  ; argv[0] pointer.
+		inc bp
+		inc bp
+		mov cx, 144  ; To avoid overflowing argv_bytes. See above why 144.
+@@next_copy:	dec cx
+		jnz @@argv0_limit_not_reached
+		xor al, al
+		stosb
+		jmp short @@after_copy
+@@argv0_limit_not_reached:
+		lodsb
+		stosb
+		test al, al
+		jnz @@next_copy
+@@after_copy:
+		
+		; Now copy cmdline.
+		pop ds  ; PSP.
+		mov si, 080h  ; Command-line size byte within PSP, usually space. 0..127, we trust it.
+		lodsb
+		xor ah, ah
+		xchg bx, ax  ; bx := ax.
+		mov byte ptr ds:[si+bx], 0
+@@scan_for_arg:	lodsb
+		test al, al
+		jz @@after_cmdline
+		cmp al, ' '
+		je @@scan_for_arg
+		cmp al, 9  ; Tab.
+		je @@scan_for_arg
+		mov [bp], di  ; Start new argv[...] element. Uses ss by default, good.
+		inc bp
+		inc bp
+		stosb  ; First byte of argv[...].
+@@next_argv_byte:
+		lodsb
+		stosb
+		test al, al
+		jz @@after_cmdline
+		cmp al, ' '
+		je @@end_arg
+		cmp al, 9  ; Tab.
+		jne @@next_argv_byte
+@@end_arg:	dec di
+		xor al, al
+		stosb  ; Replace whitespace with terminating '\0'.
+		jmp short @@scan_for_arg
+		
+@@after_cmdline:
+		mov word ptr [bp], 0  ; NULL at the end of argv.
+		pop dx  ; argv_pointers. Final return value of dx.
+		sub bp, dx
+		xchg ax, bp  ; ax := bp.
+		;shr ax, 1  ; Set ax to argc, it's final return value. No need to set it, main below doesn't use it.
+		; Fall through to main_never_returns.
+
+main_never_returns:  ; Never returns. Takes argv in DX.
+		mov bp, sp
+		sub sp, 12h
+		mov bx, dx  ; Argv.
+		xor ax, ax
+		cmp word ptr ds:[bx+2], ax
+		je @@8
+		cmp word ptr ds:[bx+4], ax
+		je @@8
+		cmp word ptr ds:[bx+6], ax
+		je @@9
+@@8:
+		mov bx, msg_usage_end-msg_usage
+		call_ @@base1
+@@base1:
+		pop dx
+		add dx, msg_usage-@@base1  ; DX := msg_usage. The no-link hack requires such a position-independent way.
+		mov al, 2  ; AX := 2, assuming AH == 0.
+		call_ write_
+		mov ax, 4c01h
+		int 21h
+@@9:
+		mov dx, word ptr ds:[bx+2]
+		xchg ax, dx
+		call_ open2_
+		mov word ptr ds:[_rdfd-_start+200h], ax
+		test ax, ax
+		jge @@10
+		mov ax, 14h
+		call_ fatal_
+@@10:
+		mov ax, word ptr ds:[bx+4]
+		call_ creat1_
+		mov word ptr ds:[_wrfd-_start+200h], ax
+		test ax, ax
+		jge @@11
+		mov ax, 15h
+		call_ fatal_
+@@11:
+		xor bx, bx
+		mov byte ptr ds:[bp-2], 0
+@@12:
+		mov word ptr ds:[_rsize-_start+200h], 3
+		call_ r8_
+		mov dx, ax
+		call_ r16_le_
+		mov word ptr ds:[_rsize-_start+200h], ax
+		test ax, ax
+		ja @@13
+		mov ax, 2
+		call_ fatal_
+@@13:
+		dec word ptr ds:[_rsize-_start+200h]
+		cmp dl, 8ah
+		je @@15
+		cmp dl, 8bh
+		je @@15
+		cmp dl, 88h
+		je @@14
+		cmp dl, 9ah
+		je @@14
+		cmp dl, 96h
+		je @@14
+		cmp dl, 98h
+		je @@14
+		cmp dl, 99h
+		je @@14
+		cmp dl, 80h
+		jne @@16
+@@14:
+		cmp word ptr ds:[_rsize-_start+200h], 0
+		jbe @@21
+		call_ r8_
+		jmp @@14
+@@15:
+		jmp_near @@41
+@@16:
+		cmp dl, 0a0h
+		je @@17
+		cmp dl, 0a2h
+		je @@17
+		cmp dl, 0a1h
+		je @@17
+		cmp dl, 0a3h
+		jne @@26
+@@17:
+		call_ r8_
+		cmp ax, 1
+		je @@18
+		mov ax, 0bh
+		call_ fatal_
+@@18:
+		call_ r16_le_
+		mov cx, ax
+		cmp dx, 0a1h
+		je @@19
+		cmp dx, 0a3h
+		jne @@20
+@@19:
+		call_ r16_le_
+@@20:
+		cmp byte ptr ds:[bp-2], 0
+		je @@22
+		cmp cx, bx
+		je @@23
+		mov ax, 4
+		call_ fatal_
+		jmp @@23
+@@21:
+		jmp_near @@38
+@@22:
+		mov bx, cx
+		inc byte ptr ds:[bp-2]
+@@23:
+		cmp dx, 0a0h
+		je @@24
+		cmp dx, 0a1h
+		jne @@27
+@@24:
+		add bx, word ptr ds:[_rsize-_start+200h]
+@@25:
+		cmp word ptr ds:[_rsize-_start+200h], 0
+		jbe @@21
+		call_ r8_
+		call_ w8_
+		jmp @@25
+@@26:
+		jmp_near @@37
+@@27:
+		call_ r16_le_
+		mov cx, ax
+		mov word ptr ds:[bp-8], ax
+		mov word ptr ds:[bp-18], 0
+		cmp dx, 0a3h
+		jne @@28
+		call_ r16_le_
+		mov word ptr ds:[bp-18], ax
+@@28:
+		call_ r16_le_
+		mov si, ax
+		test ax, ax
+		jne @@29
+		mov ax, 6
+		call_ fatal_
+@@29:
+		test si, si
+		jbe @@21
+		call_ r16_le_
+		mov cx, ax
+		mov di, ax
+		mov word ptr ds:[bp-6], 0
+		cmp dx, 0a3h
+		jne @@30
+		call_ r16_le_
+		mov word ptr ds:[bp-6], ax
+@@30:
+		call_ r16_le_
+		test ax, ax
+		je @@31
+		mov ax, 8
+		call_ fatal_
+@@31:
+		call_ r8_
+		mov cx, ax
+		call_ r8_
+		mov word ptr ds:[bp-12], ax
+		cmp cx, 1
+		je @@32
+		mov ax, 9
+		call_ fatal_
+@@32:
+		mov ax, word ptr ds:[bp-8]
+		mov word ptr ds:[bp-10], ax
+		mov cx, word ptr ds:[bp-18]
+@@33:
+		mov ax, word ptr ds:[bp-10]
+		or ax, cx
+		test ax, ax
+		jbe @@36
+		add bx, di
+		mov word ptr ds:[bp-4], di
+		mov ax, word ptr ds:[bp-6]
+		mov word ptr ds:[bp-14], ax
+@@34:
+		mov ax, word ptr ds:[bp-14]
+		or ax, word ptr ds:[bp-4]
+		test ax, ax
+		jbe @@35
+		mov al, byte ptr ds:[bp-12]
+		call_ w8_
+		add word ptr ds:[bp-4], -1
+		adc word ptr ds:[bp-14], -1
+		jmp @@34
+@@35:
+		add word ptr ds:[bp-10], -1
+		adc cx, -1
+		jmp @@33
+@@36:
+		dec si
+		jmp_near @@29
+@@37:
+		mov ax, 12h
+		call_ fatal_
+@@38:
+		inc word ptr ds:[_rsize-_start+200h]
+		call_ r8_
+		cmp word ptr ds:[_rsize-_start+200h], 0
+		jne @@40
+@@39:
+		jmp_near @@12
+@@40:
+		mov ax, 0ah
+		call_ fatal_
+		jmp @@39
+@@41:
+		call_ wflush_
+		mov ax, 4c00h  ; EXIT_SUCCESS.
+		int 21h
+		; Not reached.
+
+fatal_:  ; Never returns.
+		mov cx, ax
+		mov bx, msg_fatal_end-msg_fatal
+		call_ @@base2
+@@base2:
+		pop dx
+		add dx, msg_fatal-@@base2  ; DX := msg_usage. The no-link hack requires such a position-independent way.
+		mov ax, 2
+		call_ write_
+		xchg ax, cx  ; AL := CL; AH := junk; CL := junk.
+		mov ah, 4ch
+		int 21h
+		; Not reached.
+
+wflush_:
+		push bx
+		push dx
+		mov ax, word ptr ds:[_wri-_start+200h]
+		test ax, ax
+		jbe @@6
+		mov bx, ax
+		mov ax, word ptr ds:[_wrfd-_start+200h]
+		mov dx, _wrbuf-_start+200h
+		call_ write_
+		test ax, ax
+		jle @@4
+		cmp ax, word ptr ds:[_wri-_start+200h]
+		je @@5
+@@4:
+		mov ax, 7
+		call_ fatal_
+@@5:
+		xor ax, ax
+		mov word ptr ds:[_wri-_start+200h], ax
+@@6:
+		pop dx
+		pop bx
+		ret
+
+w8_:
+		push bx
+		push dx
+		mov dl, al
+		cmp word ptr ds:[_wri-_start+200h], 200h
+		jne @@7
+		call_ wflush_
+@@7:
+		mov bx, word ptr ds:[_wri-_start+200h]
+		mov byte ptr ds:[bx+_wrbuf-_start+200h], dl
+		inc bx
+		mov word ptr ds:[_wri-_start+200h], bx
+		pop dx
+		pop bx
+		ret
+
+r8_:
+		push bx
+		push dx
+		cmp word ptr ds:[_rsize-_start+200h], 0
+		jne @@1
+		mov ax, 3
+		call_ fatal_
+@@1:
+		mov ax, word ptr ds:[_rdi-_start+200h]
+		cmp ax, word ptr ds:[_rdlimit-_start+200h]
+		jne @@3
+		mov ax, word ptr ds:[_rdfd-_start+200h]
+		mov bx, 200h
+		mov dx, _rdbuf-_start+200h
+		call_ read_
+		mov bx, ax
+		test ax, ax
+		jge @@2
+		mov ax, 5
+		call_ fatal_
+@@2:
+		mov word ptr ds:[_rdlimit-_start+200h], bx
+		xor ax, ax
+		mov word ptr ds:[_rdi-_start+200h], ax
+@@3:
+		mov bx, word ptr ds:[_rdi-_start+200h]
+		mov al, byte ptr ds:[bx+_rdbuf-_start+200h]
+		xor ah, ah
+		dec word ptr ds:[_rsize-_start+200h]
+		inc bx
+		mov word ptr ds:[_rdi-_start+200h], bx
+		pop dx
+		pop bx
+		ret
+
+r16_le_:
+		push dx
+		call_ r8_  ; Read low byte.
+		xchg dx, ax  ; DX := AX; AX := junk.
+		call_ r8_  ; Read high byte.
+		mov dh, al
+		xchg dx, ax
+		pop dx
+		ret
+
+; ssize_t write(int fd, const void *buf, size_t count);
+; Optimized for size. AX == fd, DX == buf, BX == count.
+write_:		push cx
+		xchg ax, bx		; AX := count; BX := fd.
+		xchg ax, cx		; CX := count; AX := junk.
+		mov ah, 040h
+		jmp int21cx
+
+; ssize_t read(int fd, void *buf, size_t count);
+; Optimized for size. AX == fd, DX == buf, BX == count.
+read_:		push cx
+		xchg ax, bx		; AX := count; BX := fd.
+		xchg ax, cx		; CX := count; AX := junk.
+		mov ah, 03fh
+int21cx:	int 021h
+		jnc @@ok
+		sbb ax, ax		; AX := -1.
+@@ok:		pop cx
+		ret
+
+
+; int creat(const char *pathname, int mode);
+; int creat1(const char *pathname);
+; Optimized for size. AX == pathname, DX == mode.
+; The value O_CREAT | O_TRUNC | O_WRONLY is used as flags.
+; mode is ignored, except for bit 8 (read-only). Recommended value: 0644,
+; for Unix compatibility.
+creat1_:
+creat_:		push cx
+		xchg ax, dx		; DX := pathname; AX := mode.
+		xor cx, cx
+		test ah, 1
+		jz @@1c
+		inc cx			; CX := 1 means read-only.
+@@1c:		mov ah, 03ch
+		jmp int21cx
+
+; int open(const char *pathname, int flags, int mode);
+; int open2(const char *pathname, int flags);
+; Optimized for size. AX == pathname, DX == flags, BX == mode.
+; Unix open(2) is able to create new files (O_CREAT), in DOS please use
+; creat() for that.
+; mode is ignored. Recommended value: 0644, for Unix compatibility.
+open2_:
+open_:		xchg ax, dx		; DX := pathname; AX := junk.
+		mov ah, 03dh
+		int 021h
+		jnc @@oko
+		sbb ax, ax		; AX := -1.
+@@oko:		ret
+
+msg_fatal	db 'folink2 fatal error', 13, 10
+msg_fatal_end	db 0  ; Not needed.
+msg_usage	db 'Usage: folink2 <in.obj> <out.bin>', 13, 10
+msg_usage_end	db 0  ; Not needed.
+
+; TODO(pts): Assert that the maximum file size up to this point (including
+; the db '@@' at the beginning) is 0x400. That's the maximum size for a
+; single LEDATA record in the OMF .obj file generated by TASM.
+
+; --- Variables initialized to 0 by _start.
+		; The .obj hack omits the ? values from the .obj file. Good.
+		;section .bss
+___section_bss:
+
+___section_c_bss:
+_wrbuf		db 200h dup (?)
+_rdbuf		db 200h dup (?)
+_wrfd		db 2 dup (?)  ; Like `dw ?', but MASM 5.00 won't emit \x00 bytes.
+_rdfd		db 2 dup (?)  ; Like `dw ?', but MASM 5.00 won't emit \x00 bytes.
+_wri		db 2 dup (?)  ; Like `dw ?', but MASM 5.00 won't emit \x00 bytes.
+_rdlimit	db 2 dup (?)  ; Like `dw ?', but MASM 5.00 won't emit \x00 bytes.
+_rsize		db 2 dup (?)  ; Like `dw ?', but MASM 5.00 won't emit \x00 bytes.
+_rdi		db 2 dup (?)  ; Like `dw ?', but MASM 5.00 won't emit \x00 bytes.
+
+; --- Uninitialized .bss used by _start.    ___section_startup_ubss:
+___section_startup_ubss:
+
+argv_bytes	db 270 dup (?)
+argv_pointers	db 130 dup (?)
+
+___section_ubss_end:
+
+CC ends
+end _start
