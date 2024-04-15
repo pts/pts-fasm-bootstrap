@@ -10,7 +10,7 @@ test -f "orig/fasm120.zip"  # 2001-11-17  No Linux support, segfault with fasm.a
 #test -f "orig/fasm-1.43.tar.gz"  # First version with `format ELF executable' support, and it's already using it.
 test -f "orig/fasm-1.73.32.tgz"  # 2023-12-04
 
-rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas fbsasm.as8 fbsasm.sym fbsasms.as8 fbsasm.mws.o
+rm -f fasm-orig-* fasm-pass?-* fasm-re-* fbsasm fbsasm-pass? fbsasm.bin fbsasm.o fbsasm.obj folink2t.com folink2l.com folink2.obj f.u00 f.upu f.uau f.t fbsasm.und fbsasm.err fbsasm.bin fbsasm.nas fbsasm.as8 fbsasm.sym fbsasms.as8 fbsasm.mws.o
 rm -rf fasm-src-* tmp
 
 rm -rf tmp
@@ -175,6 +175,13 @@ case "$1" in  # Any of these below will work.
     # Needs TASM 2.0 (1990) or later, because earlier versions convert the
     # filename in the OMF THEADR record to uppercase.
     :
+    if false; then  # Just an experiment for using folink2.mas instead of folink2.tas.
+      rm -f folink2t.com
+      cp -a folink2.mas f.uau
+      "$tkvikdos" tools/masm500.exe /t f.uau ,foli2m.com,nul, nul
+      mv foli2m.com folink2t.com
+      rm -f f.uau
+    fi
   else  # Build folink2 with TASM 1.01.
     cp -a folink2.tas f.t  # The TASM nolink-hack below works with TASM 1.01, TASM 4.1 and TASM 5.x and only if the filename is f.t (uppercase in TASM invocation below).
     # Needs TASM 2.0 (1990) or later, because earlier versions don't support the /q switch.
