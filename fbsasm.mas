@@ -77,6 +77,14 @@ _TEXT segment byte use32  ; The segment name is arbitrary.
 assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
 ifdef BIN  ; `jwasm -bin -DBIN' or `asmc -bin -DBIN'. For other assemblers and modes, it's set in the compilation script.
   org (BIN)  ; program_base; in MASM the constant must be hardcoded. This would make WLINK put tons of \0 bytes to the beginning.
+else
+  ifdef LORG
+    if LORG+0
+      org (LORG)
+    else
+      org 700000h  ; Default.
+    endif
+  endif
 endif
 
 ; `cmp_s a1, imm2' is like `cmp a1, imm2' for word-sized operands, but avoids some MASM 5.x and TASM (latest) quirks.
@@ -10877,7 +10885,11 @@ ifdef BIN
   org (BIN)+text_size+bss_align-4  ; 4 because of DWORD in the _BSS line, looks like a bug in JWasm and ASMC. Sigh.
   prebss_size = 0
 else
-  prebss_size = 1000h  ; Adding 1000h, because WLINK raw puts the entire _BSS 1000h bytes further. TODO(pts): Use folink3 with BIN?  !! Report bug.
+  ifdef LORG  ; Needed by MASM 6.00B, it is buggy with non-const (e.g. `text_size') `org' value. Also works with others with folink3.
+    prebss_size = 0
+  else
+    prebss_size = 1000h  ; Adding 1000h, because WLINK raw puts the entire _BSS 1000h bytes further. TODO(pts): Use folink3 with BIN?  !! Report bug.
+  endif
 endif
 bss_start = $  ; `= $' instead of `:' to pacify TASM 5.3 about missing `assume cs:_BSS'.
 
