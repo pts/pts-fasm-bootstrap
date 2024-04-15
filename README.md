@@ -125,4 +125,5 @@ programming languages, targeting Linux i386:
   part of OpenSolaris.
 * POASM from Pelle's C.
 * [HLA](https://en.wikipedia.org/wiki/High_Level_Assembly) with its built-in
-* linker.
+  linker.
+* [GoAsm.exe](http://www.godevtool.com/) + GoLink.exe.
