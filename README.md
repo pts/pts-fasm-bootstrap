@@ -129,3 +129,4 @@ programming languages, targeting Linux i386:
 * [GoAsm.exe](http://www.godevtool.com/) + GoLink.exe.
 * [ASM32](https://www.intelligentfirm.com/cpl32.html):
   it supports flat .bin output in use32 mode.
+* [XAssembler](https://web.archive.org/web/20070823101949/http://xasm.webpark.pl:80/xasm/en_download.htm).
