@@ -127,3 +127,5 @@ programming languages, targeting Linux i386:
 * [HLA](https://en.wikipedia.org/wiki/High_Level_Assembly) with its built-in
   linker.
 * [GoAsm.exe](http://www.godevtool.com/) + GoLink.exe.
+* [ASM32](https://www.intelligentfirm.com/cpl32.html):
+  it supports flat .bin output in use32 mode.
