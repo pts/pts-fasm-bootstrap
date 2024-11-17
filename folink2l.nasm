@@ -27,7 +27,7 @@ Elf32_Ehdr:
 		OSABI_Linux equ 3
 		db 7Fh,'ELF',1,1,1,OSABI_Linux,0,0,0,0,0,0,0,0,2,0,3,0
 		dd 1,_start,Elf32_Phdr-file_header,0,0
-		dw Elf32_Phdr-file_header,20h,1,0,0,0
+		dw Elf32_Phdr-file_header,20h,1,28h,0,0
 Elf32_Phdr:	dd 1,0,program_base,0,prebss-program_base,mem_end-program_base,7,1000h
 
 _start:  ; Entry point of the Linux i386 program. Stack: top is argc, then argv[0], argv[1] etc., then NULL, then envp[0], envp[1] etc., then NULL, then ELF aux table.
