@@ -41,7 +41,7 @@ file_header:
 	.short	2,3
 	.long	1,start
 	.long	program_header-file_header,0,0
-	.short	program_header-file_header,0x20,1,0,0,0
+	.short	program_header-file_header,0x20,1,0x28,0,0
 
 program_header:
 	.long	1,0,program_base,0

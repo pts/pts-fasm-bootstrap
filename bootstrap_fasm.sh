@@ -45,7 +45,7 @@ awk <fasm-src-1.73.32/Linux/fasm.asm >fasm-src-1.73.32/Linux/fasmb-1.20.asm '
         print"macro pushd value { push dword value }\r"
         print"macro align value { rb (value-1) - ($ + value-1) mod value }\r"
         print"program_base = 0x8048000\r";print"org program_base\r";print"use32\r"
-        print"file_header:\r";print"db 0x7F,'\''ELF'\'',1,1,1,3\r";print"rb file_header+0x10-$\r";print"dw 2,3\r";print"dd 1,start\r";print"dd program_header-file_header,0,0\r";print"dw program_header-file_header,0x20,1,0,0,0\r"
+        print"file_header:\r";print"db 0x7F,'\''ELF'\'',1,1,1,3\r";print"rb file_header+0x10-$\r";print"dw 2,3\r";print"dd 1,start\r";print"dd program_header-file_header,0,0\r";print"dw program_header-file_header,0x20,1,0x28,0,0\r"
         print"program_header:\r";print"dd 1,0,program_base,0\r";print"dd bss-program_base,program_end-program_base,7,0x1000\r"
       } else if (/^[ \t]*entry[ \t]/) {
       } else if (/^[ \t]*segment[ \t]/) {

@@ -137,7 +137,7 @@ if ($header_type eq "elf" or $header_type eq "elf2") {
   }
   die "fatal: assert: bad ELF phdr count\n" if @phdrs != $phdr_count;
   my $OSABI_Linux = 3;
-  my $ehdr = pack("Ca3C4x8vvVVVx8vvvx6", 0x7f, "ELF", 1, 1, 1, $OSABI_Linux, 2, 3, 1, $org + $header_size + $start_value, 0x34, 0x34, 0x20, $phdr_count);
+  my $ehdr = pack("Ca3C4x8vvVVVx8v6", 0x7f, "ELF", 1, 1, 1, $OSABI_Linux, 2, 3, 1, $org + $header_size + $start_value, 0x34, 0x34, 0x20, $phdr_count, 0x28, 0, 0);
   $header = join("", $ehdr, @phdrs);
   die "fatal: assert: bad ELF header size\n" if length($header) != $header_size;
   for my $v (@add_vaddrs) { $v += $header_size; }

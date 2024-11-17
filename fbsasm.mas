@@ -154,7 +154,7 @@ Elf32_Ehdr:
 		OSABI_Linux = 3
 		db 7Fh,'ELF',1,1,1,OSABI_Linux,0,0,0,0,0,0,0,0,2,0,3,0
 		dd 1,_start,Elf32_Phdr-file_header,0,0
-		dw (Elf32_Phdr-file_header) and 0ffffh,20h,1,0,0,0
+		dw (Elf32_Phdr-file_header) and 0ffffh,20h,1,28h,0,0
 Elf32_Phdr:  ; MASM 6.11 requires a line break here, MASM 5.00 allows it without line break.
 		dd 1,0,file_header,0,text_size,mem_size,7,1000h
 

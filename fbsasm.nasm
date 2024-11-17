@@ -46,7 +46,7 @@ file_header:
 	dw	2,3
 	dd	1,start
 	dd	program_header-file_header,0,0
-	dw	program_header-file_header,0x20,1,0,0,0
+	dw	program_header-file_header,0x20,1,0x28,0,0
 
 program_header:
 	dd	1,0,program_base,0

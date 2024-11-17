@@ -11,12 +11,12 @@
 	macro	align value { rb (value-1) - ($ + value-1) mod value }
 
 file_header:
-	db	0x7F,'ELF',1,1,1
+	db	0x7F,'ELF',1,1,1,3
 	rb	file_header+0x10-$
 	dw	2,3
 	dd	1,start
 	dd	program_header-file_header,0,0
-	dw	program_header-file_header,0x20,1,0,0,0
+	dw	program_header-file_header,0x20,1,0x28,0,0
 
 program_header:
 	dd	1,0,program_base,0
