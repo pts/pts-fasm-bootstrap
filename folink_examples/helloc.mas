@@ -1,0 +1,77 @@
+;
+; helloli3.mas: example DOS 8086 hello-world .com program with MASM 5.0 or compatible
+; by pts@fazekas.hu at Fri Oct  4 15:17:58 CEST 2024
+;
+
+ifdef __JWASM__  ; Also ASMC. Only needed for `-bin', but also works (with `tlink /t' and `folink3') withot `-bin'.
+  _G group _TEXT, _BSS
+endif
+
+_TEXT segment byte  ; The segment name is arbitrary.
+assume cs:_TEXT, ds:_TEXT, es:_TEXT, ss:_TEXT
+org 100h
+file_header:
+_start:
+; !! Add (relative) call relocation.
+mov ah, 9
+mov dx, offset msg
+int 21h
+ret
+msg db 'Hello, World!', 13, 10, '$'
+dw offset msg+300h
+db '*'
+;dw -1
+;dd offset msg+0ffffh  ; TASM offset debug.
+dw offset bssvar
+
+text_end:
+ifdef __JWASM__  ; Also ASMC.
+  _BSS segment byte 'BSS'
+endif
+;db ((file_header-text_end) and 3) dup (?)  ; Align BSS. !! Test it.
+bssvar dd ?  ; MASM 6.00 + TLINK omits this from the end of the file, MASM 5.0 + TASM doesn't. !! JWasm -bin doesn't.
+ifdef __JWASM__  ; Also ASMC.
+  _BSS ends
+endif
+
+text_size = $-file_header
+;dw text_size
+bss_align = 0
+
+ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+  ideal
+  ends _TEXT
+  masm
+else
+  _TEXT ends
+endif
+
+;_BSS segment byte 'BSS'  ; Buggy.
+;_BSS segment para 'BSS'
+; !! MASM 6.00
+;org text_size
+;org 0
+;org 5
+;org 100h+text_size+bss_align  ; !! Don't duplicate 100h.  ; !! bug: MASM 6.00 adds 8 extra bytes to text_size (25h instead 1dh here).
+;org 5
+;org 0  ; TLINK: 0dh with `segment byte 'BSS''
+;org 1  ; TLINK and JWasm: 0eh  !! Why? Why not 1eh?
+;org 20h  ; Still ads 0dh.
+;org 100h  ; This also adds 0dh.
+
+; !! doc: BSS is uninitialized in DOS .com programs.
+; !! MASM 5.0 bug: It generates the NUL bytes for this to the .obj file, making `tlink /t' emit the bytes. MASM 6.11 doesn't do that.
+;bssvar dw ?
+;db 5
+;dw ?
+
+;ifdef ??version  ; TASM. Bugfix for TASM 3.0 only. It crashes on `... ends'.
+;  ideal
+;  ends _BSS
+;  masm
+;else
+;  _BSS ends
+;endif
+
+end _start  ; Pacify `tlink /t' (which creates a DOS .com program).
+
