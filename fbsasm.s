@@ -19,6 +19,11 @@
 ##  #
 # This file is autognerated by nasm2as.pl
 ##
+##
+##
+##
+##
+##
 ##  #  flat assembler 0.37 source, fasm.asm
 ##  #  Copyright (c) 1999-2002, Tomasz Grysztar
 ##  #  All rights reserved.
@@ -10159,6 +10164,23 @@ symbol_characters:
  .byte 9, 0xa, 0xd, 0x1a, 0x20
  .ascii "+-/*:=|&~()[]<>{},;\\"
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 operators:
  .byte 1
  .ascii "+"
@@ -10753,6 +10775,7 @@ instructions:
   ##db %1, %2
   ##dw %3
 ##%endm
+
 
 instructions_2:
  .ascii "bt"
@@ -11487,6 +11510,7 @@ _logo:
 .byte 0
 
 
+
 _usage:
 .ascii "usage: fasm source output"
 .byte 0xa, 0
@@ -11507,7 +11531,7 @@ _counter:
 
 prebss:
 # bss_align = 0
-.section .bss  #  We could use `absolute $' here instead, but that's broken (breaks address calculation in program_end-bss+prebss-file_header) in NASM 0.95--0.97.
+.bss  #  We could use `absolute $' here instead, but that's broken (breaks address calculation in program_end-bss+prebss-file_header) in NASM 0.95--0.97.
 bss:
 # .fill bss_align, 1, 0  #  Uninitialized data follows.
 

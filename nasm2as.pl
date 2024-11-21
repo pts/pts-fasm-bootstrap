@@ -285,8 +285,8 @@ while (<STDIN>) {
       $_ = "$1 " . fix_inst_arg($4) . ", \%$3, " . fix_inst_arg($2);
     } elsif (m@^\%if\s@ or $_ eq "%else" or $_ eq "%endif") {
       substr($_, 0, 1) = ".";
-    } elsif ($_ eq "absolute \$" or $_ eq "section .bss") {
-      $_ = ".section .bss";
+    } elsif ($_ eq "absolute \$" or $_ eq "section .bss" or $_ eq "section .bss align=1") {
+      $_ = ".bss";  # Some versions of GNU as(1) emit the wrong COFF section flags for `.section .bss'.
     } elsif (m@^alignb?\s+([1248])$@) {
       $_ = ".align $1";
     } elsif (m@^(?:([_a-zA-Z][.\w]*)[:\s]\s*)?resb\s+(.*)$@) {
