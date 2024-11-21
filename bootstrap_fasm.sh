@@ -133,12 +133,34 @@ case "$1" in  # Any of these below will work.
   rm -f fbsasm.sym
   ;;
  as* | gas* | --as* | --gas*)  # GNU as(1) assembler and GNU ld(1) linker, from GNU Binutils. Example: --as=debian-2.1-slink/as
+  # These don't work:
+  # --as=debian-1.1-buzz/as  (2.6.0.2, it has too many code generation bugs)
+  # All these work:
+  # --as=debian-1.2-rex/as  (2.7.0.3, code generation bugs worked around by nasm2as.pl)
+  # --as=debian-2.1-slink/as  (2.9.1.0.19, code generation bugs worked around by nasm2as.pl)
+  # --as=debian-2.2-potato/as  (2.9.5.0.37, no code generation bugs encountered)
+  # --as=tools/gaself32-2.30
+  # --as=tools/gasgo32coff-2.24
+  # --as=tools/gasgo32coff-2.26
+  # --as=tools/gaswin32coff-2.20
+  # --as=tools/gaswin32coff-2.23.52
+  # --as=toolset/bin/gaself32-2.7
+  # --as=toolset/bin/gaself32-2.9.5.0.37
+  # --as=toolset/bin/gasgo32coff-2.9.5.0.37
+  # --as=toolset/bin/gaswin32coff-2.9.5.0.37
+  # --as=toolset/bin/gaself32-2.22
+  # --as=toolset/bin/gaself32-2.24
   ASPROG="${1#*=}"
   test "$ASPROG" = "$1" && ASPROG=as
   ASPROGDIR="${ASPROG%/*}/"
   ASPROGBASE="${ASPROG##*/}";
   test "$ASPROGDIR" = "$ASPROG/" && ASPROGDIR=
-  LDPROG="${ASPROGDIR}ld${ASPROGBASE#*as}"
+  case "$ASPROGBASE" in
+    gascoff32-* | gasgo32coff-* | gaswin32coff-*) LDPROG="${ASPROGDIR}ld-${ASPROGBASE#*-}"; test -f "$LDPROG" || LDPROG=toolset/bin/wlink-ow2023-03-04 ;;  # tools/ld-2.22 doesn't support COFF as input. `LDPROG=ld' would also work with >= 2.22 on Debian or Ubuntu.
+    gaself32-*) LDPROG="${ASPROGDIR}ld-${ASPROGBASE#*-}"; test -f "$LDPROG" || LDPROG=tools/ld-2.22 ;;
+    as* | gas*) LDPROG="${ASPROGDIR}ld${ASPROGBASE#*as*}" ;;
+    *) LDPROG=ld ;;
+  esac
   if "$ASPROG" --32 -march=i386 --version >/dev/null 2>&1; then  # Newer GNU as(1) (tested with 2.22 and 2.30).
     "$ASPROG" --32 -march=i386 -o fbsasm.o fbsasm.s
   else  # Old GNU as(1) (tested with 2.7, 2.9.1 and 2.9.5) for i386.
@@ -146,7 +168,13 @@ case "$1" in  # Any of these below will work.
   fi
   # TODO(pts): Write a custom linker which can do this (supports a single
   # ELF 32-bit .o input file with .text and .bss only).
-  "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o  # -N to make .text read-write-execute.
+  case "${LDPROG##*/}" in
+   wlink*)
+    "$LDPROG" op q op start=_start form elf op noext op norelocs n fbsasm f fbsasm.o
+    perl -we 'die if !open(F, "+< ", $ARGV[0]); binmode(F); die if !sysseek(F, 0x4c, 0); $_ = "\7\0\0\0"; die if (syswrite(F, $_, 4) or 0) != 4' fbsasm  # Post-processing to make .text read-write-execute.
+    ;;
+   *) "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o ;;  # -N to make .text read-write-execute.
+  esac
   rm -f fbsasm.o
   ;;
  tasm* | --tasm*)  # Example: --tasm=tasm/tasm41.exe . Example: --tasm=tasm/tasm32ps
