@@ -49,20 +49,17 @@ die "fatal: expected .bss section" if substr($s, 0x6c - 8, 8) ne ".bss\0\0\0\0";
 die "fatal: expected .rodata section" if $section_count >= 4 and substr($s, 0x94 - 8, 8) ne ".rodata\0";
 
 # Even after fixit it, relocations are still wrong.
-my $text_vaddr = unpack("V", substr($s, 0x1c + 4, 4));
-my $text_size = unpack("V", substr($s, 0x1c + 8, 4));
+my($text_vaddr, $text_size) = unpack("VV", substr($s, 0x1c + 4, 8));
 die "fatal: paddr--vaddr mismatch in .text: $fn\n" if substr($s, 0x1c, 4) ne substr($s, 0x1c + 4, 4);
 my $text_ofs = unpack("V", substr($s, 0x1c + 0xc, 4));
 my $text_reloc_ofs = unpack("V", substr($s, 0x1c + 0x10, 4));
 my $text_reloc_count = unpack("V", substr($s, 0x1c + 0x18, 4));
-my $data_vaddr = unpack("V", substr($s, 0x44 + 4, 4));
-my $data_size = unpack("V", substr($s, 0x44 + 8, 4));
+my($data_vaddr, $data_size) = unpack("VV", substr($s, 0x44 + 4, 8));
 die "fatal: paddr--vaddr mismatch in .data: $fn\n" if substr($s, 0x44, 4) ne substr($s, 0x44 + 4, 4);
 my $data_ofs = unpack("V", substr($s, 0x44 + 0xc, 4));
 my $data_reloc_ofs = unpack("V", substr($s, 0x44 + 0x10, 4));
 my $data_reloc_count = unpack("V", substr($s, 0x44 + 0x18, 4));
-my $bss_vaddr = unpack("V", substr($s, 0x6c + 4, 4));
-my $bss_size = unpack("V", substr($s, 0x6c + 8, 4));
+my($bss_vaddr, $bss_size) = unpack("VV", substr($s, 0x6c + 4, 8));
 die "fatal: paddr--vaddr mismatch in .bss: $fn\n" if substr($s, 0x6c, 4) ne substr($s, 0x6c + 4, 4);
 my $is_coff_fixed = ($text_vaddr == 0 and $data_vaddr == 0 and $bss_vaddr == 0);  # Already fixed by fixcoff.pl.
 #my $padding_after_text = (-$text_vaddr & 3);
@@ -89,7 +86,7 @@ if ($need_sym_load) {
     $i += $numaux;
   }
 } else {
-  $text_sym = 0; $data_sym = 1; $bss_sym = 2;  # As emitted by mw386as.
+  $text_sym = 0; $data_sym = 1; $bss_sym = 2;  # As emitted by mw386as.  !! SVR3 assembler adds some aux entries, so these are incorrect.
 }
 my %symrs;
 $symrs{$text_sym} = 0 if defined($text_sym);
@@ -158,12 +155,18 @@ sub add_section($$$$$) {
     my($vaddr, $symndx, $type) = unpack("VVv", substr($r, $i, 10));
     # RELOC_ADDR32=6, RELOC_REL32=0x14==20.
     #printf(STDERR "info: vaddr=0x%x symndx=0x%x type=0x%x\n", $vaddr, $symndx, $type);
-    die sprintf("fatal: expected reloc type=0x6(RELOC_ADDR32), got 0x%x\n", $type) if $type != 6;
-    my $symr = $symrs{$symndx};
-    die sprintf("fatal: expected symbol corresponding to section, got 0x%x\n", $symndx) if !defined($symr);
-    die sprintf("fatal: expected vaddr at least 0x%x, got 0x%x\n", $svaddr, $vaddr) if $svaddr > $vaddr;
-    die sprintf("fatal: vaddr too large: 0x%x\n", $vaddr) if $vaddr - $svaddr + 4 > length($s);
-    my $delta = $org + $add_vaddrs[$symr];
+    my $delta = 0;
+    if ($type == 0x14 and $symndx == $text_sym) {  # IP-relative relocation emitted by the SVR3 assembler for `call' and `jmp'.
+      # It is correct to ignore sthis relocation while linking.
+      #printf STDERR "debug: delta=0x%x\n", $delta;
+    } else {
+      die sprintf("fatal: expected reloc type=0x6(RELOC_ADDR32), got 0x%x\n", $type) if $type != 6;
+      my $symr = $symrs{$symndx};
+      die sprintf("fatal: expected symbol corresponding to section, got 0x%x\n", $symndx) if !defined($symr);
+      die sprintf("fatal: expected vaddr at least 0x%x, got 0x%x\n", $svaddr, $vaddr) if $svaddr > $vaddr;
+      die sprintf("fatal: vaddr too large: 0x%x\n", $vaddr) if $vaddr - $svaddr + 4 > length($s);
+      $delta = $org + $add_vaddrs[$symr];
+    }
     next if !$delta;
     #printf(STDERR "info: fix vaddr=0x%x delta=0x%x d=0x%x\n", $vaddr - $svaddr, $delta, unpack("V", substr($s, $vaddr - $svaddr, 4)));
     substr($s, $vaddr - $svaddr, 4) = pack("V", unpack("V", substr($s, $vaddr - $svaddr, 4)) + $delta);
