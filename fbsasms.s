@@ -1,59 +1,62 @@
-##  #  by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024
-##  #
-##  #  Minimum NASM version required to compile: NASM 0.95 (1997-07-27). The
-##  #  nasm.exe bundled with NASM 0.95 (nasm095s.zip) precompiled for DOS 8086
-##  #  also works.
-##  #
-##  #  This is a subset of the source code of fasm 1.30 (with some CPU instructions,
-##  #  `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386
-##  #  only. It's useful for bootstrapping fasm.
-##  #
-##  #  Compile with: nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm  # Fast.
-##  #  Compile with: nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm
-##  #  Compile with: nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm
-##  #
-##  #  Compile the GNU as(1) version (fbsasm.s) with: as --32 -march=i386 -o fbsasm.o fbsasm && ld -m elf_i386 -N -s -o fbsasm fbsasm.o
-##  #  Compile the GNU as(1) version (fbsasm.s) with earlier versions of GNU as(1) with: as -o fbsasm.o fbsasm && ld -m elf_i386 -N -s -o fbsasm fbsasm.o
-##  #
-##  #  Lines in fbsasm.nasm and fbsasm.fasm correspond to each other.
-##  #
-# This file is autognerated by nasm2as.pl
-##
-##
-##
-##
-##
-##
-##  #  flat assembler 0.37 source, fasm.asm
-##  #  Copyright (c) 1999-2002, Tomasz Grysztar
-##  #  All rights reserved.
-##
-##%define program_base 0x700000  #  NASM 0.95 doesn't support `program_base equ 0x700000' with `org program_base'.
-##
-##%ifndef near_o0
-##%define near_o0 near  #  For `nasm -O0'.
-##%endif
-##
-	##org	program_base
-	##bits 32  #  NASM 0.97 supports this but ignores `use32'.
-##  # cpu 386  ; True but NASM 0.97 doesn't support it.
-##
-##  # 	macro	align value { rb (value-1) - ($ + value-1) mod value }
-##
-##file_header:
-	##db	0x7F,'ELF',1,1,1
-	##times	file_header+0x10-$ db 0
-	##dw	2,3
-	##dd	1,start
-	##dd	program_header-file_header,0,0
-	##dw	program_header-file_header,0x20,1,0x28,0,0
-##
-##program_header:
-	##dd	1,0,program_base,0
-	##dd	prebss-file_header,program_end-bss+prebss-file_header,7,0x1000
-##
+/* This source file works with the SVR3, SunOS 4.0.1 and SVR4 asseblers. */
+.file "fbsasms.s"
+/*  #  by pts@fazekas.hu at Thu Mar 21 07:44:40 CET 2024 */
+/*  # */
+/*  #  Minimum NASM version required to compile: NASM 0.95 (1997-07-27). The */
+/*  #  nasm.exe bundled with NASM 0.95 (nasm095s.zip) precompiled for DOS 8086 */
+/*  #  also works. */
+/*  # */
+/*  #  This is a subset of the source code of fasm 1.30 (with some CPU instructions, */
+/*  #  `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386 */
+/*  #  only. It's useful for bootstrapping fasm. */
+/*  # */
+/*  #  Compile with: nasm-0.98.39 -O0 -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm  # Fast. */
+/*  #  Compile with: nasm-0.98.39 -O1 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm */
+/*  #  Compile with: nasm-0.98.39 -O999999999 -Dnear_o0= -w+orphan-labels -f bin -o fbsasm fbsasm.asm && chmod +x fbsasm */
+/*  # */
+/*  #  Compile the GNU as(1) version (fbsasm.s) with: as --32 -march=i386 -o fbsasm.o fbsasm && ld -m elf_i386 -N -s -o fbsasm fbsasm.o */
+/*  #  Compile the GNU as(1) version (fbsasm.s) with earlier versions of GNU as(1) with: as -o fbsasm.o fbsasm && ld -m elf_i386 -N -s -o fbsasm fbsasm.o */
+/*  # */
+/*  #  Lines in fbsasm.nasm and fbsasm.fasm correspond to each other. */
+/*  # */
+/* This file is autognerated by nasm2as.pl */
+/* */
+/* */
+/* */
+/* */
+/* */
+/* */
+/*  #  flat assembler 0.37 source, fasm.asm */
+/*  #  Copyright (c) 1999-2002, Tomasz Grysztar */
+/*  #  All rights reserved. */
+/* */
+/*%define program_base 0x700000  #  NASM 0.95 doesn't support `program_base equ 0x700000' with `org program_base'. */
+/* */
+/*%ifndef near_o0 */
+/*%define near_o0 near  #  For `nasm -O0'. */
+/*%endif */
+/* */
+/*org	program_base */
+/*bits 32  #  NASM 0.97 supports this but ignores `use32'. */
+/*  # cpu 386  ; True but NASM 0.97 doesn't support it. */
+/* */
+/*  # 	macro	align value { rb (value-1) - ($ + value-1) mod value } */
+/* */
+/*file_header: */
+/*db	0x7F,'ELF',1,1,1 */
+/*times	file_header+0x10-$ db 0 */
+/*dw	2,3 */
+/*dd	1,start */
+/*dd	program_header-file_header,0,0 */
+/*dw	program_header-file_header,0x20,1,0x28,0,0 */
+/* */
+/*program_header: */
+/*dd	1,0,program_base,0 */
+/*dd	prebss-file_header,program_end-bss+prebss-file_header,7,0x1000 */
+/* */
 .globl _start
-_start:  # Program entry point.
+_start:
+  /* Program entry point. */
 start:
 
 	mov $_logo, %esi
@@ -70,29 +73,29 @@ start:
 
 	mov $characters, %edi
 	mov $0x100, %ecx
-	xor %al, %al
+	xorb %al, %al
       make_characters_table:
-	stosb %al, %es:(%edi)
-	inc %al
+	stosb
+	incb %al
 	loop make_characters_table
-	mov $characters+'a, %esi
-	mov $characters+'A, %edi
+	mov $characters+0x61, %esi
+	mov $characters+0x41, %edi
 	mov $26, %ecx
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	mov $characters, %edi
 	mov $symbol_characters+1, %esi
 	movzbl -1(%esi), %ecx
 	xor %ebx, %ebx
       convert_table:
-	lodsb %ds:(%esi), %al
-	mov %al, %bl
+	lodsb
+	movb %al, %bl
 	movb $0, (%edi,%ebx,1)
 	loop convert_table
 
 	push %eax
-	push %eax  #  alloca(8) for the gettimeofday buffer.
-	mov $78, %eax  #  SYS_gettimeofday.
+	push %eax  /*  alloca(8) for the gettimeofday buffer. */
+	mov $78, %eax  /*  SYS_gettimeofday. */
 	mov %esp, %ebx
 	xor %ecx, %ecx
 	int $0x80
@@ -103,7 +106,7 @@ start:
 	mov 4(%esp), %eax
 	div %ecx
 	pop %ecx
-	pop %ecx  #  Free the gettimeofday buffer.
+	pop %ecx  /*  Free the gettimeofday buffer. */
 	add %ebx, %eax
 	movl %eax, start_time
 
@@ -112,13 +115,13 @@ start:
 	call assembler
 
 	movzbl current_pass, %eax
-	inc %al
+	incb %al
 	call display_number
 	mov $_passes_suffix, %esi
 	call display_string
 	push %eax
-	push %eax  #  alloca(8) for the gettimeofday buffer.
-	mov $78, %eax  #  SYS_gettimeofday.
+	push %eax  /*  alloca(8) for the gettimeofday buffer. */
+	mov $78, %eax  /*  SYS_gettimeofday. */
 	mov %esp, %ebx
 	xor %ecx, %ecx
 	int $0x80
@@ -129,7 +132,7 @@ start:
 	mov 4(%esp), %eax
 	div %ecx
 	pop %ecx
-	pop %ecx  #  Free the gettimeofday buffer.
+	pop %ecx  /*  Free the gettimeofday buffer. */
 	add %ebx, %eax
 	sub start_time, %eax
 	jnc time_ok
@@ -145,7 +148,7 @@ start:
 	div %ebx
 	push %edx
 	call display_number
-	mov $'., %dl
+	movb $0x2e, %dl
 	call display_character
 	pop %eax
 	call display_number
@@ -156,20 +159,20 @@ start:
 	call display_number
 	mov $_bytes_suffix, %esi
 	call display_string
-	xor %al, %al
+	xorb %al, %al
 	jmp exit_program
 
 information:
 	mov $_usage, %esi
 	call display_string
-	mov $1, %al
+	movb $1, %al
 	jmp exit_program
 
-# %include 'system.inc'
+/* %include 'system.inc' */
 
-#  flat assembler 0.37 source, system.inc
-#  Copyright (c) 1999-2002, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler 0.37 source, system.inc */
+/*  Copyright (c) 1999-2002, Tomasz Grysztar */
+/*  All rights reserved. */
 
 O_ACCMODE = 03
 O_RDONLY = 00
@@ -197,18 +200,18 @@ S_IXOTH = 01
 
 init_memory:
 	xor %ebx, %ebx
-	mov $45, %eax  #  SYS_brk.
+	mov $45, %eax  /*  SYS_brk. */
 	int $0x80
 	movl %eax, additional_memory
-# mov	ebx,syscall_buffer
-# mov	eax,116  ; SYS_sysinfo. We are interested only the sysinfo.freeram field ([syscall_buffer+14h]), but on modern Linux it's not bytes anymore (see mem_unit in sysinfo(2)), so it's meaningless below.
-# int	0x80
-# mov dword [available_memory],0x100000  ; Hardcode allocating maximum 1 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30.
-	movl $0x280000, available_memory  #  Hardcode allocating maximum 2.5 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30. 2.5 MiB is enough to compile fasm 1.73.32.
+/* mov	ebx,syscall_buffer */
+/* mov	eax,116  ; SYS_sysinfo. We are interested only the sysinfo.freeram field ([syscall_buffer+14h]), but on modern Linux it's not bytes anymore (see mem_unit in sysinfo(2)), so it's meaningless below. */
+/* int	0x80 */
+/* mov dword [available_memory],0x100000  ; Hardcode allocating maximum 1 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30. */
+	movl $0x280000, available_memory  /*  Hardcode allocating maximum 2.5 MiB. 1 MiB enough, but 0.75 MiB is not enough to compile fasm 1.30. 2.5 MiB is enough to compile fasm 1.73.32. */
     allocate_memory:
 	mov additional_memory, %ebx
 	add available_memory, %ebx
-	mov $45, %eax  #  SYS_brk.
+	mov $45, %eax  /*  SYS_brk. */
 	int $0x80
 	movl %eax, memory_end
 	sub additional_memory, %eax
@@ -226,7 +229,7 @@ init_memory:
 
 exit_program:
 	movzbl %al, %ebx
-	mov $1, %eax  #  SYS_exit.
+	mov $1, %eax  /*  SYS_exit. */
 	int $0x80
 
 open:
@@ -235,7 +238,7 @@ open:
 	push %edi
 	push %ebp
 	mov %edx, %ebx
-	mov $5, %eax  #  SYS_open.
+	mov $5, %eax  /*  SYS_open. */
 	mov $O_RDONLY, %ecx
 	xor %edx, %edx
 	int $0x80
@@ -257,7 +260,7 @@ create:
 	push %edi
 	push %ebp
 	mov %edx, %ebx
-	mov $5, %eax  #  SYS_open.
+	mov $5, %eax  /*  SYS_open. */
 	mov $O_CREAT+O_TRUNC+O_WRONLY, %ecx
 	mov $S_IRUSR+S_IWUSR+S_IRGRP, %edx
 	int $0x80
@@ -271,7 +274,7 @@ create:
 	clc
 	ret
 close:
-	mov $6, %eax  #  SYS_close.
+	mov $6, %eax  /*  SYS_close. */
 	int $0x80
 	ret
 read:
@@ -280,7 +283,7 @@ read:
 	push %esi
 	push %edi
 	push %ebp
-	mov $3, %eax  #  SYS_read.
+	mov $3, %eax  /*  SYS_read. */
 	xchg %edx, %ecx
 	int $0x80
 	pop %ebp
@@ -299,7 +302,7 @@ write:
 	push %esi
 	push %edi
 	push %ebp
-	mov $4, %eax  #  SYS_write.
+	mov $4, %eax  /*  SYS_write. */
 	xchg %edx, %ecx
 	int $0x80
 	pop %ebp
@@ -313,8 +316,8 @@ write:
 lseek:
 	mov %edx, %ecx
 	xor %edx, %edx
-	mov %al, %dl
-	mov $19, %eax  #  SYS_lseek.
+	movb %al, %dl
+	mov $19, %eax  /*  SYS_lseek. */
 	int $0x80
 	clc
 	ret
@@ -324,12 +327,12 @@ display_string:
 	mov %esi, %edi
 	mov %esi, %edx
 	or $-1, %ecx
-	xor %al, %al
-	repne
-	scasb %es:(%edi), %al
+	xorb %al, %al
+	repnz
+	scasb
 	neg %ecx
 	sub $2, %ecx
-	mov $4, %eax  #  SYS_write.
+	mov $4, %eax  /*  SYS_write. */
 	mov $1, %ebx
 	xchg %edx, %ecx
 	int $0x80
@@ -337,7 +340,7 @@ display_string:
 	ret
 display_block:
 	push %ebx
-	mov $4, %eax  #  SYS_write.
+	mov $4, %eax  /*  SYS_write. */
 	mov $1, %ebx
 	mov %ecx, %edx
 	mov %esi, %ecx
@@ -346,8 +349,8 @@ display_block:
 	ret
 display_character:
 	push %ebx
-	mov %dl, character
-	mov $4, %eax  #  SYS_write.
+	movb %dl, character
+	mov $4, %eax  /*  SYS_write. */
 	mov $1, %ebx
 	mov $character, %ecx
 	mov %ebx, %edx
@@ -358,20 +361,20 @@ display_number:
 	push %ebx
 	mov $1000000000, %ecx
 	xor %edx, %edx
-	xor %bl, %bl
+	xorb %bl, %bl
       display_loop:
 	div %ecx
 	push %edx
 	cmp $1, %ecx
 	je display_digit
-	or %bl, %bl
+	orb %bl, %bl
 	jnz display_digit
-	or %al, %al
+	orb %al, %al
 	jz digit_ok
-	not %bl
+	notb %bl
       display_digit:
-	mov %al, %dl
-	add $0x30, %dl
+	movb %al, %dl
+	addb $0x30, %dl
 	push %ebx
 	push %ecx
 	call display_character
@@ -396,7 +399,7 @@ fatal_error:
 	call display_string
 	mov $error_suffix, %esi
 	call display_string
-	mov $0xff, %al
+	movb $0xff, %al
 	jmp exit_program
 assembler_error:
 	call flush_display_buffer
@@ -413,11 +416,11 @@ assembler_error:
 	call display_string
 	mov 4(%ebx), %eax
 	call display_number
-	mov $'], %dl
+	movb $0x5d, %dl
 	call display_character
 	cmp current_line, %ebx
 	je line_number_ok
-	mov $0x20, %dl
+	movb $0x20, %dl
 	call display_character
 	mov current_line, %esi
 	mov (%esi), %esi
@@ -430,7 +433,7 @@ assembler_error:
 	mov 4(%esi), %eax
 	and $0x7fffffff, %eax
 	call display_number
-	mov $'], %dl
+	movb $0x5d, %dl
 	call display_character
       line_number_ok:
 	mov $line_data_start, %esi
@@ -438,13 +441,13 @@ assembler_error:
 	mov %ebx, %esi
 	mov (%esi), %edx
 	call open
-	mov $2, %al
+	movb $2, %al
 	xor %edx, %edx
 	call lseek
 	mov 8(%esi), %edx
 	sub %edx, %eax
 	push %eax
-	xor %al, %al
+	xorb %al, %al
 	call lseek
 	mov (%esp), %ecx
 	mov memory_start, %edx
@@ -453,14 +456,14 @@ assembler_error:
 	pop %ecx
 	mov memory_start, %esi
       get_line_data:
-	mov (%esi), %al
-	cmp $0xa, %al
+	movb (%esi), %al
+	cmpb $0xa, %al
 	je display_line_data
-	cmp $0xd, %al
+	cmpb $0xd, %al
 	je display_line_data
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	je display_line_data
-	or %al, %al
+	orb %al, %al
 	jz display_line_data
 	inc %esi
 	loop get_line_data
@@ -483,168 +486,166 @@ character:
 .byte 0, 0
 
 error_prefix:
-.ascii "error: "
-.byte 0
+.string "error: "
 error_suffix:
-.ascii "."
+.byte 0x2e
 lf:
 .byte 0xa, 0
 line_number_start:
-.ascii " ["
-.byte 0
+.string " ["
 line_data_start:
-.ascii ":"
+.byte 0x3a
 .byte 0xa, 0
 
-##%macro dm 1
-  ##db %1, 0
-##%endm
+/*%macro dm 1 */
+/*db %1, 0 */
+/*%endm */
 
-# %include '../version.inc'
+/* %include '../version.inc' */
 
-#  flat assembler  version 1.30
-#  Copyright (c) 1999-2002, Tomasz Grysztar
-#  All rights reserved.
-#
-#  This programs is free for commercial and non-commercial use as long as
-#  the following conditions are aheared to.
-#
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions are
-#  met:
-#
-#  1. Redistributions of source code must retain the above copyright notice,
-#     this list of conditions and the following disclaimer.
-#  2. Redistributions in binary form must reproduce the above copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
-#
-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-#  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-#  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-#  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR
-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-#  The licence and distribution terms for any publically available
-#  version or derivative of this code cannot be changed. i.e. this code
-#  cannot simply be copied and put under another distribution licence
-#  (including the GNU Public Licence).
+/*  flat assembler  version 1.30 */
+/*  Copyright (c) 1999-2002, Tomasz Grysztar */
+/*  All rights reserved. */
+/* */
+/*  This programs is free for commercial and non-commercial use as long as */
+/*  the following conditions are aheared to. */
+/* */
+/*  Redistribution and use in source and binary forms, with or without */
+/*  modification, are permitted provided that the following conditions are */
+/*  met: */
+/* */
+/*  1. Redistributions of source code must retain the above copyright notice, */
+/*     this list of conditions and the following disclaimer. */
+/*  2. Redistributions in binary form must reproduce the above copyright */
+/*     notice, this list of conditions and the following disclaimer in the */
+/*     documentation and/or other materials provided with the distribution. */
+/* */
+/*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS */
+/*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED */
+/*  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A */
+/*  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR */
+/*  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, */
+/*  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, */
+/*  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR */
+/*  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF */
+/*  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING */
+/*  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS */
+/*  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
+/* */
+/*  The licence and distribution terms for any publically available */
+/*  version or derivative of this code cannot be changed. i.e. this code */
+/*  cannot simply be copied and put under another distribution licence */
+/*  (including the GNU Public Licence). */
 
-##%define VERSION_STRING '1.30-bootstrap'
+/*%define VERSION_STRING '1.30-bootstrap' */
 
 
 
 VERSION_MAJOR = 1
 VERSION_MINOR = 30
 
-# %include '../errors.inc'
+/* %include '../errors.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 out_of_memory:
 	call fatal_error
-	.asciz "out of memory"
+	.string "out of memory"
 main_file_not_found:
 	call fatal_error
-	.asciz "source file not found"
+	.string "source file not found"
 write_failed:
 	call fatal_error
-	.asciz "write failed"
+	.string "write failed"
 code_cannot_be_generated:
 	call fatal_error
-	.asciz "code cannot be generated"
+	.string "code cannot be generated"
 unexpected_end_of_file:
 	call fatal_error
-	.asciz "unexpected end of file"
+	.string "unexpected end of file"
 file_not_found:
 	call assembler_error
-	.asciz "file not found"
+	.string "file not found"
 error_reading_file:
 	call assembler_error
-	.asciz "error reading file"
+	.string "error reading file"
 invalid_macro_arguments:
 	call assembler_error
-	.asciz "invalid macro arguments"
+	.string "invalid macro arguments"
 unexpected_characters:
 	call assembler_error
-	.asciz "unexpected characters"
+	.string "unexpected characters"
 invalid_argument:
 	call assembler_error
-	.asciz "invalid argument"
+	.string "invalid argument"
 illegal_instruction:
 	call assembler_error
-	.asciz "illegal instruction"
+	.string "illegal instruction"
 unexpected_instruction:
 	call assembler_error
-	.asciz "unexpected instruction"
+	.string "unexpected instruction"
 invalid_operand:
 	call assembler_error
-	.asciz "invalid operand"
+	.string "invalid operand"
 invalid_operand_size:
 	call assembler_error
-	.asciz "invalid size of operand"
+	.string "invalid size of operand"
 operand_size_not_specified:
 	call assembler_error
-	.asciz "operand size not specified"
+	.string "operand size not specified"
 operand_sizes_do_not_match:
 	call assembler_error
-	.asciz "operand sizes do not match"
+	.string "operand sizes do not match"
 invalid_address_size:
 	call assembler_error
-	.asciz "invalid size of address value"
+	.string "invalid size of address value"
 address_sizes_do_not_agree:
 	call assembler_error
-	.asciz "address sizes do not agree"
+	.string "address sizes do not agree"
 invalid_expression:
 	call assembler_error
-	.asciz "invalid expression"
+	.string "invalid expression"
 invalid_address:
 	call assembler_error
-	.asciz "invalid address"
+	.string "invalid address"
 invalid_value:
 	call assembler_error
-	.asciz "invalid value"
+	.string "invalid value"
 value_out_of_range:
 	call assembler_error
-	.asciz "value out of range"
+	.string "value out of range"
 invalid_use_of_symbol:
 	call assembler_error
-	.asciz "invalid use of symbol"
+	.string "invalid use of symbol"
 relative_jump_out_of_range:
 	call assembler_error
-	.asciz "relative jump out of range"
+	.string "relative jump out of range"
 extra_characters_on_line:
 	call assembler_error
-	.asciz "extra characters on line"
+	.string "extra characters on line"
 name_too_long:
 	call assembler_error
-	.asciz "name too long"
+	.string "name too long"
 invalid_name:
 	call assembler_error
-	.asciz "invalid name"
+	.string "invalid name"
 reserved_word_used_as_symbol:
 	call assembler_error
-	.asciz "reserved word used as symbol"
+	.string "reserved word used as symbol"
 symbol_already_defined:
 	call assembler_error
-	.asciz "symbol already defined"
+	.string "symbol already defined"
 missing_end_quote:
 	call assembler_error
-	.asciz "missing end quote"
+	.string "missing end quote"
 
-# %include '../expressi.inc'
+/* %include '../expressi.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 convert_expression:
 	push %ebp
@@ -653,19 +654,19 @@ convert_expression:
 	mov $operators, %edi
 	call get_operator
 	pop %edi
-	or %al, %al
+	orb %al, %al
 	jz expression_loop
 	push %ebp
-	cmp $0x80, %al
+	cmpb $0x80, %al
 	je init_positive
-	cmp $0x81, %al
+	cmpb $0x81, %al
 	je init_negative
 	jmp invalid_expression
       init_positive:
-	xor %al, %al
+	xorb %al, %al
 	jmp expression_number
       init_negative:
-	mov $0xd1, %al
+	movb $0xd1, %al
 	jmp expression_number
       expression_loop:
 	push %ebp
@@ -679,45 +680,45 @@ convert_expression:
 	je invalid_expression
 	call convert_number
 	pop %eax
-	or %al, %al
+	orb %al, %al
 	jz expression_operator
-	stosb %al, %es:(%edi)
+	stosb
       expression_operator:
 	push %edi
 	mov $operators, %edi
 	call get_operator
 	pop %edi
 	pop %ebp
-	or %al, %al
+	orb %al, %al
 	jz expression_end
       operators_loop:
 	cmp %ebp, %esp
 	je push_operator
-	mov %al, %bl
-	and $0xf0, %bl
-	mov (%esp), %bh
-	and $0xf0, %bh
-	cmp %bh, %bl
+	movb %al, %bl
+	andb $0xf0, %bl
+	movb (%esp), %bh
+	andb $0xf0, %bh
+	cmpb %bh, %bl
 	ja push_operator
-	pop %bx
+	popw %bx
 	movb %bl, (%edi)
 	inc %edi
 	jmp operators_loop
       push_operator:
-	push %ax
+	pushw %ax
 	jmp expression_loop
       expression_end:
 	cmp %ebp, %esp
 	je expression_converted
-	pop %ax
-	stosb %al, %es:(%edi)
+	popw %ax
+	stosb
 	jmp expression_end
       expression_converted:
 	pop %ebp
 	ret
 
 convert_number:
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	je expression_value
 	inc %edi
 	call get_number
@@ -739,29 +740,29 @@ convert_number:
 	ret
       qword_number:
 	movb $8, -1(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	scasl
+	scasl
 	ret
       dword_number:
 	movb $4, -1(%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	ret
       word_number:
 	movb $2, -1(%edi)
-	scasw %es:(%edi), %ax
+	scasw
 	ret
       expression_value:
 	inc %esi
 	call convert_expression
-	lodsb %ds:(%esi), %al
-	cmp $'), %al
+	lodsb
+	cmpb $0x29, %al
 	jne invalid_expression
 	ret
       symbol_value:
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	jne invalid_value
-	lodsb %ds:(%esi), %al
+	lodsb
 	movzbl %al, %ecx
 	push %ecx
 	push %esi
@@ -777,30 +778,30 @@ convert_number:
 	pop %ecx
 	call get_label_id
 	movb $0x11, -1(%edi)
-	stosl %eax, %es:(%edi)
+	stosl
 	ret
       register_value:
 	pop %edi
 	add $8, %esp
 	movb $0x10, -1(%edi)
-	mov %ah, %al
-	stosb %al, %es:(%edi)
+	movb %ah, %al
+	stosb
 	ret
 
 get_number:
 	xor %ebp, %ebp
-	lodsb %ds:(%esi), %al
-	cmp $0x22, %al
+	lodsb
+	cmpb $0x22, %al
 	je get_text_number
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne not_number
-	lodsb %ds:(%esi), %al
+	lodsb
 	movzbl %al, %ecx
 	movl %esi, number_start
-	mov (%esi), %al
-	sub $0x30, %al
+	movb (%esi), %al
+	subb $0x30, %al
 	jb invalid_number
-	cmp $9, %al
+	cmpb $9, %al
 	ja invalid_number
 	mov %esi, %eax
 	add %ecx, %esi
@@ -809,19 +810,19 @@ get_number:
 	movl $0, (%edi)
 	movl $0, 4(%edi)
 	inc %esi
-	cmpw $('0|('x<<8)), (%eax)  #  Same multibyte character constant order in fasm and NASM.
+	cmpw $[0x30|[0x78<<8]], (%eax)  /*  Same multibyte character constant order in fasm and NASM. */
 	je get_hex_number
 	dec %esi
-	cmpb $'h, 1(%esi)
+	cmpb $0x68, 1(%esi)
 	je get_hex_number
-	cmpb $'o, 1(%esi)
+	cmpb $0x6f, 1(%esi)
 	je get_oct_number
-	cmpb $'b, 1(%esi)
+	cmpb $0x62, 1(%esi)
 	je get_bin_number
-	cmpb $'d, 1(%esi)
+	cmpb $0x64, 1(%esi)
 	je get_dec_number
 	inc %esi
-	cmpb $'0, (%eax)
+	cmpb $0x30, (%eax)
 	je get_oct_number
       get_dec_number:
 	xor %edx, %edx
@@ -830,12 +831,12 @@ get_number:
 	cmp number_start, %esi
 	jb number_ok
 	movzbl (%esi), %eax
-	sub $0x30, %al
+	subb $0x30, %al
 	jc bad_number
-	cmp $9, %al
+	cmpb $9, %al
 	ja bad_number
 	mov %eax, %ecx
-	jecxz next_dec_digit
+	jcxz next_dec_digit
       convert_dec_digit:
 	addl %ebx, (%edi)
 	adcl %edx, 4(%edi)
@@ -846,7 +847,7 @@ get_number:
 	mov $10, %eax
 	mul %ebx
 	mov %eax, %ebx
-	imul $10, %ecx
+	imul $10, %ecx, %ecx
 	jo dec_out_of_range
 	add %ecx, %edx
 	jnc get_dec_digit
@@ -863,28 +864,28 @@ get_number:
 	stc
 	ret
       get_bin_number:
-	xor %bl, %bl
+	xorb %bl, %bl
       get_bin_digit:
 	cmp number_start, %esi
 	jb number_ok
 	movzbl (%esi), %eax
-	sub $0x30, %al
+	subb $0x30, %al
 	jc bad_number
-	cmp $1, %al
+	cmpb $1, %al
 	ja bad_number
 	xor %edx, %edx
-	mov %bl, %cl
+	movb %bl, %cl
 	dec %esi
-	cmp $64, %bl
+	cmpb $64, %bl
 	je bin_out_of_range
-	inc %bl
-	cmp $32, %cl
+	incb %bl
+	cmpb $32, %cl
 	jae bin_digit_high
 	shl %cl, %eax
 	orl %eax, (%edi)
 	jmp get_bin_digit
       bin_digit_high:
-	sub $32, %cl
+	subb $32, %cl
 	shl %cl, %eax
 	orl %eax, 4(%edi)
 	jmp get_bin_digit
@@ -892,38 +893,38 @@ get_number:
 	or $1, %ebp
 	jmp get_bin_digit
       get_hex_number:
-	xor %bl, %bl
+	xorb %bl, %bl
       get_hex_digit:
 	cmp number_start, %esi
 	jb number_ok
 	movzbl (%esi), %eax
-	cmp $'x, %al
+	cmpb $0x78, %al
 	je hex_number_ok
-	sub $0x30, %al
+	subb $0x30, %al
 	jc bad_number
-	cmp $9, %al
+	cmpb $9, %al
 	jbe hex_digit_ok
-	sub $7, %al
-	cmp $15, %al
+	subb $7, %al
+	cmpb $15, %al
 	jbe hex_digit_ok
-	sub $0x20, %al
+	subb $0x20, %al
 	jc bad_number
-	cmp $15, %al
+	cmpb $15, %al
 	ja bad_number
       hex_digit_ok:
 	xor %edx, %edx
-	mov %bl, %cl
+	movb %bl, %cl
 	dec %esi
-	cmp $64, %bl
+	cmpb $64, %bl
 	je hex_out_of_range
-	add $4, %bl
-	cmp $32, %cl
+	addb $4, %bl
+	cmpb $32, %cl
 	jae hex_digit_high
 	shl %cl, %eax
 	orl %eax, (%edi)
 	jmp get_hex_digit
       hex_digit_high:
-	sub $32, %cl
+	subb $32, %cl
 	shl %cl, %eax
 	orl %eax, 4(%edi)
 	jmp get_hex_digit
@@ -931,29 +932,29 @@ get_number:
 	or $1, %ebp
 	jmp get_hex_digit
       get_oct_number:
-	xor %bl, %bl
+	xorb %bl, %bl
       get_oct_digit:
 	cmp number_start, %esi
 	jb number_ok
 	movzbl (%esi), %eax
-	sub $0x30, %al
+	subb $0x30, %al
 	jc bad_number
-	cmp $7, %al
+	cmpb $7, %al
 	ja bad_number
       oct_digit_ok:
 	xor %edx, %edx
-	mov %bl, %cl
+	movb %bl, %cl
 	dec %esi
-	cmp $64, %bl
+	cmpb $64, %bl
 	jae oct_out_of_range
-	add $3, %bl
-	cmp $32, %cl
+	addb $3, %bl
+	cmpb $32, %cl
 	jae oct_digit_high
 	shl %cl, %eax
 	orl %eax, (%edi)
 	jmp get_oct_digit
       oct_digit_high:
-	sub $32, %cl
+	subb $32, %cl
 	shl %cl, %eax
 	orl %eax, 4(%edi)
 	jmp get_oct_digit
@@ -970,9 +971,9 @@ get_number:
 	clc
 	ret
       get_text_number:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %eax, %edx
-	xor %bl, %bl
+	xorb %bl, %bl
 	movl $0, (%edi)
 	movl $0, 4(%edi)
       get_text_character:
@@ -980,17 +981,17 @@ get_number:
 	jc number_done
 	movzbl (%esi), %eax
 	inc %esi
-	mov %bl, %cl
-	cmp $64, %bl
+	movb %bl, %cl
+	cmpb $64, %bl
 	je text_out_of_range
-	add $8, %bl
-	cmp $32, %cl
+	addb $8, %bl
+	cmpb $32, %cl
 	jae text_character_high
 	shl %cl, %eax
 	orl %eax, (%edi)
 	jmp get_text_character
       text_character_high:
-	sub $32, %cl
+	subb $32, %cl
 	shl %cl, %eax
 	orl %eax, 4(%edi)
 	jmp get_text_character
@@ -999,64 +1000,64 @@ get_number:
 	jmp get_text_character
 
 calculate_expression:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz get_string_value
-	cmp $'., %al
+	cmpb $0x2e, %al
 	je convert_fp
-	cmp $1, %al
+	cmpb $1, %al
 	je get_byte_number
-	cmp $2, %al
+	cmpb $2, %al
 	je get_word_number
-	cmp $4, %al
+	cmpb $4, %al
 	je get_dword_number
-	cmp $8, %al
+	cmpb $8, %al
 	je get_qword_number
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je value_out_of_range
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je get_register
-	cmp $0x11, %al
+	cmpb $0x11, %al
 	je get_label
-	cmp $'), %al
+	cmpb $0x29, %al
 	je expression_calculated
-	cmp $'], %al
+	cmpb $0x5d, %al
 	je expression_calculated
 	sub $0x10, %edi
 	mov %edi, %ebx
 	sub $0x10, %ebx
-	mov 8(%ebx), %dx
-	or 8(%edi), %dx
-	cmp $0xe0, %al
+	movw 8(%ebx), %dx
+	orw 8(%edi), %dx
+	cmpb $0xe0, %al
 	je calculate_rva
-	cmp $0xd0, %al
+	cmpb $0xd0, %al
 	je calculate_not
-	cmp $0xd1, %al
+	cmpb $0xd1, %al
 	je calculate_neg
-	cmp $0x80, %al
+	cmpb $0x80, %al
 	je calculate_add
-	cmp $0x81, %al
+	cmpb $0x81, %al
 	je calculate_sub
-	mov 12(%ebx), %ah
-	or 12(%edi), %ah
+	movb 12(%ebx), %ah
+	orb 12(%edi), %ah
 	jnz invalid_use_of_symbol
-	cmp $0x90, %al
+	cmpb $0x90, %al
 	je calculate_mul
-	cmp $0x91, %al
+	cmpb $0x91, %al
 	je calculate_div
-	or %dx, %dx
+	orw %dx, %dx
 	jnz invalid_expression
-	cmp $0xa0, %al
+	cmpb $0xa0, %al
 	je calculate_mod
-	cmp $0xb0, %al
+	cmpb $0xb0, %al
 	je calculate_and
-	cmp $0xb1, %al
+	cmpb $0xb1, %al
 	je calculate_or
-	cmp $0xb2, %al
+	cmpb $0xb2, %al
 	je calculate_xor
-	cmp $0xc0, %al
+	cmpb $0xc0, %al
 	je calculate_shl
-	cmp $0xc1, %al
+	cmpb $0xc1, %al
 	je calculate_shr
 	jmp invalid_expression
       expression_calculated:
@@ -1066,57 +1067,57 @@ calculate_expression:
 	movw $0, 8(%edi)
 	movb $0, 12(%edi)
 	xor %eax, %eax
-	lodsb %ds:(%esi), %al
-	stosl %eax, %es:(%edi)
-	xor %al, %al
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	lodsb
+	stosl
+	xorb %al, %al
+	stosl
+	scasl
+	scasl
 	jmp calculate_expression
       get_word_number:
 	movw $0, 8(%edi)
 	movb $0, 12(%edi)
 	xor %eax, %eax
-	lodsw %ds:(%esi), %ax
-	stosl %eax, %es:(%edi)
-	xor %ax, %ax
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	lodsw
+	stosl
+	xorw %ax, %ax
+	stosl
+	scasl
+	scasl
 	jmp calculate_expression
       get_dword_number:
 	movw $0, 8(%edi)
 	movb $0, 12(%edi)
-	movsl %ds:(%esi), %es:(%edi)
+	movsl
 	xor %eax, %eax
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	stosl
+	scasl
+	scasl
 	jmp calculate_expression
       get_qword_number:
 	movw $0, 8(%edi)
 	movb $0, 12(%edi)
-	movsl %ds:(%esi), %es:(%edi)
-	movsl %ds:(%esi), %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	movsl
+	movsl
+	scasl
+	scasl
 	jmp calculate_expression
       get_register:
 	movb $0, 9(%edi)
 	movb $0, 12(%edi)
-	lodsb %ds:(%esi), %al
-	mov %al, 8(%edi)
+	lodsb
+	movb %al, 8(%edi)
 	movb $1, 10(%edi)
 	xor %eax, %eax
-	stosl %eax, %es:(%edi)
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	stosl
+	stosl
+	scasl
+	scasl
 	jmp calculate_expression
       get_label:
 	movw $0, 8(%edi)
 	movb $0, 12(%edi)
-	lodsl %ds:(%esi), %eax
+	lodsl
 	or %eax, %eax
 	jz current_offset_label
 	cmp $1, %eax
@@ -1126,28 +1127,28 @@ calculate_expression:
 	jz label_undefined
 	testb $4, 8(%ebx)
 	jz label_defined
-	mov current_pass, %al
-	cmp 9(%ebx), %al
+	movb current_pass, %al
+	cmpb 9(%ebx), %al
 	jne label_undefined
       label_defined:
-	mov 11(%ebx), %al
+	movb 11(%ebx), %al
 	cmpb $0, next_pass_needed
 	je label_type_ok
 	cmpb $0, current_pass
 	jne label_type_ok
-	xor %al, %al
+	xorb %al, %al
       label_type_ok:
-	mov %al, 12(%edi)
+	movb %al, 12(%edi)
 	mov 12(%ebx), %eax
 	mov %eax, 8(%edi)
 	mov (%ebx), %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov 4(%ebx), %eax
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
-	mov 10(%ebx), %al
-	or %al, %al
+	stosl
+	scasl
+	scasl
+	movb 10(%ebx), %al
+	orb %al, %al
 	jz calculate_expression
 	cmpb $2, forced_size
 	je calculate_expression
@@ -1155,14 +1156,14 @@ calculate_expression:
 	jne check_size
 	cmpb $0, operand_size
 	jne calculate_expression
-	.byte 0xa2  #WORKAROUNDL movb %al, operand_size
+	.byte 0xa2  /*WORKAROUNDL movb %al, operand_size */
 	.long operand_size
 	jmp calculate_expression
       check_size:
 	xchgb %al, operand_size
-	or %al, %al
+	orb %al, %al
 	jz calculate_expression
-	cmp operand_size, %al
+	cmpb operand_size, %al
 	jne operand_sizes_do_not_match
 	jmp calculate_expression
       current_offset_label:
@@ -1172,21 +1173,21 @@ calculate_expression:
       get_current_offset:
 	mov current_offset, %eax
 	sub org_start, %eax
-	cdq
-	stosl %eax, %es:(%edi)
+	cltd
+	stosl
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov org_sib, %eax
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
+	stosl
+	scasl
 	jmp calculate_expression
       counter_label:
 	mov counter, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	xor %eax, %eax
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	stosl
+	scasl
+	scasl
 	jmp calculate_expression
       label_undefined:
 	cmpb $0, current_pass
@@ -1194,10 +1195,10 @@ calculate_expression:
 	orb $-1, next_pass_needed
 	movb $0, 12(%edi)
 	xor %eax, %eax
-	stosl %eax, %es:(%edi)
-	stosl %eax, %es:(%edi)
-	scasl %es:(%edi), %eax
-	scasl %es:(%edi), %eax
+	stosl
+	stosl
+	scasl
+	scasl
 	jmp calculate_expression
       calculate_add:
 	cmpb $0, next_pass_needed
@@ -1207,94 +1208,94 @@ calculate_expression:
 	cmpb $0, 12(%ebx)
 	jne invalid_use_of_symbol
       add_values:
-	mov 12(%edi), %al
-	or %al, 12(%ebx)
+	movb 12(%edi), %al
+	orb %al, 12(%ebx)
 	mov (%edi), %eax
 	add %eax, (%ebx)
 	mov 4(%edi), %eax
 	adc %eax, 4(%ebx)
-	or %dx, %dx
+	orw %dx, %dx
 	jz calculate_expression
 	push %esi
 	mov %ebx, %esi
 	lea 10(%edi), %ebx
-	mov 8(%edi), %cl
+	movb 8(%edi), %cl
 	call add_register
 	lea 11(%edi), %ebx
-	mov 9(%edi), %cl
+	movb 9(%edi), %cl
 	call add_register
 	pop %esi
 	jmp calculate_expression
       add_register:
-	or %cl, %cl
+	orb %cl, %cl
 	jz add_register_done
       add_register_start:
-	cmp %cl, 8(%esi)
+	cmpb %cl, 8(%esi)
 	jne add_in_second_slot
-	mov (%ebx), %al
-	add %al, 10(%esi)
+	movb (%ebx), %al
+	addb %al, 10(%esi)
 	jnz add_register_done
 	movb $0, 8(%esi)
 	ret
       add_in_second_slot:
-	cmp %cl, 9(%esi)
+	cmpb %cl, 9(%esi)
 	jne create_in_first_slot
-	mov (%ebx), %al
-	add %al, 11(%esi)
+	movb (%ebx), %al
+	addb %al, 11(%esi)
 	jnz add_register_done
 	movb $0, 9(%esi)
 	ret
       create_in_first_slot:
 	cmpb $0, 8(%esi)
 	jne create_in_second_slot
-	mov %cl, 8(%esi)
-	mov (%ebx), %al
-	mov %al, 10(%esi)
+	movb %cl, 8(%esi)
+	movb (%ebx), %al
+	movb %al, 10(%esi)
 	ret
       create_in_second_slot:
 	cmpb $0, 9(%esi)
 	jne invalid_expression
-	mov %cl, 9(%esi)
-	mov (%ebx), %al
-	mov %al, 11(%esi)
+	movb %cl, 9(%esi)
+	movb (%ebx), %al
+	movb %al, 11(%esi)
       add_register_done:
 	ret
       calculate_sub:
-	xor %ah, %ah
+	xorb %ah, %ah
 	cmpb $0, next_pass_needed
 	jne sub_values
-	mov 12(%ebx), %ah
-	mov 12(%edi), %al
-	or %al, %al
+	movb 12(%ebx), %ah
+	movb 12(%edi), %al
+	orb %al, %al
 	jz sub_values
-	cmp %ah, %al
+	cmpb %ah, %al
 	jne invalid_use_of_symbol
-	xor %ah, %ah
+	xorb %ah, %ah
       sub_values:
 	movb %ah, 12(%ebx)
 	mov (%edi), %eax
 	sub %eax, (%ebx)
 	mov 4(%edi), %eax
 	sbb %eax, 4(%ebx)
-	or %dx, %dx
+	orw %dx, %dx
 	jz calculate_expression
 	push %esi
 	mov %ebx, %esi
 	lea 10(%edi), %ebx
-	mov 8(%edi), %cl
+	movb 8(%edi), %cl
 	call sub_register
 	lea 11(%edi), %ebx
-	mov 9(%edi), %cl
+	movb 9(%edi), %cl
 	call sub_register
 	pop %esi
 	jmp calculate_expression
       sub_register:
-	or %cl, %cl
+	orb %cl, %cl
 	jz add_register_done
 	negb (%ebx)
 	jmp add_register_start
       calculate_mul:
-	or %dx, %dx
+	orw %dx, %dx
 	jz mul_start
 	cmpw $0, 8(%ebx)
 	jne mul_start
@@ -1312,16 +1313,16 @@ calculate_expression:
 	mov %eax, 12(%ebx)
       mul_start:
 	push %esi
-	push %dx
+	pushw %dx
 	mov %ebx, %esi
-	xor %bl, %bl
+	xorb %bl, %bl
 	testl $1 << 31, 4(%esi)
 	jz mul_first_sign_ok
 	notl (%esi)
 	notl 4(%esi)
 	addl $1, (%esi)
 	adcl $0, 4(%esi)
-	not %bl
+	notb %bl
       mul_first_sign_ok:
 	testl $1 << 31, 4(%edi)
 	jz mul_second_sign_ok
@@ -1329,7 +1330,7 @@ calculate_expression:
 	notl 4(%edi)
 	addl $1, (%edi)
 	adcl $0, 4(%edi)
-	not %bl
+	notb %bl
       mul_second_sign_ok:
 	cmpl $0, 4(%esi)
 	jz mul_numbers
@@ -1353,95 +1354,95 @@ calculate_expression:
 	jc value_out_of_range
 	mov %eax, (%esi)
 	mov %edx, 4(%esi)
-	or %bl, %bl
+	orb %bl, %bl
 	jz mul_ok
 	notl (%esi)
 	notl 4(%esi)
 	addl $1, (%esi)
 	adcl $0, 4(%esi)
       mul_ok:
-	pop %dx
-	or %dx, %dx
+	popw %dx
+	orw %dx, %dx
 	jz mul_calculated
 	cmpw $0, 8(%edi)
 	jne invalid_value
 	cmpb $0, 8(%esi)
 	je mul_first_register_ok
-	mov (%edi), %al
-	cbw
-	cwde
-	cdq
+	movb (%edi), %al
+	cbtw
+	cwtl
+	cltd
 	cmp 4(%edi), %edx
 	jne value_out_of_range
 	cmp (%edi), %eax
 	jne value_out_of_range
 	imulb 10(%esi)
-	mov %ah, %dl
-	cbw
-	cmp %dl, %ah
+	movb %ah, %dl
+	cbtw
+	cmpb %dl, %ah
 	jne value_out_of_range
-	mov %al, 10(%esi)
+	movb %al, 10(%esi)
       mul_first_register_ok:
 	cmpb $0, 9(%esi)
 	je mul_calculated
-	mov (%edi), %al
-	cbw
-	cwde
-	cdq
+	movb (%edi), %al
+	cbtw
+	cwtl
+	cltd
 	cmp 4(%edi), %edx
 	jne value_out_of_range
 	cmp (%edi), %eax
 	jne value_out_of_range
 	imulb 11(%esi)
-	mov %ah, %dl
-	cbw
-	cmp %dl, %ah
+	movb %ah, %dl
+	cbtw
+	cmpb %dl, %ah
 	jne value_out_of_range
-	mov %al, 11(%esi)
+	movb %al, 11(%esi)
       mul_calculated:
 	pop %esi
 	jmp calculate_expression
       calculate_div:
 	push %esi
-	push %dx
+	pushw %dx
 	mov %ebx, %esi
 	call div_64
-	pop %dx
-	or %dx, %dx
+	popw %dx
+	orw %dx, %dx
 	jz div_calculated
 	cmpb $0, 8(%esi)
 	je div_first_register_ok
-	mov (%edi), %al
-	cbw
-	cwde
-	cdq
+	movb (%edi), %al
+	cbtw
+	cwtl
+	cltd
 	cmp 4(%edi), %edx
 	jne value_out_of_range
 	cmp (%edi), %eax
 	jne value_out_of_range
-	or %al, %al
+	orb %al, %al
 	jz value_out_of_range
-	mov 10(%esi), %al
-	cbw
+	movb 10(%esi), %al
+	cbtw
 	idivb (%edi)
-	mov %al, 10(%esi)
+	movb %al, 10(%esi)
       div_first_register_ok:
 	cmpb $0, 9(%esi)
 	je div_calculated
-	mov (%edi), %al
-	cbw
-	cwde
-	cdq
+	movb (%edi), %al
+	cbtw
+	cwtl
+	cltd
 	cmp 4(%edi), %edx
 	jne value_out_of_range
 	cmp (%edi), %eax
 	jne value_out_of_range
-	or %al, %al
+	orb %al, %al
 	jz value_out_of_range
-	mov 11(%esi), %al
-	cbw
+	movb 11(%esi), %al
+	cbtw
 	idivb (%edi)
-	mov %al, 11(%esi)
+	movb %al, 11(%esi)
       div_calculated:
 	pop %esi
 	jmp calculate_expression
@@ -1487,16 +1488,16 @@ calculate_expression:
 	jne xor_qword
 	cmpb $0, 1(%edi)
 	jne xor_qword
-	mov (%edi), %al
-	xor %al, (%ebx)
+	movb (%edi), %al
+	xorb %al, (%ebx)
 	jmp calculate_expression
       xor_word:
 	cmpl $0, 4(%edi)
 	jne xor_qword
 	cmpw $0, 2(%edi)
 	jne xor_qword
-	mov (%edi), %ax
-	xor %ax, (%ebx)
+	movw (%edi), %ax
+	xorw %ax, (%ebx)
 	jmp calculate_expression
       xor_dword:
 	cmpl $0, 4(%edi)
@@ -1509,8 +1510,8 @@ calculate_expression:
 	jne xor_qword
 	mov (%edi), %eax
 	xor %eax, (%ebx)
-	mov 4(%edi), %ax
-	xor %ax, 4(%ebx)
+	movw 4(%edi), %ax
+	xorw %ax, 4(%ebx)
 	jmp calculate_expression
       calculate_shl:
 	mov 4(%edi), %eax
@@ -1525,13 +1526,13 @@ calculate_expression:
 	jae shl_high
 	mov 4(%ebx), %edx
 	mov (%ebx), %eax
-	shld %cl, %eax, %edx
+	shldl %eax, %edx
 	shl %cl, %eax
 	mov %eax, (%ebx)
 	mov %edx, 4(%ebx)
 	jmp calculate_expression
       shl_high:
-	sub $32, %cl
+	subb $32, %cl
 	mov (%ebx), %eax
 	shl %cl, %eax
 	mov %eax, 4(%ebx)
@@ -1555,13 +1556,13 @@ calculate_expression:
 	jae shr_high
 	mov 4(%ebx), %edx
 	mov (%ebx), %eax
-	shrd %cl, %edx, %eax
+	shrdl %edx, %eax
 	shr %cl, %edx
 	mov %eax, (%ebx)
 	mov %edx, 4(%ebx)
 	jmp calculate_expression
       shr_high:
-	sub $32, %cl
+	subb $32, %cl
 	mov 4(%ebx), %eax
 	shr %cl, %eax
 	mov %eax, (%ebx)
@@ -1642,10 +1643,10 @@ calculate_expression:
       calculate_rva:
 	cmpw $0, 8(%edi)
 	jne invalid_expression
-	mov 12(%edi), %al
-	cmp $2, %al
+	movb 12(%edi), %al
+	cmpb $2, %al
 	je rva_ok
-	or %al, %al
+	orb %al, %al
 	jnz invalid_use_of_symbol
 	cmpb $0, next_pass_needed
 	je invalid_use_of_symbol
@@ -1658,7 +1659,7 @@ calculate_expression:
 	add $0x10, %edi
 	jmp calculate_expression
       div_64:
-	xor %bl, %bl
+	xorb %bl, %bl
 	cmpl $0, (%edi)
 	jne divider_ok
 	cmpl $0, 4(%edi)
@@ -1673,7 +1674,7 @@ calculate_expression:
 	notl 4(%esi)
 	addl $1, (%esi)
 	adcl $0, 4(%esi)
-	not %bl
+	notb %bl
       div_first_sign_ok:
 	testl $1 << 31, 4(%edi)
 	jz div_second_sign_ok
@@ -1681,7 +1682,7 @@ calculate_expression:
 	notl 4(%edi)
 	addl $1, (%edi)
 	adcl $0, 4(%edi)
-	not %bl
+	notb %bl
       div_second_sign_ok:
 	cmpl $0, 4(%edi)
 	jne div_high
@@ -1723,7 +1724,7 @@ calculate_expression:
 	mov %ebx, %eax
 	ret
       div_done:
-	or %bl, %bl
+	orb %bl, %bl
 	jz div_ok
 	notl (%esi)
 	notl 4(%esi)
@@ -1734,17 +1735,17 @@ calculate_expression:
       convert_fp:
 	movw $0, 8(%edi)
 	movb $0, 12(%edi)
-	mov value_size, %al
-	cmp $4, %al
+	movb value_size, %al
+	cmpb $4, %al
 	je convert_fp_dword
-	cmp $8, %al
+	cmpb $8, %al
 	je convert_fp_qword
 	jmp invalid_value
       convert_fp_dword:
 	xor %eax, %eax
 	cmpw $0x8000, 8(%esi)
 	je fp_dword_store
-	mov 8(%esi), %bx
+	movw 8(%esi), %bx
 	mov 4(%esi), %eax
 	shl %eax
 	shr $9, %eax
@@ -1752,17 +1753,17 @@ calculate_expression:
 	inc %eax
 	test $1 << 23, %eax
 	jz fp_dword_ok
-	and $(1 << 23) - 1, %eax
-	inc %bx
+	and $[1 << 23] - 1, %eax
+	incw %bx
 	shr %eax
       fp_dword_ok:
-	add $0x7f, %bx
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x100, %bx
-	.word 0x100
+	addw $0x7f, %bx
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x100, %bx */
+	.value 0x100
 	jae value_out_of_range
 	shl $23, %ebx
 	or %ebx, %eax
-	mov 11(%esi), %bl
+	movb 11(%esi), %bl
 	shl $31, %ebx
 	or %ebx, %eax
       fp_dword_store:
@@ -1776,31 +1777,31 @@ calculate_expression:
 	xor %edx, %edx
 	cmpw $0x8000, 8(%esi)
 	je fp_qword_store
-	mov 8(%esi), %bx
+	movw 8(%esi), %bx
 	mov (%esi), %eax
 	mov 4(%esi), %edx
 	shl %eax
 	rcl %edx
 	mov %edx, %ecx
 	shr $12, %edx
-	shrd $12, %ecx, %eax
+	shrdl $12, %ecx, %eax
 	jnc fp_qword_ok
 	add $1, %eax
 	adc $0, %edx
 	test $1 << 20, %edx
 	jz fp_qword_ok
-	and $(1 << 20) - 1, %edx
-	inc %bx
+	and $[1 << 20] - 1, %edx
+	incw %bx
 	shr %edx
 	rcr %eax
       fp_qword_ok:
-	add $0x3ff, %bx
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x800, %bx
-	.word 0x800
+	addw $0x3ff, %bx
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x800, %bx */
+	.value 0x800
 	jae value_out_of_range
 	shl $20, %ebx
 	or %ebx, %edx
-	mov 11(%esi), %bl
+	movb 11(%esi), %bl
 	shl $31, %ebx
 	or %ebx, %edx
       fp_qword_store:
@@ -1809,17 +1810,17 @@ calculate_expression:
 	add $12, %esi
 	ret
       get_string_value:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %eax, %ecx
 	cmp $8, %ecx
 	ja value_out_of_range
 	mov %edi, %edx
 	xor %eax, %eax
-	stosl %eax, %es:(%edi)
-	stosl %eax, %es:(%edi)
+	stosl
+	stosl
 	mov %edx, %edi
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	mov %edx, %edi
 	inc %esi
 	movw $0, 8(%edi)
@@ -1862,10 +1863,10 @@ get_word_value:
 	call calculate_expression
 	cmpw $0, 8(%edi)
 	jne invalid_value
-	mov 12(%edi), %al
-	cmp $2, %al
+	movb 12(%edi), %al
+	cmpb $2, %al
 	je invalid_use_of_symbol
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
       check_word_value:
 	mov (%edi), %eax
@@ -1887,8 +1888,8 @@ get_dword_value:
 	call calculate_expression
 	cmpw $0, 8(%edi)
 	jne invalid_value
-	mov 12(%edi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	movb 12(%edi), %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
       check_dword_value:
 	mov (%edi), %eax
@@ -1907,8 +1908,8 @@ get_pword_value:
 	call calculate_expression
 	cmpw $0, 8(%edi)
 	jne invalid_value
-	mov 12(%edi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	movb 12(%edi), %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
 	mov (%edi), %eax
 	mov 4(%edi), %edx
@@ -1924,8 +1925,8 @@ get_qword_value:
 	call calculate_expression
 	cmpw $0, 8(%edi)
 	jne invalid_value
-	mov 12(%edi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	movb 12(%edi), %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
 	mov (%edi), %eax
 	mov 4(%edi), %edx
@@ -1933,22 +1934,22 @@ get_qword_value:
 get_value:
 	movb $0, operand_size
 	movb $0, forced_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_value
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je value_byte
-	cmp $2, %al
+	cmpb $2, %al
 	je value_word
-	cmp $4, %al
+	cmpb $4, %al
 	je value_dword
-	cmp $6, %al
+	cmpb $6, %al
 	je value_pword
-	cmp $8, %al
+	cmpb $8, %al
 	je value_qword
-	or %al, %al
+	orb %al, %al
 	jnz invalid_value
       value_qword:
 	call get_qword_value
@@ -1977,26 +1978,26 @@ get_address:
 	movb $0, address_size
 	movb $4, value_size
 	pushl $address_ok
-	mov (%esi), %al
-	and $240, %al
-	cmp $0x60, %al
+	movb (%esi), %al
+	andb $240, %al
+	cmpb $0x60, %al
 	jne get_size_prefix
-	lodsb %ds:(%esi), %al
-	sub $0x60, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, segment_register
+	lodsb
+	subb $0x60, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, segment_register */
 	.long segment_register
-	mov (%esi), %al
-	and $240, %al
+	movb (%esi), %al
+	andb $240, %al
       get_size_prefix:
-	cmp $0x70, %al
+	cmpb $0x70, %al
 	jne calculate_address
-	lodsb %ds:(%esi), %al
-	sub $0x70, %al
-	cmp $4, %al
+	lodsb
+	subb $0x70, %al
+	cmpb $4, %al
 	ja invalid_address_size
-	.byte 0xa2  #WORKAROUNDL movb %al, address_size
+	.byte 0xa2  /*WORKAROUNDL movb %al, address_size */
 	.long address_size
-	.byte 0xa2  #WORKAROUNDL movb %al, value_size
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_size */
 	.long value_size
 	jmp calculate_address
 get_address_value:
@@ -2006,94 +2007,94 @@ get_address_value:
       calculate_address:
 	movl %edi, current_offset
 	call calculate_expression
-	mov 12(%edi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	movb 12(%edi), %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
-	cmp $1, %al
+	cmpb $1, %al
 	je invalid_use_of_symbol
-	or %al, %al
+	orb %al, %al
 	jz address_symbol_ok
-	mov $0x84, %al
+	movb $0x84, %al
 	xchgb %al, address_size
-	or %al, %al
+	orb %al, %al
 	jz address_symbol_ok
-	cmp $4, %al
+	cmpb $4, %al
 	jne address_sizes_do_not_agree
       address_symbol_ok:
-	xor %bx, %bx
-	xor %cl, %cl
-	mov address_size, %ch
+	xorw %bx, %bx
+	xorb %cl, %cl
+	movb address_size, %ch
 	cmpw $0, 8(%edi)
 	je check_dword_value
-	mov 8(%edi), %al
-	mov 10(%edi), %dl
+	movb 8(%edi), %al
+	movb 10(%edi), %dl
 	call get_address_register
-	mov 9(%edi), %al
-	mov 11(%edi), %dl
+	movb 9(%edi), %al
+	movb 11(%edi), %dl
 	call get_address_register
-	mov %bx, %ax
-	shr $4, %ah
-	shr $4, %al
-	or %bh, %bh
+	movw %bx, %ax
+	shrb $4, %ah
+	shrb $4, %al
+	orb %bh, %bh
 	jz check_address_registers
-	or %bl, %bl
+	orb %bl, %bl
 	jz check_address_registers
-	cmp %ah, %al
+	cmpb %ah, %al
 	jne invalid_address
       check_address_registers:
-	or %ah, %al
-	cmp $2, %al
+	orb %ah, %al
+	cmpb $2, %al
 	je address_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	jne invalid_address
-	or %bh, %bh
+	orb %bh, %bh
 	jnz check_index_scale
-	cmp $2, %cl
+	cmpb $2, %cl
 	je special_index_scale
-	cmp $3, %cl
+	cmpb $3, %cl
 	je special_index_scale
-	cmp $5, %cl
+	cmpb $5, %cl
 	je special_index_scale
-	cmp $9, %cl
+	cmpb $9, %cl
 	je special_index_scale
       check_index_scale:
-	or %cl, %cl
+	orb %cl, %cl
 	jz address_registers_ok
-	cmp $1, %cl
+	cmpb $1, %cl
 	je address_registers_ok
-	cmp $2, %cl
+	cmpb $2, %cl
 	je address_registers_ok
-	cmp $4, %cl
+	cmpb $4, %cl
 	je address_registers_ok
-	cmp $8, %cl
+	cmpb $8, %cl
 	je address_registers_ok
 	jmp invalid_address
       special_index_scale:
-	mov %bl, %bh
-	dec %cl
+	movb %bl, %bh
+	decb %cl
       address_registers_ok:
 	jmp check_dword_value
       address_16bit:
-	or %cl, %cl
+	orb %cl, %cl
 	jz check_word_value
-	cmp $1, %cl
+	cmpb $1, %cl
 	je check_word_value
 	jmp invalid_address
       get_address_register:
-	or %al, %al
+	orb %al, %al
 	jz address_register_ok
-	cmp $1, %dl
+	cmpb $1, %dl
 	jne scaled_register
-	or %bh, %bh
+	orb %bh, %bh
 	jnz scaled_register
-	mov %al, %bh
+	movb %al, %bh
       address_register_ok:
 	ret
       scaled_register:
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_address
-	mov %al, %bl
-	mov %dl, %cl
+	movb %al, %bl
+	movb %dl, %cl
 	jmp address_register_ok
       address_ok:
 	mov %eax, %edx
@@ -2102,57 +2103,57 @@ get_address_value:
 calculate_logical_expression:
 	call get_logical_value
       logical_loop:
-	push %ax
-	lodsb %ds:(%esi), %al
-	cmp $'|, %al
+	pushw %ax
+	lodsb
+	cmpb $0x7c, %al
 	je logical_or
-	cmp $'&, %al
+	cmpb $0x26, %al
 	je logical_and
 	dec %esi
-	pop %ax
+	popw %ax
 	ret
       logical_or:
 	call get_logical_value
-	pop %bx
-	or %bl, %al
+	popw %bx
+	orb %bl, %al
 	jmp logical_loop
       logical_and:
 	call get_logical_value
-	pop %bx
-	and %bl, %al
+	popw %bx
+	andb %bl, %al
 	jmp logical_loop
 
 get_logical_value:
-	xor %al, %al
-	cmpb $'~, (%esi)
+	xorb %al, %al
+	cmpb $0x7e, (%esi)
 	jne negation_ok
 	inc %esi
-	or $-1, %al
+	orb $-1, %al
       negation_ok:
-	push %ax
-	cmpb $'{, (%esi)
+	pushw %ax
+	cmpb $0x7b, (%esi)
 	je logical_expression
 	push %esi
 	cmpb $0x11, (%esi)
 	jne check_for_values
 	add $2, %esi
       check_for_values:
-	xor %bl, %bl
-	cmpb $'(, (%esi)
+	xorb %bl, %bl
+	cmpb $0x28, (%esi)
 	jne find_eq_symbol
 	call skip_symbol
-	lodsb %ds:(%esi), %al
-	cmp $'=, %al
+	lodsb
+	cmpb $0x3d, %al
 	je compare_values
-	cmp $'>, %al
+	cmpb $0x3e, %al
 	je compare_values
-	cmp $'<, %al
+	cmpb $0x3c, %al
 	je compare_values
-	cmp $0xf2, %al
+	cmpb $0xf2, %al
 	je compare_values
-	cmp $0xf3, %al
+	cmpb $0xf3, %al
 	je compare_values
-	cmp $0xf6, %al
+	cmpb $0xf6, %al
 	je compare_values
 	dec %esi
       find_eq_symbol:
@@ -2162,9 +2163,9 @@ get_logical_value:
 	je scan_symbols_list
 	call check_character
 	jc logical_number
-	cmp $44, %al
+	cmpb $44, %al
 	jne next_eq_symbol
-	mov $1, %bl
+	movb $1, %bl
       next_eq_symbol:
 	call skip_symbol
 	jmp find_eq_symbol
@@ -2177,8 +2178,8 @@ get_logical_value:
 	mov %esi, %ecx
 	dec %ecx
 	sub %edi, %ecx
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	pop %edi
 	je symbols_equal
 	mov %edx, %esi
@@ -2192,12 +2193,12 @@ get_logical_value:
 	jc return_true
 	jmp symbols_different
       scan_symbols_list:
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_expression
-	xor %bp, %bp
+	xorw %bp, %bp
 	inc %esi
-	lodsb %ds:(%esi), %al
-	cmp $'<, %al
+	lodsb
+	cmpb $0x3c, %al
 	jne invalid_expression
 	pop %ebx
 	mov %esi, %ecx
@@ -2208,19 +2209,19 @@ get_logical_value:
 	push %ecx
 	push %edi
 	mov %ebx, %edi
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	pop %edi
 	pop %ecx
 	jne not_equal_in_list
 	cmpb $44, (%esi)
 	je skip_rest_of_list
-	cmpb $'>, (%esi)
+	cmpb $0x3e, (%esi)
 	jne not_equal_in_list
       skip_rest_of_list:
 	call check_character
 	jc invalid_expression
-	cmp $'>, %al
+	cmpb $0x3e, %al
 	je list_return_true
 	call skip_symbol
 	jmp skip_rest_of_list
@@ -2232,9 +2233,9 @@ get_logical_value:
       skip_list_item:
 	call check_character
 	jc invalid_expression
-	cmp $'>, %al
+	cmpb $0x3e, %al
 	je list_return_false
-	cmp $44, %al
+	cmpb $44, %al
 	je next_in_list
 	call skip_symbol
 	jmp skip_list_item
@@ -2245,16 +2246,16 @@ get_logical_value:
 	inc %esi
 	jmp return_false
       check_character:
-	mov (%esi), %al
-	or %al, %al
+	movb (%esi), %al
+	orb %al, %al
 	jz stop
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je stop
-	cmp $'}, %al
+	cmpb $0x7d, %al
 	je stop
-	cmp $'|, %al
+	cmpb $0x7c, %al
 	je stop
-	cmp $'&, %al
+	cmpb $0x26, %al
 	je stop
 	clc
 	ret
@@ -2264,27 +2265,27 @@ get_logical_value:
       compare_values:
 	pop %esi
 	call get_value
-	mov value_type, %bl
+	movb value_type, %bl
 	push %eax
 	push %edx
-	push %bx
-	lodsb %ds:(%esi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, compare_type
+	pushw %bx
+	lodsb
+	.byte 0xa2  /*WORKAROUNDL movb %al, compare_type */
 	.long compare_type
 	call get_value
-	pop %bx
+	popw %bx
 	cmpb $0, next_pass_needed
 	jne values_ok
-	cmp value_type, %bl
+	cmpb value_type, %bl
 	jne invalid_use_of_symbol
       values_ok:
 	pop %ecx
 	pop %ebx
-	cmpb $'=, compare_type
+	cmpb $0x3d, compare_type
 	je check_equal
-	cmpb $'>, compare_type
+	cmpb $0x3e, compare_type
 	je check_greater
-	cmpb $'<, compare_type
+	cmpb $0x3c, compare_type
 	je check_less
 	cmpb $0xf2, compare_type
 	je check_not_less
@@ -2341,29 +2342,29 @@ get_logical_value:
 	or %edx, %eax
 	jnz return_true
       return_false:
-	xor %al, %al
+	xorb %al, %al
 	jmp logical_value_ok
       return_true:
-	or $-1, %al
+	orb $-1, %al
 	jmp logical_value_ok
       logical_expression:
 	inc %esi
 	call calculate_logical_expression
-	push %ax
-	lodsb %ds:(%esi), %al
-	cmp $'}, %al
+	pushw %ax
+	lodsb
+	cmpb $0x7d, %al
 	jne invalid_expression
-	pop %ax
+	popw %ax
       logical_value_ok:
-	pop %bx
-	xor %bl, %al
+	popw %bx
+	xorb %bl, %al
 	ret
 
-# %include '../preproce.inc'
+/* %include '../preproce.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 preprocessor:
 	mov memory_start, %eax
@@ -2390,11 +2391,11 @@ preprocess_file:
 	push %edx
 	call open
 	jc no_source_file
-	mov $2, %al
+	movb $2, %al
 	xor %edx, %edx
 	call lseek
 	push %eax
-	xor %al, %al
+	xorb %al, %al
 	xor %edx, %edx
 	call lseek
 	pop %ecx
@@ -2416,12 +2417,12 @@ preprocess_file:
 	inc %ecx
 	movl %edi, current_line
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov %ecx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov %esi, %eax
 	sub %ebx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	push %ebx
 	push %edx
 	call convert_line
@@ -2445,38 +2446,38 @@ convert_line:
 	push %ecx
 	cmpb $0, macro_status
 	jle convert_line_data
-	.byte 0x66, 0xb8  #WORKAROUNDW mov $0x3b, %ax
-	.word 0x3b
-	stosw %ax, %es:(%edi)
+	.byte 0x66, 0xb8  /*WORKAROUNDW mov $0x3b, %ax */
+	.value 0x3b
+	stosw
       convert_line_data:
 	cmp memory_end, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	cmp $0x20, %al
+	lodsb
+	cmpb $0x20, %al
 	je convert_line_data
-	cmp $9, %al
+	cmpb $9, %al
 	je convert_line_data
 	dec %esi
-	lodsb %ds:(%esi), %al
-	mov %al, %ah
+	lodsb
+	movb %al, %ah
 	mov $characters, %ebx
-	xlatb
-	or %al, %al
+	xlat
+	orb %al, %al
 	jz convert_separator
-	cmp $0x27, %ah
+	cmpb $0x27, %ah
 	je convert_string
-	cmp $0x22, %ah
+	cmpb $0x22, %ah
 	je convert_string
 	movb $0x1a, (%edi)
-	scasw %es:(%edi), %ax
-	stosb %al, %es:(%edi)
+	scasw
+	stosb
 	mov $characters, %ebx
 	xor %ecx, %ecx
       convert_symbol:
-	lodsb %ds:(%esi), %al
-	xlatb
-	stosb %al, %es:(%edi)
-	or %al, %al
+	lodsb
+	xlat
+	stosb
+	orb %al, %al
 	loopnz convert_symbol
 	neg %ecx
 	cmp $255, %ecx
@@ -2485,63 +2486,63 @@ convert_line:
 	mov %edi, %ebx
 	sub %ecx, %ebx
 	movb %cl, -1(%ebx)
-	mov -1(%esi), %ah
+	movb -1(%esi), %ah
       convert_separator:
-	xchg %ah, %al
-	cmp $0x20, %al
+	xchgb %ah, %al
+	cmpb $0x20, %al
 	jb control_character
 	je convert_line_data
       symbol_character:
-	cmp $0x3b, %al
+	cmpb $0x3b, %al
 	je ignore_comment
-	cmp $0x5c, %al
+	cmpb $0x5c, %al
 	je concate_lines
-	stosb %al, %es:(%edi)
+	stosb
 	jmp convert_line_data
       control_character:
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	je line_end
-	cmp $0xd, %al
+	cmpb $0xd, %al
 	je cr_character
-	cmp $0xa, %al
+	cmpb $0xa, %al
 	je lf_character
-	cmp $9, %al
+	cmpb $9, %al
 	je convert_line_data
-	or %al, %al
+	orb %al, %al
 	jnz symbol_character
 	jmp line_end
       lf_character:
-	lodsb %ds:(%esi), %al
-	cmp $0xd, %al
+	lodsb
+	cmpb $0xd, %al
 	je line_end
 	dec %esi
 	jmp line_end
       cr_character:
-	lodsb %ds:(%esi), %al
-	cmp $0xa, %al
+	lodsb
+	cmpb $0xa, %al
 	je line_end
 	dec %esi
 	jmp line_end
       convert_string:
-	mov $0x22, %al
-	stosb %al, %es:(%edi)
-	scasl %es:(%edi), %eax
+	movb $0x22, %al
+	stosb
+	scasl
 	mov %edi, %ebx
       copy_string:
-	lodsb %ds:(%esi), %al
-	stosb %al, %es:(%edi)
-	cmp $0xa, %al
+	lodsb
+	stosb
+	cmpb $0xa, %al
 	je missing_end_quote
-	cmp $0xd, %al
+	cmpb $0xd, %al
 	je missing_end_quote
-	or %al, %al
+	orb %al, %al
 	jz missing_end_quote
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	je missing_end_quote
-	cmp %ah, %al
+	cmpb %ah, %al
 	jne copy_string
-	lodsb %ds:(%esi), %al
-	cmp %ah, %al
+	lodsb
+	cmpb %ah, %al
 	je copy_string
 	dec %esi
 	dec %edi
@@ -2550,57 +2551,57 @@ convert_line:
 	mov %eax, -4(%ebx)
 	jmp convert_line_data
       concate_lines:
-	lodsb %ds:(%esi), %al
-	cmp $0x20, %al
+	lodsb
+	cmpb $0x20, %al
 	je concate_lines
-	cmp $9, %al
+	cmpb $9, %al
 	je concate_lines
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	je unexpected_end_of_file
-	cmp $0xa, %al
+	cmpb $0xa, %al
 	je concate_lf
-	cmp $0xd, %al
+	cmpb $0xd, %al
 	je concate_cr
-	cmp $0x3b, %al
+	cmpb $0x3b, %al
 	jne extra_characters_on_line
       find_concated_line:
-	lodsb %ds:(%esi), %al
-	cmp $0xa, %al
+	lodsb
+	cmpb $0xa, %al
 	je concate_lf
-	cmp $0xd, %al
+	cmpb $0xd, %al
 	je concate_cr
-	or %al, %al
+	orb %al, %al
 	jz concate_ok
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne find_concated_line
 	jmp unexpected_end_of_file
       concate_lf:
-	lodsb %ds:(%esi), %al
-	cmp $0xd, %al
+	lodsb
+	cmpb $0xd, %al
 	je concate_ok
 	dec %esi
 	jmp concate_ok
       concate_cr:
-	lodsb %ds:(%esi), %al
-	cmp $0xa, %al
+	lodsb
+	cmpb $0xa, %al
 	je concate_ok
 	dec %esi
       concate_ok:
 	incl (%esp)
 	jmp convert_line_data
       ignore_comment:
-	lodsb %ds:(%esi), %al
-	cmp $0xa, %al
+	lodsb
+	cmpb $0xa, %al
 	je lf_character
-	cmp $0xd, %al
+	cmpb $0xd, %al
 	je cr_character
-	or %al, %al
+	orb %al, %al
 	jz line_end
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne ignore_comment
       line_end:
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	xorb %al, %al
+	stosb
 	pop %ecx
 	ret
 
@@ -2610,18 +2611,18 @@ preprocess_line:
 	push %esi
 	mov current_line, %esi
 	add $12, %esi
-	mov macro_status, %al
-	dec %al
+	movb macro_status, %al
+	decb %al
 	jz find_macro_block
-	dec %al
+	decb %al
 	jz skip_macro_block
       preprocess_instruction:
-	lodsb %ds:(%esi), %al
-	cmp $':, %al
+	lodsb
+	cmpb $0x3a, %al
 	je preprocess_instruction
 	movzbl (%esi), %ecx
 	inc %esi
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne not_preprocessor_symbol
 	push %edi
 	mov $preprocessor_directives, %edi
@@ -2634,8 +2635,8 @@ preprocess_line:
 	xor %eax, %eax
 	jmp *%ebx
       not_preprocessor_directive:
-	mov %cl, %al
-	xor %ah, %ah
+	movb %cl, %al
+	xorb %ah, %ah
 	call get_macro
 	jc not_macro
 	movb $0x3b, -2(%edx)
@@ -2644,22 +2645,22 @@ preprocess_line:
       not_macro:
 	movl %esi, struc_name
 	add %ecx, %esi
-	lodsb %ds:(%esi), %al
-	cmp $':, %al
+	lodsb
+	cmpb $0x3a, %al
 	je preprocess_instruction
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne not_preprocessor_symbol
-	cmpl $3+(('e|('q<<8)|('u<<16)) << 8), (%esi)  #  Same multibyte character constant order in fasm and NASM.
+	cmpl $3+[[0x65|[0x71<<8]|[0x75<<16]] << 8], (%esi)  /*  Same multibyte character constant order in fasm and NASM. */
 	je define_symbolic_constant
-	lodsb %ds:(%esi), %al
-	mov $1, %ah
+	lodsb
+	movb $1, %ah
 	call get_macro
 	jc not_preprocessor_symbol
-	movb $':, -2(%edx)
-	mov $0x3b, %al
-	xchg -1(%edx), %al
-	dec %al
-	mov %al, (%edx)
+	movb $0x3a, -2(%edx)
+	movb $0x3b, %al
+	xchgb -1(%edx), %al
+	decb %al
+	movb %al, (%edx)
 	jmp use_macro
       not_preprocessor_symbol:
 	mov current_line, %esi
@@ -2675,15 +2676,15 @@ get_macro:
 	mov %edi, %ebp
 	mov additional_memory, %ebx
       check_macro:
-	mov %al, %cl
+	movb %al, %cl
 	cmp macros_list, %ebx
 	je no_macro_found
 	sub $8, %ebx
-	cmp (%ebx), %ax
+	cmpw (%ebx), %ax
 	jne check_macro
 	mov 4(%ebx), %edi
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	je macro_ok
 	mov %edx, %esi
 	jmp check_macro
@@ -2697,17 +2698,17 @@ get_macro:
 	ret
 process_symbolic_constants:
 	mov %esi, %ebp
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	je check_symbol
-	cmp $0x22, %al
+	cmpb $0x22, %al
 	je ignore_string
-	or %al, %al
+	orb %al, %al
 	jnz process_symbolic_constants
 	dec %esi
 	ret
       ignore_string:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	add %eax, %esi
 	jmp process_symbolic_constants
       check_symbol:
@@ -2727,11 +2728,11 @@ process_symbolic_constants:
 	mov %ebx, %esi
 	cmp additional_memory_end, %edx
 	je not_symbolic_constant
-	cmp (%edx), %al
+	cmpb (%edx), %al
 	jne next_symbolic_constant
 	mov 4(%edx), %edi
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	je symbolic_constant_found
       next_symbolic_constant:
 	add $16, %edx
@@ -2747,69 +2748,69 @@ process_symbolic_constants:
 	xchg %edx, %esi
 	xor %eax, %eax
 	shr %ecx
-	rcl %al
+	rclb %al
 	shr %ecx
-	rcl %ah
+	rclb %ah
 	rep
-	movsl %ds:(%esi), %es:(%edi)
-	mov %ah, %cl
+	movsl
+	movb %ah, %cl
 	rep
-	movsw %ds:(%esi), %es:(%edi)
-	mov %al, %cl
+	movsw
+	movb %al, %cl
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	mov %edx, %esi
 	clc
 	ret
       process_after_replaced:
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	je symbol_after_replaced
-	stosb %al, %es:(%edi)
-	cmp $0x22, %al
+	stosb
+	cmpb $0x22, %al
 	je string_after_replaced
-	or %al, %al
+	orb %al, %al
 	jnz process_after_replaced
 	mov %edi, %ecx
 	sub %esi, %ecx
 	mov %ebp, %edi
 	xor %eax, %eax
 	shr %ecx
-	rcl %al
+	rclb %al
 	shr %ecx
-	rcl %ah
+	rclb %ah
 	rep
-	movsl %ds:(%esi), %es:(%edi)
-	mov %ah, %cl
+	movsl
+	movb %ah, %cl
 	rep
-	movsw %ds:(%esi), %es:(%edi)
-	mov %al, %cl
+	movsw
+	movb %al, %cl
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	ret
       string_after_replaced:
-	lodsl %ds:(%esi), %eax
-	stosl %eax, %es:(%edi)
+	lodsl
+	stosl
 	mov %eax, %ecx
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	jmp process_after_replaced
       symbol_after_replaced:
 	movzbl (%esi), %ecx
 	inc %esi
 	call replace_symbolic_constant
 	jnc process_after_replaced
-	mov $0x1a, %al
-	mov %cl, %ah
-	stosw %ax, %es:(%edi)
+	movb $0x1a, %al
+	movb %cl, %ah
+	stosw
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	jmp process_after_replaced
 include_file:
-	lodsb %ds:(%esi), %al
-	cmp $0x22, %al
+	lodsb
+	cmpb $0x22, %al
 	jne invalid_argument
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %esi, %edx
 	add %eax, %esi
 	cmpb $0, (%esi)
@@ -2834,21 +2835,21 @@ define_symbolic_constant:
 	mov %ebx, 12(%edx)
 	mov struc_name, %ebx
 	movb $0x3b, -2(%ebx)
-	mov -1(%ebx), %al
-	mov %al, (%edx)
+	movb -1(%ebx), %al
+	movb %al, (%edx)
 	mov %ebx, 4(%edx)
 	jmp line_preprocessed
 define_struc:
-	or $1, %ah
+	orb $1, %ah
 define_macro:
 	cmpb $0, macro_status
 	jne unexpected_instruction
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	jne invalid_name
-	lodsb %ds:(%esi), %al
+	lodsb
 	mov additional_memory, %ebx
-	mov %ax, (%ebx)
+	movw %ax, (%ebx)
 	mov %esi, 4(%ebx)
 	add $8, %ebx
 	cmp labels_list, %ebx
@@ -2857,66 +2858,66 @@ define_macro:
 	movzbl %al, %eax
 	add %eax, %esi
 	movb $1, macro_status
-	xor %bl, %bl
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	xorb %bl, %bl
+	lodsb
+	orb %al, %al
 	jz line_preprocessed
-	cmp $'{, %al
+	cmpb $0x7b, %al
 	je found_macro_block
 	dec %esi
       skip_macro_arguments:
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	je skip_macro_argument
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_macro_arguments
-	xor $-1, %bl
+	xorb $-1, %bl
 	jz invalid_macro_arguments
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	jne invalid_macro_arguments
       skip_macro_argument:
 	movzbl (%esi), %eax
 	inc %esi
 	add %eax, %esi
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	je skip_macro_arguments
-	cmp $'], %al
+	cmpb $0x5d, %al
 	jne end_macro_arguments
-	lodsb %ds:(%esi), %al
-	not %bl
+	lodsb
+	notb %bl
       end_macro_arguments:
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_macro_arguments
-	or %al, %al
+	orb %al, %al
 	jz line_preprocessed
-	cmp $'{, %al
+	cmpb $0x7b, %al
 	je found_macro_block
 	jmp invalid_macro_arguments
       find_macro_block:
 	add $2, %esi
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz line_preprocessed
-	cmp $'{, %al
+	cmpb $0x7b, %al
 	jne unexpected_characters
       found_macro_block:
 	movb $2, macro_status
       skip_macro_block:
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	je skip_macro_symbol
-	cmp $0x3b, %al
+	cmpb $0x3b, %al
 	je skip_macro_symbol
-	cmp $0x22, %al
+	cmpb $0x22, %al
 	je skip_macro_string
-	or %al, %al
+	orb %al, %al
 	jz line_preprocessed
-	cmp $'}, %al
+	cmpb $0x7d, %al
 	jne skip_macro_block
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jnz extra_characters_on_line
 	movb $0, macro_status
 	jmp line_preprocessed
@@ -2926,23 +2927,23 @@ define_macro:
 	add %eax, %esi
 	jmp skip_macro_block
       skip_macro_string:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	add %eax, %esi
 	jmp skip_macro_block
 purge_macro:
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	jne invalid_name
-	lodsb %ds:(%esi), %al
-	xor %ah, %ah
+	lodsb
+	xorb %ah, %ah
 	call get_macro
 	jc macro_purged
 	orb $0x80, 1(%ebx)
       macro_purged:
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	je purge_macro
-	or %al, %al
+	orb %al, %al
 	jnz extra_characters_on_line
 	jmp line_preprocessed
 use_macro:
@@ -2961,12 +2962,12 @@ use_macro:
 	movl %edi, macro_constants
 	movl $0, counter
       process_macro_arguments:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz find_macro_instructions
-	cmp $'{, %al
+	cmpb $0x7b, %al
 	je macro_instructions_start
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne get_macro_argument
 	mov %esi, %ebp
 	inc %esi
@@ -2983,21 +2984,21 @@ use_macro:
 	xchg %edx, %esi
 	mov %esi, 12(%edi)
       get_argument_value:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz argument_value_end
-	cmp $44, %al
+	cmpb $44, %al
 	je argument_value_end
-	cmp $0x22, %al
+	cmpb $0x22, %al
 	je argument_string
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne get_argument_value
 	movzbl (%esi), %eax
 	inc %esi
 	add %eax, %esi
 	jmp get_argument_value
       argument_string:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	add %eax, %esi
 	jmp get_argument_value
       argument_value_end:
@@ -3009,10 +3010,10 @@ use_macro:
 	add $16, %edi
 	cmp labels_list, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	je next_argument
-	cmp $'], %al
+	cmpb $0x5d, %al
 	je next_arguments_group
 	dec %esi
 	jmp arguments_end
@@ -3029,15 +3030,15 @@ use_macro:
 	mov %ebp, %esi
 	jmp process_macro_arguments
       arguments_end:
-	lodsb %ds:(%esi), %al
-	cmp $'{, %al
+	lodsb
+	cmpb $0x7b, %al
 	je macro_instructions_start
       find_macro_instructions:
 	add $14, %esi
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz find_macro_instructions
-	cmp $'{, %al
+	cmpb $0x7b, %al
 	jne unexpected_characters
       macro_instructions_start:
 	cmpb $0, (%edx)
@@ -3058,31 +3059,31 @@ use_macro:
 	movl %edi, current_line
 	mov 4(%ebx), %eax
 	dec %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov %ecx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov (%esp), %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	orb $0x40, macro_status
 	push %ebx
 	push %ecx
       process_macro:
-	lodsb %ds:(%esi), %al
-	cmp $'}, %al
+	lodsb
+	cmpb $0x7d, %al
 	je macro_line_processed
-	or %al, %al
+	orb %al, %al
 	jz macro_line_processed
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	je process_macro_symbol
-	andb $~0x40, macro_status
-	stosb %al, %es:(%edi)
-	cmp $0x22, %al
+	andb $[-0x40-1], macro_status
+	stosb
+	cmpb $0x22, %al
 	jne process_macro
       copy_macro_string:
 	mov (%esi), %ecx
 	add $4, %ecx
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	jmp process_macro
       process_macro_symbol:
 	push %esi
@@ -3107,14 +3108,14 @@ use_macro:
 	pop %ebx
 	jmp *%edx
       not_macro_directive:
-	andb $~0x40, macro_status
+	andb $[-0x40-1], macro_status
 	mov counter, %eax
 	or %eax, %eax
 	jnz check_for_macro_constant
 	inc %eax
       check_for_macro_constant:
 	shl $8, %eax
-	mov (%esi), %al
+	movb (%esi), %al
 	inc %esi
 	movzbl %al, %ebp
 	mov macro_constants, %edx
@@ -3129,8 +3130,8 @@ use_macro:
       try_macro_constant:
 	mov %ebp, %ecx
 	mov 4(%edx), %edi
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	je macro_constant_found
 	mov %ebx, %esi
       next_macro_constant:
@@ -3149,13 +3150,13 @@ use_macro:
 	mov 8(%edx), %ecx
 	mov 12(%edx), %esi
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	movb $44, (%edi)
 	inc %edi
 	mov %ebx, %esi
 	inc %eax
 	shl $8, %eax
-	mov -1(%esi), %al
+	movb -1(%esi), %al
 	push %edi
 	jmp scan_macro_constants
       replace_macro_constant:
@@ -3165,33 +3166,33 @@ use_macro:
 	mov 12(%edx), %edx
 	xchg %edx, %esi
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	mov %edx, %esi
 	jmp process_macro
       not_macro_constant:
 	pop %edi
 	pop %esi
-	mov $0x1a, %al
-	stosb %al, %es:(%edi)
-	mov (%esi), %al
+	movb $0x1a, %al
+	stosb
+	movb (%esi), %al
 	inc %esi
-	stosb %al, %es:(%edi)
-	cmpb $'., (%esi)
+	stosb
+	cmpb $0x2e, (%esi)
 	jne copy_macro_symbol
 	mov struc_name, %ebx
 	or %ebx, %ebx
 	jz copy_macro_symbol
 	xchg %ebx, %esi
 	movzbl -1(%esi), %ecx
-	add %cl, -1(%edi)
+	addb %cl, -1(%edi)
 	jc name_too_long
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	xchg %ebx, %esi
       copy_macro_symbol:
 	movzbl %al, %ecx
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	jmp process_macro
       macro_line_processed:
 	movb $0, (%edi)
@@ -3201,15 +3202,15 @@ use_macro:
 	pop %eax
 	pop %ecx
 	pop %ebx
-	cmp $'}, %al
+	cmpb $0x7d, %al
 	je macro_block_processed
       process_next_line:
 	inc %ecx
 	add $14, %esi
 	jmp process_macro_line
       local_symbols:
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	jne invalid_argument
 	push %edi
 	push %ecx
@@ -3218,7 +3219,7 @@ use_macro:
 	mov additional_memory, %edx
 	mov counter, %eax
 	shl $8, %eax
-	mov %cl, %al
+	movb %cl, %al
 	mov %eax, (%edx)
 	mov %esi, 4(%edx)
 	movzbl _counter, %eax
@@ -3228,13 +3229,13 @@ use_macro:
 	sub $3, %edi
 	movl %edi, memory_end
 	mov %edi, 12(%edx)
-	add %cl, %al
+	addb %cl, %al
 	jc name_too_long
-	inc %al
+	incb %al
 	jz name_too_long
 	movb $0x1a, (%edi)
 	inc %edi
-	mov %al, (%edi)
+	movb %al, (%edi)
 	inc %edi
 	add $2, %eax
 	mov %eax, 8(%edx)
@@ -3243,25 +3244,25 @@ use_macro:
 	jae out_of_memory
 	movl %edx, additional_memory
 	rep
-	movsb %ds:(%esi), %es:(%edi)
-	mov $'?, %al
-	stosb %al, %es:(%edi)
+	movsb
+	movb $0x3f, %al
+	stosb
 	movzbl _counter, %ecx
 	push %esi
 	mov $_counter+1, %esi
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	pop %esi
 	pop %ecx
 	pop %edi
 	cmp memory_end, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	je local_symbols
-	cmp $'}, %al
+	cmpb $0x7d, %al
 	je macro_block_processed
-	or %al, %al
+	orb %al, %al
 	jnz extra_characters_on_line
 	jmp process_next_line
       common_block:
@@ -3314,7 +3315,7 @@ use_macro:
       macro_block_processed:
 	call close_macro_block
 	jc process_macro_line
-	andb $~0x80, 1(%ebx)
+	andb $[-0x80-1], 1(%ebx)
 	popl current_line
 	mov macro_constants, %eax
 	movl %eax, additional_memory
@@ -3331,30 +3332,30 @@ increase_counter:
       counter_loop:
 	call increase_digit
 	jnc counter_ok
-	movb $'0, (%eax,%ecx,1)
+	movb $0x30, (%eax,%ecx,1)
 	loop counter_loop
       counter_ok:
 	ret
       increase_digit:
 	incb (%eax,%ecx,1)
-	cmpb $':, (%eax,%ecx,1)
+	cmpb $0x3a, (%eax,%ecx,1)
 	jb digit_increased
 	je letter_digit
-	cmpb $'f, (%eax,%ecx,1)
+	cmpb $0x66, (%eax,%ecx,1)
 	jbe digit_increased
 	stc
 	ret
       letter_digit:
-	movb $'a, (%eax,%ecx,1)
+	movb $0x61, (%eax,%ecx,1)
       digit_increased:
 	clc
 	ret
 
-# %include '../parser.inc'
+/* %include '../parser.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 parser:
 	mov memory_end, %eax
@@ -3367,16 +3368,16 @@ parser:
 	movl %esi, current_line
 	cmp labels_list, %edi
 	jae out_of_memory
-	mov $0xf, %al
-	stosb %al, %es:(%edi)
+	movb $0xf, %al
+	stosb
 	mov %esi, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	add $12, %esi
 	call parse_line
 	cmp code_start, %esi
 	jb parser_loop
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	xorb %al, %al
+	stosb
 	popl additional_memory
 	mov code_start, %eax
 	movl %eax, source_start
@@ -3392,14 +3393,14 @@ parse_line:
 	inc %esi
 	movzbl (%esi), %ecx
 	inc %esi
-	cmpb $':, (%esi,%ecx,1)
+	cmpb $0x3a, (%esi,%ecx,1)
 	je simple_label
 	push %esi
 	push %ecx
 	add %ecx, %esi
 	cmpb $0x1a, (%esi)
 	je check_for_data_label
-	cmpb $'=, (%esi)
+	cmpb $0x3d, (%esi)
 	je constant_label
 	pop %ecx
 	pop %esi
@@ -3425,11 +3426,11 @@ parse_line:
 	call get_symbol
 	pop %edi
 	jc unknown_instruction
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp parse_arguments
       data_instruction:
 	movzbl %ah, %ebx
-	mov data_handlers(,%ebx,2), %bx
+	movw data_handlers(,%ebx,2), %bx
 	jmp parse_instruction
       unknown_instruction:
 	sub $2, %esi
@@ -3441,25 +3442,25 @@ parse_line:
 	call identify_label
 	movb $3, (%edi)
 	inc %edi
-	stosl %eax, %es:(%edi)
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	stosl
+	xorb %al, %al
+	stosb
 	inc %esi
 	jmp parse_arguments
       data_label:
 	pop %ecx
 	pop %ebx
 	pop %edi
-	push %ax
+	pushw %ax
 	push %esi
 	mov %ebx, %esi
 	call identify_label
 	movb $2, (%edi)
 	inc %edi
-	stosl %eax, %es:(%edi)
+	stosl
 	pop %esi
-	pop %ax
-	stosb %al, %es:(%edi)
+	popw %ax
+	stosb
 	push %edi
 	jmp data_instruction
       simple_label:
@@ -3467,13 +3468,13 @@ parse_line:
 	call identify_label
 	movb $2, (%edi)
 	inc %edi
-	stosl %eax, %es:(%edi)
+	stosl
 	inc %esi
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	xorb %al, %al
+	stosb
 	jmp instruction_start
       identify_label:
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je local_label_name
 	call get_label_id
 	mov 4(%eax), %ebx
@@ -3493,73 +3494,73 @@ parse_line:
 	jmp get_main_instruction
       parse_label_directive:
 	push %edi
-	lodsb %ds:(%esi), %al
-	cmp $0x1a, %al
+	lodsb
+	cmpb $0x1a, %al
 	jne invalid_argument
 	movzbl (%esi), %ecx
-	lodsb %ds:(%esi), %al
+	lodsb
 	pop %edi
-	mov $2, %al
-	stosb %al, %es:(%edi)
+	movb $2, %al
+	stosb
 	call identify_label
-	stosl %eax, %es:(%edi)
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	stosl
+	xorb %al, %al
+	stosb
 	jmp parse_arguments
       parse_instruction:
 	pop %edi
-	mov %al, %dl
-	mov $1, %al
-	stosb %al, %es:(%edi)
-	mov %bx, %ax
-	stosw %ax, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $prefix_instruction-assembler, %bx
-	.word prefix_instruction-assembler
+	movb %al, %dl
+	movb $1, %al
+	stosb
+	movw %bx, %ax
+	stosw
+	movb %dl, %al
+	stosb
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $prefix_instruction-assembler, %bx */
+	.value --prefix_instruction___assembler
 	je parse_prefix_instruction
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $end_directive-assembler, %bx
-	.word end_directive-assembler
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $end_directive-assembler, %bx */
+	.value --end_directive___assembler
 	je parse_prefix_instruction
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $label_directive-assembler, %bx
-	.word label_directive-assembler
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $label_directive-assembler, %bx */
+	.value --label_directive___assembler
 	je parse_label_directive
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $load_directive-assembler, %bx
-	.word load_directive-assembler
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $load_directive-assembler, %bx */
+	.value --load_directive___assembler
 	je parse_label_directive
       parse_arguments:
-	lodsb %ds:(%esi), %al
-	cmp $':, %al
+	lodsb
+	cmpb $0x3a, %al
 	je instruction_separator
-	cmp $44, %al
+	cmpb $44, %al
 	je separator
-	cmp $'=, %al
+	cmpb $0x3d, %al
 	je separator
-	cmp $'|, %al
+	cmpb $0x7c, %al
 	je separator
-	cmp $'&, %al
+	cmpb $0x26, %al
 	je separator
-	cmp $'~, %al
+	cmpb $0x7e, %al
 	je separator
-	cmp $'>, %al
+	cmpb $0x3e, %al
 	je greater
-	cmp $'<, %al
+	cmpb $0x3c, %al
 	je less
-	cmp $'), %al
+	cmpb $0x29, %al
 	je close_expression
-	or %al, %al
+	orb %al, %al
 	jz line_parsed
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je address_argument
-	cmp $'], %al
+	cmpb $0x5d, %al
 	je separator
 	dec %esi
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	jne expression_argument
 	push %edi
 	mov $directive_operators, %edi
 	call get_operator
-	or %al, %al
+	orb %al, %al
 	jnz operator_argument
 	inc %esi
 	movzbl (%esi), %ecx
@@ -3572,19 +3573,19 @@ parse_line:
 	jnc symbol_argument
 	cmp $1, %ecx
 	jne check_argument
-	cmpb $'?, (%esi)
+	cmpb $0x3f, (%esi)
 	jne check_argument
 	pop %edi
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	jmp argument_parsed
       symbol_argument:
 	pop %edi
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp argument_parsed
       operator_argument:
 	pop %edi
-	stosb %al, %es:(%edi)
-	cmp $0x80, %al
+	stosb
+	cmpb $0x80, %al
 	je forced_expression
 	jmp argument_parsed
       check_argument:
@@ -3595,7 +3596,7 @@ parse_line:
 	call get_operator
 	pop %ecx
 	pop %esi
-	or %al, %al
+	orb %al, %al
 	jnz not_instruction
 	call get_instruction
 	jnc parse_instruction
@@ -3616,11 +3617,11 @@ parse_line:
 	push %ecx
 	push %esi
 	push %edi
-	mov $'(, %al
-	stosb %al, %es:(%edi)
+	movb $0x28, %al
+	stosb
 	call convert_expression
-	mov $'), %al
-	stosb %al, %es:(%edi)
+	movb $0x29, %al
+	stosb
 	pop %eax
 	pop %edx
 	pop %ecx
@@ -3631,53 +3632,53 @@ parse_line:
 	mov %edx, %esi
       string_argument:
 	inc %esi
-	.byte 0x66, 0xb8  #WORKAROUNDW mov $'(, %ax
-	.word '(
-	stosw %ax, %es:(%edi)
-	lodsl %ds:(%esi), %eax
+	.byte 0x66, 0xb8  /*WORKAROUNDW mov $'(, %ax */
+	.value 0x28
+	stosw
+	lodsl
 	mov %eax, %ecx
-	stosl %eax, %es:(%edi)
+	stosl
 	shr %ecx
 	jnc string_movsb_ok
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
       string_movsb_ok:
 	shr %ecx
 	jnc string_movsw_ok
-	movsw %ds:(%esi), %es:(%edi)
+	movsw
       string_movsw_ok:
 	rep
-	movsl %ds:(%esi), %es:(%edi)
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	movsl
+	xorb %al, %al
+	stosb
 	jmp argument_parsed
       not_string:
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	jne parse_expression
 	push %esi
 	push %edi
 	inc %esi
-	mov $'{, %al
-	stosb %al, %es:(%edi)
+	movb $0x7b, %al
+	stosb
 	incb parenthesis_stack
 	jmp parse_arguments
       parse_expression:
       forced_expression:
-	mov $'(, %al
-	stosb %al, %es:(%edi)
+	movb $0x28, %al
+	stosb
       expression:
 	call convert_expression
-	mov $'), %al
-	stosb %al, %es:(%edi)
+	movb $0x29, %al
+	stosb
 	jmp expression_parsed
       address_argument:
-	mov $'[, %al
-	stosb %al, %es:(%edi)
+	movb $0x5b, %al
+	stosb
 	cmpw $0x21a, (%esi)
 	jne convert_address
 	push %esi
 	add $4, %esi
 	lea 1(%esi), %ebx
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	pop %esi
 	jne convert_address
 	add $2, %esi
@@ -3689,65 +3690,65 @@ parse_line:
 	pop %edi
 	pop %esi
 	jc invalid_address
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_address
-	mov %ah, %al
-	and $240, %ah
-	cmp $0x60, %ah
+	movb %ah, %al
+	andb $240, %ah
+	cmpb $0x60, %ah
 	jne invalid_address
-	stosb %al, %es:(%edi)
+	stosb
       convert_address:
 	cmpb $0x1a, (%esi)
 	jne convert_address_value
 	push %esi
-	lodsw %ds:(%esi), %ax
+	lodsw
 	movzbl %ah, %ecx
 	push %edi
 	mov $address_sizes, %edi
 	call get_symbol
 	pop %edi
 	jc no_size_prefix
-	mov %ah, %al
-	add $0x70, %al
-	stosb %al, %es:(%edi)
+	movb %ah, %al
+	addb $0x70, %al
+	stosb
 	add $4, %esp
 	jmp convert_address_value
       no_size_prefix:
 	pop %esi
       convert_address_value:
 	call convert_expression
-	lodsb %ds:(%esi), %al
-	cmp $'], %al
+	lodsb
+	cmpb $0x5d, %al
 	jne invalid_address
-	stosb %al, %es:(%edi)
+	stosb
 	jmp argument_parsed
       close_expression:
-	mov $'}, %al
+	movb $0x7d, %al
       separator:
-	stosb %al, %es:(%edi)
+	stosb
 	jmp argument_parsed
       instruction_separator:
-	stosb %al, %es:(%edi)
+	stosb
 	jmp instruction_start
       greater:
-	cmpb $'=, (%esi)
+	cmpb $0x3d, (%esi)
 	jne separator
 	inc %esi
-	mov $0xf2, %al
+	movb $0xf2, %al
 	jmp separator
       less:
 	cmpb $0x83, -1(%edi)
 	je separator
-	cmpb $'>, (%esi)
+	cmpb $0x3e, (%esi)
 	je not_equal
-	cmpb $'=, (%esi)
+	cmpb $0x3d, (%esi)
 	jne separator
 	inc %esi
-	mov $0xf3, %al
+	movb $0xf3, %al
 	jmp separator
       not_equal:
 	inc %esi
-	mov $0xf6, %al
+	movb $0xf6, %al
 	jmp separator
       argument_parsed:
 	cmpb $0, parenthesis_stack
@@ -3758,19 +3759,19 @@ parse_line:
       expression_parsed:
 	cmpb $0, parenthesis_stack
 	je parse_arguments
-	cmpb $'), (%esi)
+	cmpb $0x29, (%esi)
 	jne argument_parsed
 	decb parenthesis_stack
 	pop %edi
 	pop %esi
 	jmp parse_expression
       empty_instruction:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz line_parsed
-	cmp $':, %al
+	cmpb $0x3a, %al
 	je empty_label
-	cmp $0x3b, %al
+	cmpb $0x3b, %al
 	je skip_preprocessed_symbol
 	dec %esi
 	jmp parse_arguments
@@ -3780,20 +3781,20 @@ parse_line:
 	movl %eax, current_locals_prefix
 	jmp instruction_start
       skip_preprocessed_symbol:
-	lodsb %ds:(%esi), %al
+	lodsb
 	movzbl %al, %eax
 	add %eax, %esi
       skip_next:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz line_parsed
-	cmp $0x1a, %al
+	cmpb $0x1a, %al
 	je skip_preprocessed_symbol
-	cmp $0x22, %al
+	cmpb $0x22, %al
 	je skip_preprocessed_string
 	jmp skip_next
       skip_preprocessed_string:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	add %eax, %esi
 	jmp skip_next
       line_parsed:
@@ -3801,11 +3802,11 @@ parse_line:
 	jne invalid_expression
 	ret
 
-# %include '../assemble.inc'
+/* %include '../assemble.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 assembler:
 	mov labels_list, %edi
@@ -3814,7 +3815,7 @@ assembler:
 	shr $2, %ecx
 	xor %eax, %eax
 	rep
-	stosl %eax, %es:(%edi)
+	stosl
 	movb $0, current_pass
 	movl $0, number_of_sections
 	movb $0, times_working
@@ -3853,7 +3854,7 @@ assembler:
 	jmp assembler_loop
       pass_error:
 	movl %eax, current_line
-	jmpl *error
+	jmp *error
       assemble_done:
 	mov error_line, %eax
 	or %eax, %eax
@@ -3887,61 +3888,61 @@ assemble_line:
 	sub $0x100, %eax
 	cmp %eax, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz source_end
-	cmp $1, %al
+	cmpb $1, %al
 	je assemble_instruction
-	cmp $2, %al
+	cmpb $2, %al
 	je define_label
-	cmp $3, %al
+	cmpb $3, %al
 	je define_constant
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je new_line
-	cmp $0x13, %al
+	cmpb $0x13, %al
 	je code_type_setting
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne illegal_instruction
-	lodsb %ds:(%esi), %al
-	mov %al, %ah
-	shr $4, %ah
-	cmp $6, %ah
+	lodsb
+	movb %al, %ah
+	shrb $4, %ah
+	cmpb $6, %ah
 	jne illegal_instruction
-	and $15, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, segment_register
+	andb $15, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, segment_register */
 	.long segment_register
 	call store_segment_prefix
 	jmp assemble_line
       code_type_setting:
-	lodsb %ds:(%esi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, code_type
+	lodsb
+	.byte 0xa2  /*WORKAROUNDL movb %al, code_type */
 	.long code_type
 	jmp line_assembled
       new_line:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	movl %eax, current_line
 	jmp assemble_line
       define_label:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %eax, %ebx
-	lodsb %ds:(%esi), %al
-	mov %al, %dl
-	xor %ch, %ch
+	lodsb
+	movb %al, %dl
+	xorb %ch, %ch
 	cmpb $0, reloc_labels
 	je label_reloc_ok
-	mov $2, %ch
+	movb $2, %ch
       label_reloc_ok:
-	xchg 11(%ebx), %ch
-	mov current_pass, %al
+	xchgb 11(%ebx), %ch
+	movb current_pass, %al
 	testb $1, 8(%ebx)
 	jz new_label
-	cmp 9(%ebx), %al
+	cmpb 9(%ebx), %al
 	je symbol_already_defined
-	mov %al, 9(%ebx)
+	movb %al, 9(%ebx)
 	mov %edi, %eax
 	sub org_start, %eax
 	xchg %eax, (%ebx)
-	cdq
+	cltd
 	xchg %edx, 4(%ebx)
 	mov org_sib, %ebp
 	xchg %ebp, 12(%ebx)
@@ -3953,7 +3954,7 @@ assemble_line:
 	jne changed_label
 	cmp 12(%ebx), %ebp
 	jne changed_label
-	cmp 11(%ebx), %ch
+	cmpb 11(%ebx), %ch
 	jne changed_label
 	jmp assemble_line
       changed_label:
@@ -3961,47 +3962,47 @@ assemble_line:
 	jmp assemble_line
       new_label:
 	orb $1, 8(%ebx)
-	mov %al, 9(%ebx)
+	movb %al, 9(%ebx)
 	movb %dl, 10(%ebx)
 	mov %edi, %eax
 	sub org_start, %eax
 	mov %eax, (%ebx)
-	cdq
+	cltd
 	movl %edx, 4(%ebx)
 	mov org_sib, %eax
 	mov %eax, 12(%ebx)
 	jmp assemble_line
       define_constant:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	push %eax
-	lodsb %ds:(%esi), %al
-	push %ax
+	lodsb
+	pushw %ax
 	call get_value
-	pop %bx
-	mov %bl, %ch
+	popw %bx
+	movb %bl, %ch
 	pop %ebx
       make_constant:
-	mov current_pass, %cl
+	movb current_pass, %cl
 	testb $1, 8(%ebx)
 	jz new_constant
-	cmp 9(%ebx), %cl
+	cmpb 9(%ebx), %cl
 	jne redefine_constant
 	testb $2, 8(%ebx)
 	jz symbol_already_defined
 	orb $4, 8(%ebx)
       redefine_constant:
-	mov %cl, 9(%ebx)
+	movb %cl, 9(%ebx)
 	xchg %eax, (%ebx)
 	xchg %edx, 4(%ebx)
-	mov value_type, %cl
-	xchg %cl, 11(%ebx)
+	movb value_type, %cl
+	xchgb %cl, 11(%ebx)
 	cmpb $0, current_pass
 	je assemble_line
 	cmp (%ebx), %eax
 	jne changed_constant
 	cmp 4(%ebx), %edx
 	jne changed_constant
-	cmp 11(%ebx), %cl
+	cmpb 11(%ebx), %cl
 	jne changed_constant
 	jmp assemble_line
       changed_constant:
@@ -4014,22 +4015,22 @@ assemble_line:
 	movw %cx, 9(%ebx)
 	mov %eax, (%ebx)
 	mov %edx, 4(%ebx)
-	mov value_type, %cl
-	mov %cl, 11(%ebx)
+	movb value_type, %cl
+	movb %cl, 11(%ebx)
 	jmp assemble_line
       assemble_instruction:
 	movb $0, operand_size
 	movb $0, forced_size
-	lodsw %ds:(%esi), %ax
+	lodsw
 	movzwl %ax, %ebx
 	add $assembler, %ebx
-	lodsb %ds:(%esi), %al
+	lodsb
 	jmp *%ebx
       instruction_assembled:
-	mov (%esi), %al
-	cmp $0xf, %al
+	movb (%esi), %al
+	cmpb $0xf, %al
 	je line_assembled
-	or %al, %al
+	orb %al, %al
 	jnz extra_characters_on_line
       line_assembled:
 	clc
@@ -4042,22 +4043,22 @@ skip_line:
 	jnc skip_line
 	ret
 skip_symbol:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz nothing_to_skip
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je nothing_to_skip
-	cmp $1, %al
+	cmpb $1, %al
 	je skip_instruction
-	cmp $2, %al
+	cmpb $2, %al
 	je skip_label
-	cmp $3, %al
+	cmpb $3, %al
 	je skip_label
-	cmp $0x20, %al
+	cmpb $0x20, %al
 	jb skip_assembler_symbol
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je skip_expression
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je skip_address
       skip_done:
 	clc
@@ -4070,31 +4071,31 @@ skip_symbol:
 	inc %esi
 	jmp skip_done
       skip_address:
-	mov (%esi), %al
-	and $240, %al
-	cmp $0x60, %al
+	movb (%esi), %al
+	andb $240, %al
+	cmpb $0x60, %al
 	jb skip_expression
-	cmp $0x70, %al
+	cmpb $0x70, %al
 	ja skip_expression
 	inc %esi
 	jmp skip_address
       skip_expression:
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz skip_string
-	cmp $'., %al
+	cmpb $0x2e, %al
 	je skip_fp_value
-	cmp $'), %al
+	cmpb $0x29, %al
 	je skip_done
-	cmp $'], %al
+	cmpb $0x5d, %al
 	je skip_done
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je skip_expression
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je skip_register
-	cmp $0x11, %al
+	cmpb $0x11, %al
 	je skip_label_value
-	cmp $0x80, %al
+	cmpb $0x80, %al
 	jae skip_expression
 	movzbl %al, %eax
 	add %eax, %esi
@@ -4108,7 +4109,7 @@ skip_symbol:
 	add $12, %esi
 	jmp skip_done
       skip_string:
-	lodsl %ds:(%esi), %eax
+	lodsl
 	add %eax, %esi
 	inc %esi
 	jmp skip_done
@@ -4118,17 +4119,17 @@ skip_symbol:
 	ret
 
 org_directive:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	movb $0, reloc_labels
-	mov value_type, %dl
-	or %dl, %dl
+	movb value_type, %dl
+	orb %dl, %dl
 	jz org_ok
-	cmp $2, %dl
+	cmpb $2, %dl
 	jne invalid_use_of_symbol
 	orb $-1, reloc_labels
       org_ok:
@@ -4138,17 +4139,17 @@ org_directive:
 	movl $0, org_sib
 	jmp instruction_assembled
 label_directive:
-	lodsb %ds:(%esi), %al
-	cmp $2, %al
+	lodsb
+	cmpb $2, %al
 	jne invalid_argument
-	lodsl %ds:(%esi), %eax
+	lodsl
 	inc %esi
 	mov %eax, %ebx
-	xor %ch, %ch
+	xorb %ch, %ch
 	cmpb $0x11, (%esi)
 	jne label_size_ok
-	lodsw %ds:(%esi), %ax
-	mov %ah, %ch
+	lodsw
+	movb %ah, %ch
       label_size_ok:
 	mov %edi, %eax
 	sub org_start, %eax
@@ -4156,45 +4157,45 @@ label_directive:
 	cmpb $0x80, (%esi)
 	jne define_free_label
 	inc %esi
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
 	movb $0, 11(%ebx)
 	push %ebx
-	push %cx
-	cmpb $'., (%esi)
+	pushw %cx
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_address_value
-	or %bh, %bh
+	orb %bh, %bh
 	setnz %ch
-	xchg %cl, %ch
-	mov %cx, %bp
+	xchgb %cl, %ch
+	movw %cx, %bp
 	shl $16, %ebp
-	mov %bh, %bl
-	mov %bx, %bp
-	pop %cx
+	movb %bh, %bl
+	movw %bx, %bp
+	popw %cx
 	pop %ebx
-	mov %al, %dl
-	mov value_type, %dh
-	cmp $1, %dh
+	movb %al, %dl
+	movb value_type, %dh
+	cmpb $1, %dh
 	je invalid_use_of_symbol
 	jb free_label_reloc_ok
       define_free_label:
-	xor %dh, %dh
+	xorb %dh, %dh
 	cmpb $0, reloc_labels
 	je free_label_reloc_ok
-	mov $2, %dh
+	movb $2, %dh
       free_label_reloc_ok:
-	xchg 11(%ebx), %dh
-	mov current_pass, %cl
+	xchgb 11(%ebx), %dh
+	movb current_pass, %cl
 	testb $1, 8(%ebx)
 	jz new_free_label
-	cmp 9(%ebx), %cl
+	cmpb 9(%ebx), %cl
 	je symbol_already_defined
-	mov %dh, %ch
-	mov %cl, 9(%ebx)
+	movb %dh, %ch
+	movb %cl, 9(%ebx)
 	xchg %eax, (%ebx)
-	cdq
+	cltd
 	xchg %edx, 4(%ebx)
 	xchg %ebp, 12(%ebx)
 	cmpb $0, current_pass
@@ -4205,7 +4206,7 @@ label_directive:
 	jne changed_free_label
 	cmp 12(%ebx), %ebp
 	jne changed_free_label
-	cmp 11(%ebx), %ch
+	cmpb 11(%ebx), %ch
 	jne changed_free_label
 	jmp instruction_assembled
       changed_free_label:
@@ -4213,60 +4214,60 @@ label_directive:
 	jmp instruction_assembled
       new_free_label:
 	orb $1, 8(%ebx)
-	mov %cl, 9(%ebx)
+	movb %cl, 9(%ebx)
 	movb %ch, 10(%ebx)
 	mov %eax, (%ebx)
-	cdq
+	cltd
 	movl %edx, 4(%ebx)
 	mov %ebp, 12(%ebx)
 	jmp instruction_assembled
 load_directive:
-	lodsb %ds:(%esi), %al
-	cmp $2, %al
+	lodsb
+	cmpb $2, %al
 	jne invalid_argument
-	lodsl %ds:(%esi), %eax
+	lodsl
 	inc %esi
 	push %eax
-	mov $1, %al
+	movb $1, %al
 	cmpb $0x11, (%esi)
 	jne load_size_ok
-	lodsb %ds:(%esi), %al
-	lodsb %ds:(%esi), %al
+	lodsb
+	lodsb
       load_size_ok:
-	cmp $8, %al
+	cmpb $8, %al
 	ja invalid_value
-	.byte 0xa2  #WORKAROUNDL movb %al, operand_size
+	.byte 0xa2  /*WORKAROUNDL movb %al, operand_size */
 	.long operand_size
-	lodsb %ds:(%esi), %al
-	cmp $0x82, %al
+	lodsb
+	cmpb $0x82, %al
 	jne invalid_argument
-	lodsw %ds:(%esi), %ax
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $'(, %ax
-	.word '(
+	lodsw
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $'(, %ax */
+	.value 0x28
 	jne invalid_argument
 	lea 4(%esi), %edx
 	mov (%esi), %eax
-	lea (4)+(1)(%esi,%eax,1), %esi
+	lea 4+1(%esi,%eax,1), %esi
 	call open
 	jc file_not_found
-	mov $2, %al
+	movb $2, %al
 	xor %edx, %edx
 	call lseek
 	xor %edx, %edx
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	jne load_position_ok
 	inc %esi
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	jne invalid_argument
 	inc %esi
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	push %ebx
 	call get_dword_value
 	pop %ebx
 	mov %eax, %edx
       load_position_ok:
-	xor %al, %al
+	xorb %al, %al
 	call lseek
 	movl $0, value
 	movl $0, value+4
@@ -4278,37 +4279,37 @@ load_directive:
 	mov value, %eax
 	mov value+4, %edx
 	pop %ebx
-	xor %ch, %ch
+	xorb %ch, %ch
 	movb $0, value_type
 	jmp make_constant
 display_directive:
 	push %esi
 	push %edi
       prepare_display:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
 	cmpb $0, (%esi)
 	jne display_byte
 	inc %esi
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %eax, %ecx
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	inc %esi
 	jmp display_next
       display_byte:
 	call get_byte_value
-	stosb %al, %es:(%edi)
+	stosb
       display_next:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz do_display
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je do_display
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp prepare_display
       do_display:
@@ -4329,8 +4330,8 @@ display_directive:
 	movl %edi, display_buffer
 	mov %ecx, %eax
 	rep
-	movsb %ds:(%esi), %es:(%edi)
-	stosl %eax, %es:(%edi)
+	movsb
+	stosl
 	pop %edi
 	pop %esi
 	jmp instruction_assembled
@@ -4345,13 +4346,13 @@ flush_display_buffer:
       display_messages:
 	sub $4, %esi
 	mov (%esi), %ecx
-	mov value, %ax
-	jecxz last_bytes_ok
-	mov %ah, %al
-	mov -1(%esi), %ah
+	movw value, %ax
+	jcxz last_bytes_ok
+	movb %ah, %al
+	movb -1(%esi), %ah
 	cmp $1, %ecx
 	je last_bytes_ok
-	mov -2(%esi), %al
+	movb -2(%esi), %al
       last_bytes_ok:
 	movw %ax, value
 	sub %ecx, %esi
@@ -4360,12 +4361,12 @@ flush_display_buffer:
 	pop %esi
 	cmp display_buffer, %esi
 	jne display_messages
-	.byte 0x66, 0xb8  #WORKAROUNDW mov $0xa0d, %ax
-	.word 0xa0d
+	.byte 0x66, 0xb8  /*WORKAROUNDW mov $0xa0d, %ax */
+	.value 0xa0d
 	cmpw %ax, value
 	je display_ok
 	mov $value, %esi
-	mov %ax, (%esi)
+	movw %ax, (%esi)
 	mov $2, %ecx
 	call display_block
       display_ok:
@@ -4374,17 +4375,17 @@ flush_display_buffer:
       display_done:
 	ret
 times_directive:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
 	jne invalid_use_of_symbol
 	or %eax, %eax
 	jz zero_times
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	jne times_argument_ok
 	inc %esi
       times_argument_ok:
@@ -4413,26 +4414,26 @@ times_directive:
 	jmp instruction_assembled
 
 virtual_directive:
-	lodsb %ds:(%esi), %al
-	cmp $0x80, %al
+	lodsb
+	cmpb $0x80, %al
 	jne virtual_at_current
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_address_value
-	xor %ch, %ch
-	or %bh, %bh
+	xorb %ch, %ch
+	orb %bh, %bh
 	jz set_virtual
-	mov $1, %ch
+	movb $1, %ch
 	jmp set_virtual
       virtual_at_current:
 	dec %esi
 	mov %edi, %eax
 	sub org_start, %eax
-	xor %bx, %bx
-	xor %cx, %cx
+	xorw %bx, %bx
+	xorw %cx, %cx
 	movb $0, value_type
 	cmpb $0, reloc_labels
 	je set_virtual
@@ -4444,16 +4445,16 @@ virtual_directive:
 	movb %ch, org_sib+2
 	movb %cl, org_sib+3
 	call allocate_structure_data
-	movw $virtual_directive-assembler, (%ebx)
+	.value 0x6690, 0x03c7, --virtual_directive___assembler  /* movw $--..., (%ebx) */
 	neg %eax
 	add %edi, %eax
 	xchgl %eax, org_start
 	mov %eax, 4(%ebx)
 	mov %edx, 8(%ebx)
-	mov virtual_data, %al
-	mov %al, 2(%ebx)
-	mov reloc_labels, %al
-	mov %al, 3(%ebx)
+	movb virtual_data, %al
+	movb %al, 2(%ebx)
+	movb reloc_labels, %al
+	movb %al, 3(%ebx)
 	mov %edi, 0xc(%ebx)
 	orb $-1, virtual_data
 	movb $0, reloc_labels
@@ -4475,21 +4476,21 @@ virtual_directive:
       scan_structures:
 	cmp additional_memory_end, %ebx
 	je no_such_structure
-	cmp (%ebx), %ax
+	cmpw (%ebx), %ax
 	jne next_structure
 	clc
 	ret
       next_structure:
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $repeat_directive-assembler, %ax
-	.word repeat_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $repeat_directive-assembler, %ax */
+	.value --repeat_directive___assembler
 	jne if_structure_ok
-	cmpw $if_directive-assembler, (%ebx)
+	.value 0x6690, 0x3b81, --if_directive___assembler  /* cmpw $--..., (%ebx) */
 	je no_such_structure
       if_structure_ok:
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	jne repeat_structure_ok
-	cmpw $repeat_directive-assembler, (%ebx)
+	.value 0x6690, 0x3b81, --repeat_directive___assembler  /* cmpw $--..., (%ebx) */
 	je no_such_structure
       repeat_structure_ok:
 	add $0x10, %ebx
@@ -4500,11 +4501,11 @@ virtual_directive:
       end_virtual:
 	call find_structure_data
 	jc unexpected_instruction
-	mov 2(%ebx), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, virtual_data
+	movb 2(%ebx), %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, virtual_data */
 	.long virtual_data
-	mov 3(%ebx), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, reloc_labels
+	movb 3(%ebx), %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, reloc_labels */
 	.long reloc_labels
 	mov 4(%ebx), %eax
 	movl %eax, org_start
@@ -4521,17 +4522,17 @@ virtual_directive:
 	movl %edi, structures_buffer
 	shr $2, %ecx
 	rep
-	movsl %ds:(%esi), %es:(%edi)
+	movsl
 	pop %edi
 	pop %esi
 	jmp instruction_assembled
 repeat_directive:
 	cmpb $0, times_working
 	jne unexpected_instruction
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -4539,7 +4540,7 @@ repeat_directive:
 	or %eax, %eax
 	jz zero_repeat
 	call allocate_structure_data
-	movw $repeat_directive-assembler, (%ebx)
+	.value 0x6690, 0x03c7, --repeat_directive___assembler  /* movw $--..., (%ebx) */
 	xchg counter_limit, %eax
 	mov %eax, 4(%ebx)
 	mov $1, %eax
@@ -4565,25 +4566,25 @@ repeat_directive:
 	mov 0xc(%ebx), %esi
 	jmp instruction_assembled
       zero_repeat:
-	mov (%esi), %al
-	or %al, %al
+	movb (%esi), %al
+	orb %al, %al
 	jz unexpected_end_of_file
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	jne extra_characters_on_line
 	call find_end_repeat
 	jmp instruction_assembled
       find_end_repeat:
 	call find_structure_end
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $repeat_directive-assembler, %ax
-	.word repeat_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $repeat_directive-assembler, %ax */
+	.value --repeat_directive___assembler
 	jne unexpected_instruction
 	ret
       find_structure_end:
 	call skip_line
-	lodsb %ds:(%esi), %al
-	cmp $0xf, %al
+	lodsb
+	cmpb $0xf, %al
 	jne unexpected_end_of_file
-	lodsl %ds:(%esi), %eax
+	lodsl
 	movl %eax, current_line
       skip_labels:
 	cmpb $2, (%esi)
@@ -4593,32 +4594,32 @@ repeat_directive:
       labels_ok:
 	cmpb $1, (%esi)
 	jne find_structure_end
-	mov 1(%esi), %ax
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $prefix_instruction-assembler, %ax
-	.word prefix_instruction-assembler
+	movw 1(%esi), %ax
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $prefix_instruction-assembler, %ax */
+	.value --prefix_instruction___assembler
 	je find_structure_end
 	add $4, %esi
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $repeat_directive-assembler, %ax
-	.word repeat_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $repeat_directive-assembler, %ax */
+	.value --repeat_directive___assembler
 	je skip_repeat
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	je skip_if
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $else_directive-assembler, %ax
-	.word else_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $else_directive-assembler, %ax */
+	.value --else_directive___assembler
 	je structure_end
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $end_directive-assembler, %ax
-	.word end_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $end_directive-assembler, %ax */
+	.value --end_directive___assembler
 	jne find_structure_end
 	cmpb $1, (%esi)
 	jne find_structure_end
-	mov 1(%esi), %ax
+	movw 1(%esi), %ax
 	add $4, %esi
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $repeat_directive-assembler, %ax
-	.word repeat_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $repeat_directive-assembler, %ax */
+	.value --repeat_directive___assembler
 	je structure_end
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	jne find_structure_end
       structure_end:
 	ret
@@ -4629,60 +4630,60 @@ if_directive:
 	cmpb $0, times_working
 	jne unexpected_instruction
 	call calculate_logical_expression
-	mov %al, %dl
-	mov (%esi), %al
-	or %al, %al
+	movb %al, %dl
+	movb (%esi), %al
+	orb %al, %al
 	jz unexpected_end_of_file
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	jne extra_characters_on_line
-	or %dl, %dl
+	orb %dl, %dl
 	jnz if_true
 	call find_else
 	jc instruction_assembled
-	mov (%esi), %al
-	cmp $1, %al
+	movb (%esi), %al
+	cmpb $1, %al
 	jne else_true
-	cmpw $if_directive-assembler, 1(%esi)
+	.value 0x8166, 0x017e, --if_directive___assembler  /* cmpw $--..., 1(%esi) */
 	jne else_true
 	add $4, %esi
 	jmp if_directive
       if_true:
 	call allocate_structure_data
-	movw $if_directive-assembler, (%ebx)
+	.value 0x6690, 0x03c7, --if_directive___assembler  /* movw $--..., (%ebx) */
 	movb $0, 2(%ebx)
 	jmp instruction_assembled
       else_true:
-	or %al, %al
+	orb %al, %al
 	jz unexpected_end_of_file
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	jne extra_characters_on_line
 	call allocate_structure_data
-	movw $if_directive-assembler, (%ebx)
+	.value 0x6690, 0x03c7, --if_directive___assembler  /* movw $--..., (%ebx) */
 	orb $-1, 2(%ebx)
 	jmp instruction_assembled
       else_directive:
 	cmpb $0, times_working
 	jne unexpected_instruction
-	.byte 0x66, 0xb8  #WORKAROUNDW mov $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0xb8  /*WORKAROUNDW mov $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	call find_structure_data
 	jc unexpected_instruction
 	cmpb $0, 2(%ebx)
 	jne unexpected_instruction
       found_else:
-	mov (%esi), %al
-	cmp $1, %al
+	movb (%esi), %al
+	cmpb $1, %al
 	jne skip_else
-	cmpw $if_directive-assembler, 1(%esi)
+	.value 0x8166, 0x017e, --if_directive___assembler  /* cmpw $--..., 1(%esi) */
 	jne skip_else
 	add $4, %esi
 	call find_else
 	jnc found_else
 	jmp remove_structure_data
       skip_else:
-	or %al, %al
+	orb %al, %al
 	jz unexpected_end_of_file
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	jne extra_characters_on_line
 	call find_end_if
 	jmp remove_structure_data
@@ -4697,7 +4698,7 @@ if_directive:
 	jc find_structure_end
 	cmpb $1, (%esi)
 	jne skip_after_else
-	cmpw $if_directive-assembler, 1(%esi)
+	.value 0x8166, 0x017e, --if_directive___assembler  /* cmpw $--..., 1(%esi) */
 	jne skip_after_else
 	add $4, %esi
 	jmp skip_if
@@ -4706,11 +4707,11 @@ if_directive:
 	jmp find_structure_end
       find_else:
 	call find_structure_end
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $else_directive-assembler, %ax
-	.word else_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $else_directive-assembler, %ax */
+	.value --else_directive___assembler
 	je else_found
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	jne unexpected_instruction
 	stc
 	ret
@@ -4719,32 +4720,32 @@ if_directive:
 	ret
       find_end_if:
 	call find_structure_end
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	jne unexpected_instruction
 	ret
 end_directive:
-	lodsb %ds:(%esi), %al
-	cmp $1, %al
+	lodsb
+	cmpb $1, %al
 	jne invalid_argument
-	lodsw %ds:(%esi), %ax
+	lodsw
 	inc %esi
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $virtual_directive-assembler, %ax
-	.word virtual_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $virtual_directive-assembler, %ax */
+	.value --virtual_directive___assembler
 	je end_virtual
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $repeat_directive-assembler, %ax
-	.word repeat_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $repeat_directive-assembler, %ax */
+	.value --repeat_directive___assembler
 	je end_repeat
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $if_directive-assembler, %ax
-	.word if_directive-assembler
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $if_directive-assembler, %ax */
+	.value --if_directive___assembler
 	je end_if
 	jmp invalid_argument
 
 data_bytes:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	je get_byte
-	cmp $'?, %al
+	cmpb $0x3f, %al
 	jne invalid_argument
 	mov %edi, %eax
 	movb $0, (%edi)
@@ -4755,16 +4756,16 @@ data_bytes:
 	cmpb $0, (%esi)
 	je get_string
 	call get_byte_value
-	stosb %al, %es:(%edi)
+	stosb
       byte_ok:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz data_end
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je data_end
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp data_bytes
       data_end:
@@ -4772,10 +4773,10 @@ data_bytes:
 	jmp instruction_assembled
       get_string:
 	inc %esi
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %eax, %ecx
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	inc %esi
 	jmp byte_ok
       undefined_data:
@@ -4795,14 +4796,14 @@ data_unicode:
 data_words:
 	movb $0, base_code
       get_words_data:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	je get_word
-	cmp $'?, %al
+	cmpb $0x3f, %al
 	jne invalid_argument
 	mov %edi, %eax
 	movw $0, (%edi)
-	scasw %es:(%edi), %ax
+	scasw
 	call undefined_data
 	jmp word_ok
       get_word:
@@ -4813,248 +4814,248 @@ data_words:
       word_data_value:
 	call get_word_value
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
       word_ok:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz data_end
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je data_end
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp get_words_data
       word_string:
 	inc %esi
-	lodsl %ds:(%esi), %eax
+	lodsl
 	mov %eax, %ecx
-	jecxz word_string_ok
-	xor %ah, %ah
+	jcxz word_string_ok
+	xorb %ah, %ah
       copy_word_string:
-	lodsb %ds:(%esi), %al
-	stosw %ax, %es:(%edi)
+	lodsb
+	stosw
 	loop copy_word_string
       word_string_ok:
 	inc %esi
 	jmp word_ok
 data_dwords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	je get_dword
-	cmp $'?, %al
+	cmpb $0x3f, %al
 	jne invalid_argument
 	mov %edi, %eax
 	movl $0, (%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	call undefined_data
 	jmp dword_ok
       get_dword:
 	push %esi
 	call get_dword_value
 	pop %ebx
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	je complex_dword
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp dword_ok
       complex_dword:
 	mov %ebx, %esi
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	inc %esi
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov value_type, %al
-	push %ax
-	cmpb $'., (%esi)
+	movb value_type, %al
+	pushw %ax
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_word_value
 	call mark_relocation
-	stosw %ax, %es:(%edi)
-	pop %ax
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	stosw
+	popw %ax
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
-	mov %dx, %ax
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
       dword_ok:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz data_end
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je data_end
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp data_dwords
 data_pwords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	je get_pword
-	cmp $'?, %al
+	cmpb $0x3f, %al
 	jne invalid_argument
 	mov %edi, %eax
 	movl $0, (%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	movw $0, (%edi)
-	scasw %es:(%edi), %ax
+	scasw
 	call undefined_data
 	jmp pword_ok
       get_pword:
 	push %esi
 	call get_pword_value
 	pop %ebx
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	je complex_pword
 	call mark_relocation
-	stosl %eax, %es:(%edi)
-	mov %dx, %ax
-	stosw %ax, %es:(%edi)
+	stosl
+	movw %dx, %ax
+	stosw
 	jmp pword_ok
       complex_pword:
 	mov %ebx, %esi
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	inc %esi
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov value_type, %al
-	push %ax
-	cmpb $'., (%esi)
+	movb value_type, %al
+	pushw %ax
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	call mark_relocation
-	stosl %eax, %es:(%edi)
-	pop %ax
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	stosl
+	popw %ax
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
-	mov %dx, %ax
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
       pword_ok:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz data_end
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je data_end
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp data_pwords
 data_qwords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	je get_qword
-	cmp $'?, %al
+	cmpb $0x3f, %al
 	jne invalid_argument
 	mov %edi, %eax
 	movl $0, (%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	movl $0, (%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	call undefined_data
 	jmp qword_ok
       get_qword:
 	call get_qword_value
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
       qword_ok:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz data_end
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je data_end
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp data_qwords
 data_twords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	je get_tbyte
-	cmp $'?, %al
+	cmpb $0x3f, %al
 	jne invalid_argument
 	mov %edi, %eax
 	movl $0, (%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	movl $0, (%edi)
-	scasl %es:(%edi), %eax
+	scasl
 	movw $0, (%edi)
-	scasw %es:(%edi), %ax
+	scasw
 	call undefined_data
 	jmp tbyte_ok
       get_tbyte:
-	lodsb %ds:(%esi), %al
-	cmp $'., %al
+	lodsb
+	cmpb $0x2e, %al
 	jne invalid_value
 	cmpw $0x8000, 8(%esi)
 	je fp_zero_tbyte
 	mov (%esi), %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	mov 4(%esi), %eax
-	stosl %eax, %es:(%edi)
-	mov 8(%esi), %ax
-	add $0x3fff, %ax
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $0x8000, %ax
-	.word 0x8000
+	stosl
+	movw 8(%esi), %ax
+	addw $0x3fff, %ax
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $0x8000, %ax */
+	.value 0x8000
 	jae value_out_of_range
-	mov 11(%esi), %bl
-	shl $15, %bx
-	or %bx, %ax
-	stosw %ax, %es:(%edi)
+	movb 11(%esi), %bl
+	shlw $15, %bx
+	orw %bx, %ax
+	stosw
 	add $12, %esi
 	jmp tbyte_ok
       fp_zero_tbyte:
 	xor %eax, %eax
-	stosl %eax, %es:(%edi)
-	stosl %eax, %es:(%edi)
-	stosw %ax, %es:(%edi)
+	stosl
+	stosl
+	stosw
 	add $12, %esi
       tbyte_ok:
 	cmp display_buffer, %edi
 	jae out_of_memory
-	lodsb %ds:(%esi), %al
-	or %al, %al
+	lodsb
+	orb %al, %al
 	jz data_end
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je data_end
-	cmp $44, %al
+	cmpb $44, %al
 	jne extra_characters_on_line
 	jmp data_twords
 data_file:
-	lodsw %ds:(%esi), %ax
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $'(, %ax
-	.word '(
+	lodsw
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $'(, %ax */
+	.value 0x28
 	jne invalid_argument
 	lea 4(%esi), %edx
 	mov (%esi), %eax
-	lea (4)+(1)(%esi,%eax,1), %esi
+	lea 4+1(%esi,%eax,1), %esi
 	call open
 	jc file_not_found
-	mov $2, %al
+	movb $2, %al
 	xor %edx, %edx
 	call lseek
 	push %eax
 	xor %edx, %edx
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	jne position_ok
 	inc %esi
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	jne invalid_argument
 	inc %esi
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	push %ebx
 	call get_dword_value
@@ -5065,10 +5066,10 @@ data_file:
 	cmpb $44, (%esi)
 	jne size_ok
 	inc %esi
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	jne invalid_argument
 	inc %esi
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	push %ebx
 	push %edx
@@ -5079,7 +5080,7 @@ data_file:
       size_ok:
 	cmpb $0, next_pass_needed
 	jne file_reserve
-	xor %al, %al
+	xorb %al, %al
 	call lseek
 	pop %ecx
 	mov %edi, %edx
@@ -5091,8 +5092,8 @@ data_file:
 	jc error_reading_file
 	call close
       check_for_next_name:
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	je data_file
 	dec %esi
 	jmp instruction_assembled
@@ -5105,10 +5106,10 @@ data_file:
 	jae out_of_memory
 	jmp check_for_next_name
 reserve_bytes:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -5130,14 +5131,14 @@ reserve_bytes:
 	xor %eax, %eax
 	shr %ecx
 	jnc bytes_stosb_ok
-	stosb %al, %es:(%edi)
+	stosb
       bytes_stosb_ok:
 	shr %ecx
 	jnc bytes_stosw_ok
-	stosw %ax, %es:(%edi)
+	stosw
       bytes_stosw_ok:
 	rep
-	stosl %eax, %es:(%edi)
+	stosl
       reserved_data:
 	pop %eax
 	call undefined_data
@@ -5150,10 +5151,10 @@ reserve_bytes:
 	movl $invalid_value, error
 	jmp instruction_assembled
 reserve_words:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -5177,16 +5178,16 @@ reserve_words:
 	xor %eax, %eax
 	shr %ecx
 	jnc words_stosw_ok
-	stosw %ax, %es:(%edi)
+	stosw
       words_stosw_ok:
 	rep
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp reserved_data
 reserve_dwords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -5211,13 +5212,13 @@ reserve_dwords:
       zero_dwords:
 	xor %eax, %eax
 	rep
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp reserved_data
 reserve_pwords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -5241,10 +5242,10 @@ reserve_pwords:
 	lea (%edi,%ecx,2), %edi
 	jmp reserved_data
 reserve_qwords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -5269,10 +5270,10 @@ reserve_qwords:
 	lea (%edi,%ecx,4), %edi
 	jmp reserved_data
 reserve_twords:
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_argument
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $0, value_type
@@ -5297,104 +5298,104 @@ reserve_twords:
 	jmp reserved_data
 
 simple_instruction:
-	stosb %al, %es:(%edi)
+	stosb
 	jmp instruction_assembled
 simple_instruction_16bit:
 	cmpb $32, code_type
 	je size_prefix
-	stosb %al, %es:(%edi)
+	stosb
 	jmp instruction_assembled
       size_prefix:
-	mov %al, %ah
-	mov $0x66, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb $0x66, %al
+	stosw
 	jmp instruction_assembled
 simple_instruction_32bit:
 	cmpb $16, code_type
 	je size_prefix
-	stosb %al, %es:(%edi)
+	stosb
 	jmp instruction_assembled
 simple_extended_instruction:
-	mov %al, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb $0xf, %al
+	stosw
 	jmp instruction_assembled
 prefix_instruction:
-	stosb %al, %es:(%edi)
+	stosb
 	jmp assemble_line
 int_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $1, %ah
+	cmpb $1, %ah
 	ja invalid_operand_size
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
 	call get_byte_value
-	mov %al, %ah
-	mov $0xcd, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb $0xcd, %al
+	stosw
 	jmp instruction_assembled
 aa_instruction:
-	push %ax
-	mov $10, %bl
-	cmpb $'(, (%esi)
+	pushw %ax
+	movb $10, %bl
+	cmpb $0x28, (%esi)
 	jne aa_instruction.store
 	inc %esi
-	xor %al, %al
-	xchg operand_size, %al
-	cmp $1, %al
+	xorb %al, %al
+	xchgb operand_size, %al
+	cmpb $1, %al
 	ja invalid_operand_size
 	call get_byte_value
-	mov %al, %bl
+	movb %al, %bl
       aa_instruction.store:
 	cmpb $0, operand_size
 	jne invalid_operand
-	pop %ax
-	mov %bl, %ah
-	stosw %ax, %es:(%edi)
+	popw %ax
+	movb %bl, %ah
+	stosw
 	jmp instruction_assembled
 
 basic_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je basic_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       basic_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	cmpb $0x11, (%esi)
 	sete %al
-	.byte 0xa2  #WORKAROUNDL movb %al, imm_sized
+	.byte 0xa2  /*WORKAROUNDL movb %al, imm_sized */
 	.long imm_sized
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je basic_mem_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       basic_mem_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je basic_mem_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_mem_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_mem_reg_32bit
 	jmp invalid_operand_size
       basic_mem_reg_8bit:
@@ -5411,14 +5412,14 @@ basic_instruction:
 	call store_instruction
 	jmp instruction_assembled
       basic_mem_imm:
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je basic_mem_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_mem_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_mem_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -5427,30 +5428,30 @@ basic_instruction:
 	jmp basic_mem_imm_32bit
       basic_mem_imm_8bit:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	mov base_code, %al
-	shr $3, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	movb base_code, %al
+	shrb $3, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	movb $0x80, base_code
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       basic_mem_imm_16bit:
 	call get_word_value
 	movw %ax, value
-	mov base_code, %al
-	shr $3, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	movb base_code, %al
+	shrb $3, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
 	call operand_16bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	cmpb $0, value_type
 	jne basic_mem_imm_16bit.store
@@ -5463,26 +5464,26 @@ basic_instruction:
       basic_mem_imm_16bit.store:
 	movb $0x81, base_code
 	call store_instruction
-	mov value, %ax
+	movw value, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       basic_mem_simm_8bit:
 	movb $0x83, base_code
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       basic_mem_imm_32bit:
 	call get_dword_value
 	movl %eax, value
-	mov base_code, %al
-	shr $3, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	movb base_code, %al
+	shrb $3, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
 	call operand_32bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	cmpb $0, value_type
 	jne basic_mem_imm_32bit.store
@@ -5497,36 +5498,36 @@ basic_instruction:
 	call store_instruction
 	mov value, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       basic_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	cmpb $0x11, (%esi)
 	sete %al
-	.byte 0xa2  #WORKAROUNDL movb %al, imm_sized
+	.byte 0xa2  /*WORKAROUNDL movb %al, imm_sized */
 	.long imm_sized
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je basic_reg_reg
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je basic_reg_imm
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       basic_reg_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je basic_reg_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_reg_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_reg_mem_32bit
 	jmp invalid_operand_size
       basic_reg_mem_8bit:
@@ -5544,18 +5545,18 @@ basic_instruction:
 	call store_instruction
 	jmp instruction_assembled
       basic_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	shl $3, %al
-	mov postbyte_register, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $1, %al
+	shlb $3, %al
+	movb postbyte_register, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $1, %al
 	je basic_reg_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_reg_reg_32bit
 	jmp invalid_operand_size
       basic_reg_reg_32bit:
@@ -5566,20 +5567,20 @@ basic_instruction:
 	call operand_16bit_prefix
 	incb base_code
       basic_reg_reg_8bit:
-	mov base_code, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       basic_reg_imm:
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je basic_reg_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_reg_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -5588,75 +5589,75 @@ basic_instruction:
 	jmp basic_reg_imm_32bit
       basic_reg_imm_8bit:
 	call get_byte_value
-	mov %al, %dl
-	mov base_code, %ah
-	or $192, %ah
-	mov postbyte_register, %bl
-	and $7, %bl
-	or %bl, %bl
+	movb %al, %dl
+	movb base_code, %ah
+	orb $192, %ah
+	movb postbyte_register, %bl
+	andb $7, %bl
+	orb %bl, %bl
 	jz basic_al_imm
-	or %bl, %ah
-	mov $0x80, %al
-	stosw %ax, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	orb %bl, %ah
+	movb $0x80, %al
+	stosw
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       basic_al_imm:
-	mov base_code, %al
-	add $4, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	addb $4, %al
+	stosb
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       basic_reg_imm_16bit:
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	call operand_16bit_prefix
-	mov base_code, %ah
-	or $192, %ah
-	mov postbyte_register, %bl
-	and $7, %bl
-	or %bl, %ah
+	movb base_code, %ah
+	orb $192, %ah
+	movb postbyte_register, %bl
+	andb $7, %bl
+	orb %bl, %ah
 	cmpb $0, value_type
 	jne basic_reg_imm_16bit.store
 	cmpb $0, imm_sized
 	jne basic_reg_imm_16bit.store
-	cmp $0x80, %dx
+	cmpw $0x80, %dx
 	jb basic_reg_simm_8bit
-	cmp $-0x80, %dx
+	cmpw $-0x80, %dx
 	jae basic_reg_simm_8bit
       basic_reg_imm_16bit.store:
-	or %bl, %bl
+	orb %bl, %bl
 	jz basic_ax_imm
-	mov $0x81, %al
-	stosw %ax, %es:(%edi)
-	mov %dx, %ax
+	movb $0x81, %al
+	stosw
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       basic_reg_simm_8bit:
-	mov $0x83, %al
-	stosw %ax, %es:(%edi)
-	mov %dx, %ax
-	stosb %al, %es:(%edi)
+	movb $0x83, %al
+	stosw
+	movw %dx, %ax
+	stosb
 	jmp instruction_assembled
       basic_ax_imm:
-	mov base_code, %al
-	add $5, %al
-	stosb %al, %es:(%edi)
-	mov %dx, %ax
+	movb base_code, %al
+	addb $5, %al
+	stosb
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       basic_reg_imm_32bit:
 	call get_dword_value
 	mov %eax, %edx
 	call operand_32bit_prefix
-	mov base_code, %ah
-	or $192, %ah
-	mov postbyte_register, %bl
-	and $7, %bl
-	or %bl, %ah
+	movb base_code, %ah
+	orb $192, %ah
+	movb postbyte_register, %bl
+	andb $7, %bl
+	orb %bl, %ah
 	cmpb $0, value_type
 	jne basic_reg_imm_32bit.store
 	cmpb $0, imm_sized
@@ -5666,42 +5667,42 @@ basic_instruction:
 	cmp $-0x80, %edx
 	jae basic_reg_simm_8bit
       basic_reg_imm_32bit.store:
-	or %bl, %bl
+	orb %bl, %bl
 	jz basic_eax_imm
-	mov $0x81, %al
-	stosw %ax, %es:(%edi)
+	movb $0x81, %al
+	stosw
 	mov %edx, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       basic_eax_imm:
-	mov base_code, %al
-	add $5, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	addb $5, %al
+	stosb
 	mov %edx, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
 single_operand_instruction:
 	movb $0xf6, base_code
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je single_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       single_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je single_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je single_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je single_mem_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -5721,88 +5722,88 @@ single_operand_instruction:
 	call store_instruction
 	jmp instruction_assembled
       single_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $1, %al
+	movb postbyte_register, %bl
+	shlb $3, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $1, %al
 	je single_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je single_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je single_reg_32bit
 	jmp invalid_operand_size
       single_reg_8bit:
-	mov %bl, %ah
-	mov $0xf6, %al
-	stosw %ax, %es:(%edi)
+	movb %bl, %ah
+	movb $0xf6, %al
+	stosw
 	jmp instruction_assembled
       single_reg_16bit:
 	call operand_16bit_prefix
-	mov %bl, %ah
-	mov $0xf7, %al
-	stosw %ax, %es:(%edi)
+	movb %bl, %ah
+	movb $0xf7, %al
+	stosw
 	jmp instruction_assembled
       single_reg_32bit:
 	call operand_32bit_prefix
-	mov %bl, %ah
-	mov $0xf7, %al
-	stosw %ax, %es:(%edi)
+	movb %bl, %ah
+	movb $0xf7, %al
+	stosw
 	jmp instruction_assembled
 mov_instruction:
 	movb $0x88, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je mov_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       mov_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je mov_mem_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       mov_mem_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x60, %al
+	lodsb
+	cmpb $0x60, %al
 	jae mov_mem_sreg
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	cmp $1, %ah
+	cmpb $1, %ah
 	je mov_mem_reg_8bit
-	cmp $2, %ah
+	cmpb $2, %ah
 	je mov_mem_reg_16bit
-	cmp $4, %ah
+	cmpb $4, %ah
 	je mov_mem_reg_32bit
 	jmp invalid_operand_size
       mov_mem_reg_8bit:
-	or %bl, %al
-	or %bh, %al
+	orb %bl, %al
+	orb %bh, %al
 	jz mov_mem_al
 	call store_instruction
 	jmp instruction_assembled
       mov_mem_al:
-	cmp $2, %ch
+	cmpb $2, %ch
 	je mov_mem_address16_al
-	test $4, %ch
+	testb $4, %ch
 	jnz mov_mem_address32_al
-	or %ch, %ch
+	orb %ch, %ch
 	jnz invalid_address_size
 	cmpb $32, code_type
 	je mov_mem_address32_al
@@ -5811,37 +5812,37 @@ mov_instruction:
       mov_mem_address32_al:
 	call address_32bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa2, %al
+	movb $0xa2, %al
       store_mov_address32:
-	stosb %al, %es:(%edi)
+	stosb
 	pushl $instruction_assembled
 	jmp store_address_32bit_value
       mov_mem_address16_al:
 	call address_16bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa2, %al
+	movb $0xa2, %al
       store_mov_address16:
-	stosb %al, %es:(%edi)
+	stosb
 	mov %edx, %eax
-	stosw %ax, %es:(%edi)
+	stosw
 	cmp $0x10000, %edx
 	jge value_out_of_range
 	jmp instruction_assembled
       mov_mem_reg_16bit:
 	call operand_16bit_prefix
-	mov postbyte_register, %al
-	or %bl, %al
-	or %bh, %al
+	movb postbyte_register, %al
+	orb %bl, %al
+	orb %bh, %al
 	jz mov_mem_ax
 	incb base_code
 	call store_instruction
 	jmp instruction_assembled
       mov_mem_ax:
-	cmp $2, %ch
+	cmpb $2, %ch
 	je mov_mem_address16_ax
-	test $4, %ch
+	testb $4, %ch
 	jnz mov_mem_address32_ax
-	or %ch, %ch
+	orb %ch, %ch
 	jnz invalid_address_size
 	cmpb $32, code_type
 	je mov_mem_address32_ax
@@ -5850,37 +5851,37 @@ mov_instruction:
       mov_mem_address32_ax:
 	call address_32bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa3, %al
+	movb $0xa3, %al
 	jmp store_mov_address32
       mov_mem_address16_ax:
 	call address_16bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa3, %al
+	movb $0xa3, %al
 	jmp store_mov_address16
       mov_mem_reg_32bit:
 	call operand_32bit_prefix
-	mov postbyte_register, %al
-	or %bl, %al
-	or %bh, %al
+	movb postbyte_register, %al
+	orb %bl, %al
+	orb %bh, %al
 	jz mov_mem_ax
 	incb base_code
 	call store_instruction
 	jmp instruction_assembled
       mov_mem_sreg:
-	cmp $0x70, %al
+	cmpb $0x70, %al
 	jae invalid_operand
-	sub $0x61, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	subb $0x61, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	mov operand_size, %ah
-	or %ah, %ah
+	movb operand_size, %ah
+	orb %ah, %ah
 	jz mov_mem_sreg_size_ok
-	cmp $2, %ah
+	cmpb $2, %ah
 	je mov_mem16_sreg
-	cmp $4, %ah
+	cmpb $4, %ah
 	je mov_mem32_sreg
 	jmp invalid_operand_size
       mov_mem32_sreg:
@@ -5893,14 +5894,14 @@ mov_instruction:
 	call store_instruction
 	jmp instruction_assembled
       mov_mem_imm:
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je mov_mem_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je mov_mem_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je mov_mem_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -5909,16 +5910,16 @@ mov_instruction:
 	jmp mov_mem_imm_32bit
       mov_mem_imm_8bit:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
 	movb $0, postbyte_register
 	movb $0xc6, base_code
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       mov_mem_imm_16bit:
 	call get_word_value
@@ -5926,13 +5927,13 @@ mov_instruction:
 	movb $0, postbyte_register
 	movb $0xc7, base_code
 	call operand_16bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
-	mov value, %ax
+	movw value, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       mov_mem_imm_32bit:
 	call get_dword_value
@@ -5940,47 +5941,47 @@ mov_instruction:
 	movb $0, postbyte_register
 	movb $0xc7, base_code
 	call operand_32bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
 	mov value, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       mov_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x50, %al
+	lodsb
+	cmpb $0x50, %al
 	jae mov_sreg
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je mov_reg_mem
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je mov_reg_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       mov_reg_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x50, %al
+	lodsb
+	cmpb $0x50, %al
 	jae mov_reg_sreg
 	call convert_register
-	shl $3, %al
-	mov postbyte_register, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $1, %al
+	shlb $3, %al
+	movb postbyte_register, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $1, %al
 	je mov_reg_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je mov_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je mov_reg_reg_32bit
 	jmp invalid_operand_size
       mov_reg_reg_32bit:
@@ -5991,24 +5992,24 @@ mov_instruction:
 	call operand_16bit_prefix
 	incb base_code
       mov_reg_reg_8bit:
-	mov base_code, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       mov_reg_sreg:
-	mov %al, %ah
-	shr $4, %ah
-	cmp $5, %ah
+	movb %al, %ah
+	shrb $4, %ah
+	cmpb $5, %ah
 	je mov_reg_creg
-	cmp $7, %ah
+	cmpb $7, %ah
 	je mov_reg_dreg
 	ja invalid_operand
-	sub $0x61, %al
-	mov postbyte_register, %bl
-	shl $3, %al
-	or %al, %bl
-	or $192, %bl
+	subb $0x61, %al
+	movb postbyte_register, %bl
+	shlb $3, %al
+	orb %al, %bl
+	orb $192, %bl
 	cmpb $4, operand_size
 	je mov_reg_sreg32
 	cmpb $2, operand_size
@@ -6018,54 +6019,54 @@ mov_instruction:
      mov_reg_sreg32:
 	call operand_32bit_prefix
      mov_reg_sreg_store:
-	mov $0x8c, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0x8c, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       mov_reg_creg:
-	mov $0x20, %bh
+	movb $0x20, %bh
 	jmp mov_reg_xrx
       mov_reg_dreg:
-	mov $0x21, %bh
+	movb $0x21, %bh
       mov_reg_xrx:
-	and $7, %al
-	mov postbyte_register, %bl
-	shl $3, %al
-	or %al, %bl
-	or $192, %bl
+	andb $7, %al
+	movb postbyte_register, %bl
+	shlb $3, %al
+	orb %al, %bl
+	orb $192, %bl
 	cmpb $4, operand_size
 	jne invalid_operand_size
-	mov %bh, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb %bh, %ah
+	movb $0xf, %al
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       mov_reg_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je mov_reg_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je mov_reg_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je mov_reg_mem_32bit
 	jmp invalid_operand_size
       mov_reg_mem_8bit:
-	mov postbyte_register, %al
-	or %bl, %al
-	or %bh, %al
+	movb postbyte_register, %al
+	orb %bl, %al
+	orb %bh, %al
 	jz mov_al_mem
 	addb $2, base_code
 	call store_instruction
 	jmp instruction_assembled
       mov_al_mem:
-	cmp $2, %ch
+	cmpb $2, %ch
 	je mov_al_mem_address16
-	test $4, %ch
+	testb $4, %ch
 	jnz mov_al_mem_address32
-	or %ch, %ch
+	orb %ch, %ch
 	jnz invalid_address_size
 	cmpb $32, code_type
 	je mov_al_mem_address32
@@ -6074,28 +6075,28 @@ mov_instruction:
       mov_al_mem_address32:
 	call address_32bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa0, %al
+	movb $0xa0, %al
 	jmp store_mov_address32
       mov_al_mem_address16:
 	call address_16bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa0, %al
+	movb $0xa0, %al
 	jmp store_mov_address16
       mov_reg_mem_16bit:
 	call operand_16bit_prefix
-	mov postbyte_register, %al
-	or %bl, %al
-	or %bh, %al
+	movb postbyte_register, %al
+	orb %bl, %al
+	orb %bh, %al
 	jz mov_ax_mem
 	addb $3, base_code
 	call store_instruction
 	jmp instruction_assembled
       mov_ax_mem:
-	cmp $2, %ch
+	cmpb $2, %ch
 	je mov_ax_mem_address16
-	test $4, %ch
+	testb $4, %ch
 	jnz mov_ax_mem_address32
-	or %ch, %ch
+	orb %ch, %ch
 	jnz invalid_address_size
 	cmpb $32, code_type
 	je mov_ax_mem_address32
@@ -6104,31 +6105,31 @@ mov_instruction:
       mov_ax_mem_address32:
 	call address_32bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa1, %al
+	movb $0xa1, %al
 	jmp store_mov_address32
       mov_ax_mem_address16:
 	call address_16bit_prefix
 	call store_segment_prefix_if_necessary
-	mov $0xa1, %al
+	movb $0xa1, %al
 	jmp store_mov_address16
       mov_reg_mem_32bit:
 	call operand_32bit_prefix
-	mov postbyte_register, %al
-	or %bl, %al
-	or %bh, %al
+	movb postbyte_register, %al
+	orb %bl, %al
+	orb %bh, %al
 	jz mov_ax_mem
 	addb $3, base_code
 	call store_instruction
 	jmp instruction_assembled
       mov_reg_imm:
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je mov_reg_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je mov_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je mov_reg_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -6137,94 +6138,94 @@ mov_instruction:
 	jmp mov_reg_imm_32bit
       mov_reg_imm_8bit:
 	call get_byte_value
-	mov %al, %ah
-	mov postbyte_register, %al
-	and $7, %al
-	add $0xb0, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb postbyte_register, %al
+	andb $7, %al
+	addb $0xb0, %al
+	stosw
 	jmp instruction_assembled
       mov_reg_imm_16bit:
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	call operand_16bit_prefix
-	mov postbyte_register, %al
-	and $7, %al
-	add $0xb8, %al
-	stosb %al, %es:(%edi)
-	mov %dx, %ax
+	movb postbyte_register, %al
+	andb $7, %al
+	addb $0xb8, %al
+	stosb
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       mov_reg_imm_32bit:
 	call get_dword_value
 	mov %eax, %edx
 	call operand_32bit_prefix
-	mov postbyte_register, %al
-	and $7, %al
-	add $0xb8, %al
-	stosb %al, %es:(%edi)
+	movb postbyte_register, %al
+	andb $7, %al
+	addb $0xb8, %al
+	stosb
 	mov %edx, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       mov_sreg:
-	mov %al, %ah
-	shr $4, %ah
-	cmp $5, %ah
+	movb %al, %ah
+	shrb $4, %ah
+	cmpb $5, %ah
 	je mov_creg
-	cmp $7, %ah
+	cmpb $7, %ah
 	je mov_dreg
 	ja invalid_operand
-	sub $0x61, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	subb $0x61, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je mov_sreg_mem
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       mov_sreg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	or %ah, %ah
+	orb %ah, %ah
 	jz mov_sreg_reg_size_ok
-	cmp $4, %ah
+	cmpb $4, %ah
 	je mov_sreg_reg32
-	cmp $2, %ah
+	cmpb $2, %ah
 	je mov_sreg_reg16
 	jmp invalid_operand_size
       mov_sreg_reg32:
-	mov %al, %ah
+	movb %al, %ah
 	call operand_32bit_prefix
-	mov %ah, %al
+	movb %ah, %al
 	jmp mov_sreg_reg_size_ok
       mov_sreg_reg16:
-	mov %al, %ah
+	movb %al, %ah
 	call operand_16bit_prefix
-	mov %ah, %al
+	movb %ah, %al
       mov_sreg_reg_size_ok:
-	mov $192, %bl
-	or %al, %bl
-	mov postbyte_register, %al
-	shl $3, %al
-	or %al, %bl
-	mov $0x8e, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $192, %bl
+	orb %al, %bl
+	movb postbyte_register, %al
+	shlb $3, %al
+	orb %al, %bl
+	movb $0x8e, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       mov_sreg_mem:
 	call get_address
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz mov_sreg_mem_size_ok
-	cmp $2, %al
+	cmpb $2, %al
 	je mov_sreg_mem16
-	cmp $4, %al
+	cmpb $4, %al
 	je mov_sreg_mem32
 	jmp invalid_operand_size
       mov_sreg_mem32:
@@ -6237,70 +6238,70 @@ mov_instruction:
 	call store_instruction
 	jmp instruction_assembled
       mov_creg:
-	mov $0x22, %dl
+	movb $0x22, %dl
 	jmp mov_xrx
       mov_dreg:
-	mov $0x23, %dl
+	movb $0x23, %dl
       mov_xrx:
-	and $7, %al
-	mov %al, %bh
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	andb $7, %al
+	movb %al, %bh
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x10, %al
+	lodsb
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	cmp $4, %ah
+	cmpb $4, %ah
 	jne invalid_operand_size
-	mov $192, %bl
-	or %al, %bl
-	mov %bh, %al
-	shl $3, %al
-	or %al, %bl
-	mov $0xf, %al
-	mov %dl, %ah
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $192, %bl
+	orb %al, %bl
+	movb %bh, %al
+	shlb $3, %al
+	orb %al, %bl
+	movb $0xf, %al
+	movb %dl, %ah
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
 test_instruction:
 	movb $0x84, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je test_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       test_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je test_mem_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       test_mem_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je test_mem_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je test_mem_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je test_mem_reg_32bit
 	jmp invalid_operand_size
       test_mem_reg_8bit:
@@ -6317,14 +6318,14 @@ test_instruction:
 	call store_instruction
 	jmp instruction_assembled
       test_mem_imm:
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je test_mem_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je test_mem_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je test_mem_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -6333,16 +6334,16 @@ test_instruction:
 	jmp test_mem_imm_32bit
       test_mem_imm_8bit:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
 	movb $0, postbyte_register
 	movb $0xf6, base_code
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       test_mem_imm_16bit:
 	call get_word_value
@@ -6350,13 +6351,13 @@ test_instruction:
 	movb $0, postbyte_register
 	movb $0xf7, base_code
 	call operand_16bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
-	mov value, %ax
+	movw value, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       test_mem_imm_32bit:
 	call get_dword_value
@@ -6364,41 +6365,41 @@ test_instruction:
 	movb $0, postbyte_register
 	movb $0xf7, base_code
 	call operand_32bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
 	mov value, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       test_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je test_reg_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       test_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	shl $3, %al
-	mov postbyte_register, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $1, %al
+	shlb $3, %al
+	movb postbyte_register, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $1, %al
 	je test_reg_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je test_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je test_reg_reg_32bit
 	jmp invalid_operand_size
       test_reg_reg_32bit:
@@ -6409,20 +6410,20 @@ test_instruction:
 	call operand_16bit_prefix
 	incb base_code
       test_reg_reg_8bit:
-	mov base_code, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       test_reg_imm:
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je test_reg_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je test_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je test_reg_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -6431,102 +6432,102 @@ test_instruction:
 	jmp test_reg_imm_32bit
       test_reg_imm_8bit:
 	call get_byte_value
-	mov %al, %dl
-	mov $192, %ah
-	mov postbyte_register, %bl
-	and $7, %bl
-	or %bl, %bl
+	movb %al, %dl
+	movb $192, %ah
+	movb postbyte_register, %bl
+	andb $7, %bl
+	orb %bl, %bl
 	jz test_al_imm
-	or %bl, %ah
-	mov $0xf6, %al
-	stosw %ax, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	orb %bl, %ah
+	movb $0xf6, %al
+	stosw
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       test_al_imm:
-	mov $0xa8, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb $0xa8, %al
+	stosb
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       test_reg_imm_16bit:
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	call operand_16bit_prefix
-	mov $192, %ah
-	mov postbyte_register, %bl
-	and $7, %bl
-	or %bl, %bl
+	movb $192, %ah
+	movb postbyte_register, %bl
+	andb $7, %bl
+	orb %bl, %bl
 	jz test_ax_imm
-	or %bl, %ah
-	mov $0xf7, %al
-	stosw %ax, %es:(%edi)
-	mov %dx, %ax
+	orb %bl, %ah
+	movb $0xf7, %al
+	stosw
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       test_ax_imm:
-	mov $0xa9, %al
-	stosb %al, %es:(%edi)
-	mov %dx, %ax
-	stosw %ax, %es:(%edi)
+	movb $0xa9, %al
+	stosb
+	movw %dx, %ax
+	stosw
 	jmp instruction_assembled
       test_reg_imm_32bit:
 	call get_dword_value
 	mov %eax, %edx
 	call operand_32bit_prefix
-	mov $192, %ah
-	mov postbyte_register, %bl
-	and $7, %bl
-	or %bl, %bl
+	movb $192, %ah
+	movb postbyte_register, %bl
+	andb $7, %bl
+	orb %bl, %bl
 	jz test_eax_imm
-	or %bl, %ah
-	mov $0xf7, %al
-	stosw %ax, %es:(%edi)
+	orb %bl, %ah
+	movb $0xf7, %al
+	stosw
 	mov %edx, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       test_eax_imm:
-	mov $0xa9, %al
-	stosb %al, %es:(%edi)
+	movb $0xa9, %al
+	stosb
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
 xchg_instruction:
 	movb $0x86, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je xchg_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       xchg_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       xchg_mem_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je xchg_mem_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je xchg_mem_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je xchg_mem_reg_32bit
 	jmp invalid_operand_size
       xchg_mem_reg_8bit:
@@ -6543,70 +6544,70 @@ xchg_instruction:
 	call store_instruction
 	jmp instruction_assembled
       xchg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je xchg_reg_mem
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       xchg_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov %al, %bh
-	mov postbyte_register, %bl
+	movb %al, %bh
+	movb postbyte_register, %bl
 	shlb $3, postbyte_register
-	or $192, %al
+	orb $192, %al
 	orb %al, postbyte_register
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je xchg_reg_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je xchg_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je xchg_reg_reg_32bit
 	jmp invalid_operand_size
       xchg_reg_reg_32bit:
 	call operand_32bit_prefix
-	or %bh, %bh
+	orb %bh, %bh
 	jz xchg_ax_reg
-	xchg %bl, %bh
-	or %bh, %bh
+	xchgb %bl, %bh
+	orb %bh, %bh
 	jz xchg_ax_reg
 	incb base_code
 	jmp xchg_reg_reg_8bit
       xchg_reg_reg_16bit:
 	call operand_16bit_prefix
-	or %bh, %bh
+	orb %bh, %bh
 	jz xchg_ax_reg
-	xchg %bl, %bh
-	or %bh, %bh
+	xchgb %bl, %bh
+	orb %bh, %bh
 	jz xchg_ax_reg
 	incb base_code
       xchg_reg_reg_8bit:
-	mov base_code, %al
-	mov postbyte_register, %ah
-	stosw %ax, %es:(%edi)
+	movb base_code, %al
+	movb postbyte_register, %ah
+	stosw
 	jmp instruction_assembled
       xchg_ax_reg:
-	mov $0x90, %al
-	add %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0x90, %al
+	addb %bl, %al
+	stosb
 	jmp instruction_assembled
       xchg_reg_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je xchg_reg_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je xchg_reg_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je xchg_reg_mem_32bit
 	jmp invalid_operand_size
       xchg_reg_mem_8bit:
@@ -6623,22 +6624,22 @@ xchg_instruction:
 	call store_instruction
 	jmp instruction_assembled
 push_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je push_reg
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je push_imm
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       push_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je push_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je push_mem_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -6657,71 +6658,71 @@ push_instruction:
 	call store_instruction
 	jmp push_done
       push_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x60, %al
+	lodsb
+	cmpb $0x60, %al
 	jae push_sreg
 	call convert_register
-	mov %al, %dl
-	add $0x50, %dl
-	mov %ah, %al
-	cmp $2, %al
+	movb %al, %dl
+	addb $0x50, %dl
+	movb %ah, %al
+	cmpb $2, %al
 	je push_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je push_reg_32bit
 	jmp invalid_operand_size
       push_reg_16bit:
 	call operand_16bit_prefix
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %dl, %al
+	stosb
 	jmp push_done
       push_reg_32bit:
 	call operand_32bit_prefix
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %dl, %al
+	stosb
 	jmp push_done
       push_sreg:
-	mov operand_size, %bl
-	cmp $4, %bl
+	movb operand_size, %bl
+	cmpb $4, %bl
 	je push_sreg32
-	cmp $2, %bl
+	cmpb $2, %bl
 	je push_sreg16
-	or %bl, %bl
+	orb %bl, %bl
 	jz push_sreg_store
 	jmp invalid_operand_size
       push_sreg16:
-	mov %al, %bl
+	movb %al, %bl
 	call operand_16bit_prefix
-	mov %bl, %al
+	movb %bl, %al
 	jmp push_sreg_store
       push_sreg32:
-	mov %al, %bl
+	movb %al, %bl
 	call operand_32bit_prefix
-	mov %bl, %al
+	movb %bl, %al
       push_sreg_store:
-	cmp $0x70, %al
+	cmpb $0x70, %al
 	jae invalid_operand
-	sub $0x61, %al
-	cmp $4, %al
+	subb $0x61, %al
+	cmpb $4, %al
 	jae push_sreg_386
-	shl $3, %al
-	add $6, %al
-	stosb %al, %es:(%edi)
+	shlb $3, %al
+	addb $6, %al
+	stosb
 	jmp push_done
       push_sreg_386:
-	sub $4, %al
-	shl $3, %al
-	mov $0xa0, %ah
-	add %al, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
+	subb $4, %al
+	shlb $3, %al
+	movb $0xa0, %ah
+	addb %al, %ah
+	movb $0xf, %al
+	stosw
 	jmp push_done
       push_imm:
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je push_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je push_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $16, code_type
 	je push_imm_optimized_16bit
@@ -6735,68 +6736,68 @@ push_instruction:
 	cmp $0x80, %eax
 	jge push_imm_32bit_forced
       push_imm_8bit:
-	mov %al, %ah
-	mov $0x6a, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb $0x6a, %al
+	stosw
 	jmp push_done
       push_imm_optimized_16bit:
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	cmpb $0, value_type
 	jne push_imm_16bit_forced
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $-0x80, %ax
-	.word -0x80
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $-0x80, %ax */
+	.value -0x80
 	jl push_imm_16bit_forced
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $0x80, %ax
-	.word 0x80
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $0x80, %ax */
+	.value 0x80
 	jge push_imm_16bit_forced
 	jmp push_imm_8bit
       push_imm_16bit:
 	call get_word_value
-	mov %ax, %dx
+	movw %ax, %dx
 	call operand_16bit_prefix
       push_imm_16bit_forced:
-	mov $0x68, %al
-	stosb %al, %es:(%edi)
-	mov %dx, %ax
+	movb $0x68, %al
+	stosb
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp push_done
       push_imm_32bit:
 	call get_dword_value
 	mov %eax, %edx
 	call operand_32bit_prefix
       push_imm_32bit_forced:
-	mov $0x68, %al
-	stosb %al, %es:(%edi)
+	movb $0x68, %al
+	stosb
 	mov %edx, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
       push_done:
-	lodsb %ds:(%esi), %al
+	lodsb
 	dec %esi
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je instruction_assembled
-	or %al, %al
+	orb %al, %al
 	jz instruction_assembled
 	movb $0, operand_size
 	movb $0, forced_size
 	jmp push_instruction
 pop_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je pop_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       pop_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je pop_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je pop_mem_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -6815,226 +6816,226 @@ pop_instruction:
 	call store_instruction
 	jmp pop_done
       pop_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x60, %al
+	lodsb
+	cmpb $0x60, %al
 	jae pop_sreg
 	call convert_register
-	mov %al, %dl
-	add $0x58, %dl
-	mov %ah, %al
-	cmp $2, %al
+	movb %al, %dl
+	addb $0x58, %dl
+	movb %ah, %al
+	cmpb $2, %al
 	je pop_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je pop_reg_32bit
 	jmp invalid_operand_size
       pop_reg_16bit:
 	call operand_16bit_prefix
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %dl, %al
+	stosb
 	jmp pop_done
       pop_reg_32bit:
 	call operand_32bit_prefix
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %dl, %al
+	stosb
 	jmp pop_done
       pop_sreg:
-	mov operand_size, %bl
-	cmp $4, %bl
+	movb operand_size, %bl
+	cmpb $4, %bl
 	je pop_sreg32
-	cmp $2, %bl
+	cmpb $2, %bl
 	je pop_sreg16
-	or %bl, %bl
+	orb %bl, %bl
 	jz pop_sreg_store
 	jmp invalid_operand_size
       pop_sreg16:
-	mov %al, %bl
+	movb %al, %bl
 	call operand_16bit_prefix
-	mov %bl, %al
+	movb %bl, %al
 	jmp pop_sreg_store
       pop_sreg32:
-	mov %al, %bl
+	movb %al, %bl
 	call operand_32bit_prefix
-	mov %bl, %al
+	movb %bl, %al
       pop_sreg_store:
-	cmp $0x70, %al
+	cmpb $0x70, %al
 	jae invalid_operand
-	sub $0x61, %al
-	cmp $1, %al
+	subb $0x61, %al
+	cmpb $1, %al
 	je illegal_instruction
-	cmp $4, %al
+	cmpb $4, %al
 	jae pop_sreg_386
-	shl $3, %al
-	add $7, %al
-	stosb %al, %es:(%edi)
+	shlb $3, %al
+	addb $7, %al
+	stosb
 	jmp pop_done
       pop_sreg_386:
-	sub $4, %al
-	shl $3, %al
-	mov $0xa1, %ah
-	add %al, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
+	subb $4, %al
+	shlb $3, %al
+	movb $0xa1, %ah
+	addb %al, %ah
+	movb $0xf, %al
+	stosw
       pop_done:
-	lodsb %ds:(%esi), %al
+	lodsb
 	dec %esi
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je instruction_assembled
-	or %al, %al
+	orb %al, %al
 	jz instruction_assembled
 	movb $0, operand_size
 	movb $0, forced_size
 	jmp pop_instruction
 inc_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je inc_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je inc_mem
 	jne invalid_operand
       inc_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je inc_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je inc_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je inc_mem_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
 	cmpb $0, next_pass_needed
 	je operand_size_not_specified
       inc_mem_8bit:
-	mov $0xfe, %al
-	xchg base_code, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	movb $0xfe, %al
+	xchgb base_code, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
 	call store_instruction
 	jmp instruction_assembled
       inc_mem_16bit:
 	call operand_16bit_prefix
-	mov $0xff, %al
-	xchg base_code, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	movb $0xff, %al
+	xchgb base_code, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
 	call store_instruction
 	jmp instruction_assembled
       inc_mem_32bit:
 	call operand_32bit_prefix
-	mov $0xff, %al
-	xchg base_code, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	movb $0xff, %al
+	xchgb base_code, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
 	call store_instruction
 	jmp instruction_assembled
       inc_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov %al, %dl
-	shr $4, %al
-	mov %ah, %al
-	cmp $1, %al
+	movb %al, %dl
+	shrb $4, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je inc_reg_8bit
-	mov base_code, %dh
-	shl $3, %dh
-	add %dh, %dl
-	add $0x40, %dl
-	cmp $2, %al
+	movb base_code, %dh
+	shlb $3, %dh
+	addb %dh, %dl
+	addb $0x40, %dl
+	cmpb $2, %al
 	je inc_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je inc_reg_32bit
 	jmp invalid_operand_size
       inc_reg_8bit:
-	mov $0xfe, %al
-	mov base_code, %ah
-	shl $3, %ah
-	or %dl, %ah
-	or $192, %ah
-	stosw %ax, %es:(%edi)
+	movb $0xfe, %al
+	movb base_code, %ah
+	shlb $3, %ah
+	orb %dl, %ah
+	orb $192, %ah
+	stosw
 	jmp instruction_assembled
       inc_reg_16bit:
 	call operand_16bit_prefix
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       inc_reg_32bit:
 	call operand_32bit_prefix
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
 arpl_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je arpl_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x10, %al
+	lodsb
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	cmp $2, %ah
+	cmpb $2, %ah
 	jne invalid_operand_size
 	movb $0x63, base_code
 	call store_instruction
 	jmp instruction_assembled
       arpl_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	cmp $2, %ah
+	cmpb $2, %ah
 	jne invalid_operand_size
-	mov %al, %dl
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	movb %al, %dl
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x10, %al
+	lodsb
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	cmp $2, %ah
+	cmpb $2, %ah
 	jne invalid_operand_size
-	mov %al, %ah
-	shl $3, %ah
-	or %dl, %ah
-	or $192, %ah
-	mov $0x63, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	shlb $3, %ah
+	orb %dl, %ah
+	orb $192, %ah
+	movb $0x63, %al
+	stosw
 	jmp instruction_assembled
 bound_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $'[, %al
+	lodsb
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je bound_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bound_32bit
 	jmp invalid_operand_size
       bound_32bit:
@@ -7049,13 +7050,13 @@ bound_instruction:
 	jmp instruction_assembled
 set_instruction:
 	movb $0xf, base_code
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je set_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       set_mem:
 	call get_address
@@ -7065,85 +7066,85 @@ set_instruction:
 	call store_instruction
 	jmp instruction_assembled
       set_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov %al, %bl
-	cmp $1, %ah
+	movb %al, %bl
+	cmpb $1, %ah
 	jne invalid_operand_size
-	mov extended_code, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov $192, %al
-	or %bl, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %ah
+	movb $0xf, %al
+	stosw
+	movb $192, %al
+	orb %bl, %al
+	stosb
 	jmp instruction_assembled
 ret_instruction_16bit:
-	mov %al, %ah
+	movb %al, %ah
 	call operand_16bit_prefix
-	mov %ah, %al
+	movb %ah, %al
 	jmp ret_instruction
 ret_instruction_32bit:
-	mov %al, %ah
+	movb %al, %ah
 	call operand_32bit_prefix
-	mov %ah, %al
+	movb %ah, %al
 ret_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	dec %esi
-	or %al, %al
+	orb %al, %al
 	jz simple_ret
-	cmp $0xf, %al
+	cmpb $0xf, %al
 	je simple_ret
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	or %ah, %ah
+	orb %ah, %ah
 	jz ret_imm
-	cmp $2, %ah
+	cmpb $2, %ah
 	je ret_imm
 	jmp invalid_operand_size
       ret_imm:
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
 	call get_word_value
 	cmpb $0, value_type
 	jne invalid_use_of_symbol
-	mov %ax, %dx
-	mov base_code, %al
-	stosb %al, %es:(%edi)
-	mov %dx, %ax
-	stosw %ax, %es:(%edi)
+	movw %ax, %dx
+	movb base_code, %al
+	stosb
+	movw %dx, %ax
+	stosw
 	jmp instruction_assembled
       simple_ret:
-	mov base_code, %al
-	inc %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	incb %al
+	stosb
 	jmp instruction_assembled
 lea_instruction:
 	movb $0x8d, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	mov operand_size, %al
-	push %ax
+	movb operand_size, %al
+	pushw %ax
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	pop %ax
-	cmp $2, %al
+	popw %ax
+	cmpb $2, %al
 	je lea_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je lea_32bit
 	jmp invalid_operand_size
       lea_16bit:
@@ -7155,12 +7156,12 @@ lea_instruction:
 	call store_instruction
 	jmp instruction_assembled
 ls_instruction:
-	or %al, %al
+	orb %al, %al
 	jz les_instruction
-	cmp $3, %al
+	cmpb $3, %al
 	jz lds_instruction
-	add $0xb0, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	addb $0xb0, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
 	movb $0xf, base_code
 	jmp ls_code_ok
@@ -7170,27 +7171,27 @@ ls_instruction:
       lds_instruction:
 	movb $0xc5, base_code
       ls_code_ok:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	addb $2, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	mov operand_size, %al
-	cmp $4, %al
+	movb operand_size, %al
+	cmpb $4, %al
 	je ls_16bit
-	cmp $6, %al
+	cmpb $6, %al
 	je ls_32bit
 	jmp invalid_operand_size
       ls_16bit:
@@ -7210,83 +7211,83 @@ ls_instruction:
 	jne invalid_operand_size
 	jmp instruction_assembled
 enter_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $2, %ah
+	cmpb $2, %ah
 	je enter_imm16_size_ok
-	or %ah, %ah
+	orb %ah, %ah
 	jnz invalid_operand_size
       enter_imm16_size_ok:
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
 	call get_word_value
 	cmpb $0, value_type
 	jne invalid_use_of_symbol
-	push %ax
+	pushw %ax
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $1, %ah
+	cmpb $1, %ah
 	je enter_imm8_size_ok
-	or %ah, %ah
+	orb %ah, %ah
 	jnz invalid_operand_size
       enter_imm8_size_ok:
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
 	call get_byte_value
-	mov %al, %dl
-	pop %bx
-	mov $0xc8, %al
-	stosb %al, %es:(%edi)
-	mov %bx, %ax
-	stosw %ax, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb %al, %dl
+	popw %bx
+	movb $0xc8, %al
+	stosb
+	movw %bx, %ax
+	stosw
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
 sh_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je sh_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       sh_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	mov operand_size, %al
-	push %ax
+	pushw %bx
+	pushw %cx
+	movb operand_size, %al
+	pushw %ax
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je sh_mem_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       sh_mem_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x11, %al
+	lodsb
+	cmpb $0x11, %al
 	jne invalid_operand
-	pop %ax
-	pop %cx
-	pop %bx
+	popw %ax
+	popw %cx
+	popw %bx
 	pop %edx
-	cmp $1, %al
+	cmpb $1, %al
 	je sh_mem_cl_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je sh_mem_cl_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je sh_mem_cl_32bit
-	or %ah, %ah
+	orb %ah, %ah
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -7307,26 +7308,26 @@ sh_instruction:
 	call store_instruction
 	jmp instruction_assembled
       sh_mem_imm:
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz sh_mem_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       sh_mem_imm_size_ok:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %ax
-	pop %cx
-	pop %bx
+	popw %ax
+	popw %cx
+	popw %bx
 	pop %edx
-	cmp $1, %al
+	cmpb $1, %al
 	je sh_mem_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je sh_mem_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je sh_mem_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -7337,8 +7338,8 @@ sh_instruction:
 	je sh_mem_1_8bit
 	movb $0xc0, base_code
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       sh_mem_1_8bit:
 	movb $0xd0, base_code
@@ -7350,8 +7351,8 @@ sh_instruction:
 	movb $0xc1, base_code
 	call operand_16bit_prefix
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       sh_mem_1_16bit:
 	movb $0xd1, base_code
@@ -7364,8 +7365,8 @@ sh_instruction:
 	movb $0xc1, base_code
 	call operand_32bit_prefix
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       sh_mem_1_32bit:
 	movb $0xd1, base_code
@@ -7373,172 +7374,172 @@ sh_instruction:
 	call store_instruction
 	jmp instruction_assembled
       sh_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
 	shlb $3, postbyte_register
-	or $192, %al
+	orb $192, %al
 	orb %al, postbyte_register
-	mov %ah, %al
-	push %ax
+	movb %ah, %al
+	pushw %ax
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je sh_reg_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
       sh_reg_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x11, %al
+	lodsb
+	cmpb $0x11, %al
 	jne invalid_operand
-	pop %ax
-	mov postbyte_register, %bl
-	cmp $1, %al
+	popw %ax
+	movb postbyte_register, %bl
+	cmpb $1, %al
 	je sh_reg_cl_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je sh_reg_cl_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je sh_reg_cl_32bit
 	jmp invalid_operand_size
       sh_reg_cl_8bit:
-	mov $0xd2, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xd2, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       sh_reg_cl_16bit:
 	call operand_16bit_prefix
-	mov $0xd3, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xd3, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       sh_reg_cl_32bit:
 	call operand_32bit_prefix
-	mov $0xd3, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xd3, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       sh_reg_imm:
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz sh_reg_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       sh_reg_imm_size_ok:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %ax
-	mov postbyte_register, %bl
-	cmp $1, %al
+	popw %ax
+	movb postbyte_register, %bl
+	cmpb $1, %al
 	je sh_reg_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je sh_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je sh_reg_imm_32bit
 	jmp invalid_operand_size
       sh_reg_imm_8bit:
 	cmpb $1, value
 	je sh_reg_1_8bit
-	mov $0xc0, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	mov value, %ah
-	stosw %ax, %es:(%edi)
+	movb $0xc0, %al
+	stosb
+	movb %bl, %al
+	movb value, %ah
+	stosw
 	jmp instruction_assembled
       sh_reg_1_8bit:
-	mov $0xd0, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xd0, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       sh_reg_imm_16bit:
 	cmpb $1, value
 	je sh_reg_1_16bit
 	call operand_16bit_prefix
-	mov $0xc1, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	mov value, %ah
-	stosw %ax, %es:(%edi)
+	movb $0xc1, %al
+	stosb
+	movb %bl, %al
+	movb value, %ah
+	stosw
 	jmp instruction_assembled
       sh_reg_1_16bit:
 	call operand_16bit_prefix
-	mov $0xd1, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xd1, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       sh_reg_imm_32bit:
 	cmpb $1, value
 	je sh_reg_1_32bit
 	call operand_32bit_prefix
-	mov $0xc1, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	mov value, %ah
-	stosw %ax, %es:(%edi)
+	movb $0xc1, %al
+	stosb
+	movb %bl, %al
+	movb value, %ah
+	stosw
 	jmp instruction_assembled
       sh_reg_1_32bit:
 	call operand_32bit_prefix
-	mov $0xd1, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xd1, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
 shd_instruction:
 	movb $0xf, base_code
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je shd_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       shd_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	xor %al, %al
-	xchg operand_size, %al
-	push %ax
-	lodsb %ds:(%esi), %al
+	xorb %al, %al
+	xchgb operand_size, %al
+	pushw %ax
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je shd_mem_reg_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x11, %al
+	lodsb
+	cmpb $0x11, %al
 	jne invalid_operand
-	pop %ax
-	pop %cx
-	pop %bx
+	popw %ax
+	popw %cx
+	popw %bx
 	pop %edx
-	cmp $2, %al
+	cmpb $2, %al
 	je shd_mem_reg_cl_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je shd_mem_reg_cl_32bit
 	jmp invalid_operand_size
       shd_mem_reg_cl_16bit:
@@ -7552,75 +7553,75 @@ shd_instruction:
 	call store_instruction
 	jmp instruction_assembled
       shd_mem_reg_imm:
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz shd_mem_reg_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       shd_mem_reg_imm_size_ok:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %ax
-	pop %cx
-	pop %bx
+	popw %ax
+	popw %cx
+	popw %bx
 	pop %edx
-	cmp $2, %al
+	cmpb $2, %al
 	je shd_mem_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je shd_mem_reg_imm_32bit
 	jmp invalid_operand_size
       shd_mem_reg_imm_16bit:
 	call operand_16bit_prefix
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       shd_mem_reg_imm_32bit:
 	call operand_32bit_prefix
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       shd_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %al
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	push %ax
-	push %bx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	movb postbyte_register, %bl
+	shlb $3, %al
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	pushw %ax
+	pushw %bx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je shd_reg_reg_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x11, %al
+	lodsb
+	cmpb $0x11, %al
 	jne invalid_operand
-	pop %bx
-	pop %ax
-	cmp $2, %al
+	popw %bx
+	popw %ax
+	cmpb $2, %al
 	je shd_reg_reg_cl_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je shd_reg_reg_cl_32bit
 	jmp invalid_operand_size
       shd_reg_reg_cl_16bit:
@@ -7629,28 +7630,28 @@ shd_instruction:
       shd_reg_reg_cl_32bit:
 	call operand_32bit_prefix
       shd_reg_reg_cl_store:
-	mov extended_code, %ah
-	inc %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %ah
+	incb %ah
+	movb $0xf, %al
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       shd_reg_reg_imm:
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz shd_reg_reg_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       shd_reg_reg_imm_size_ok:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %bx
-	pop %ax
-	cmp $2, %al
+	popw %bx
+	popw %ax
+	cmpb $2, %al
 	je shd_reg_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je shd_reg_reg_imm_32bit
 	jmp invalid_operand_size
       shd_reg_reg_imm_16bit:
@@ -7659,88 +7660,88 @@ shd_instruction:
       shd_reg_reg_imm_32bit:
 	call operand_32bit_prefix
       shd_reg_reg_imm_store:
-	mov extended_code, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %ah
+	movb $0xf, %al
+	stosw
+	movb %bl, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
 movx_instruction:
 	movb $0xf, base_code
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	mov %ah, %al
-	cmp $2, %al
+	movb %ah, %al
+	cmpb $2, %al
 	je movx_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je movx_32bit
 	jmp invalid_operand_size
       movx_16bit:
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je movx_16bit_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je movx_16bit_mem_8bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
       movx_16bit_mem_8bit:
 	call operand_16bit_prefix
 	call store_instruction
 	jmp instruction_assembled
       movx_16bit_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %bl
-	or %al, %bl
-	or $192, %bl
-	cmp $1, %ah
+	movb postbyte_register, %bl
+	shlb $3, %bl
+	orb %al, %bl
+	orb $192, %bl
+	cmpb $1, %ah
 	jne invalid_operand_size
 	call operand_16bit_prefix
-	mov $0xf, %al
-	stosb %al, %es:(%edi)
-	mov extended_code, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xf, %al
+	stosb
+	movb extended_code, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       movx_32bit:
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je movx_32bit_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je movx_32bit_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je movx_32bit_mem_16bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -7756,80 +7757,80 @@ movx_instruction:
 	call store_instruction
 	jmp instruction_assembled
       movx_32bit_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $1, %al
+	movb postbyte_register, %bl
+	shlb $3, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $1, %al
 	je movx_32bit_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je movx_32bit_reg_16bit
 	jmp invalid_operand_size
       movx_32bit_reg_8bit:
 	call operand_32bit_prefix
-	mov $0xf, %al
-	stosb %al, %es:(%edi)
-	mov extended_code, %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xf, %al
+	stosb
+	movb extended_code, %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       movx_32bit_reg_16bit:
 	call operand_32bit_prefix
-	mov $0xf, %al
-	stosb %al, %es:(%edi)
-	mov extended_code, %al
-	inc %al
-	stosb %al, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xf, %al
+	stosb
+	movb extended_code, %al
+	incb %al
+	stosb
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
 bt_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	shl $3, %al
-	add $0x83, %al
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	shlb $3, %al
+	addb $0x83, %al
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
 	movb $0xf, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je bt_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	push %eax
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	je bt_mem_imm
 	cmpb $0x11, (%esi)
 	jne bt_mem_reg
-	cmpb $'(, 2(%esi)
+	cmpb $0x28, 2(%esi)
 	je bt_mem_imm
       bt_mem_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	mov %ah, %al
-	cmp $2, %al
+	movb %ah, %al
+	cmpb $2, %al
 	je bt_mem_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bt_mem_reg_32bit
 	jmp invalid_operand_size
       bt_mem_reg_16bit:
@@ -7841,29 +7842,29 @@ bt_instruction:
 	call store_instruction
 	jmp instruction_assembled
       bt_mem_imm:
-	xor %al, %al
-	xchg operand_size, %al
-	push %ax
-	lodsb %ds:(%esi), %al
+	xorb %al, %al
+	xchgb operand_size, %al
+	pushw %ax
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz bt_mem_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       bt_mem_imm_size_ok:
 	movb $0xba, extended_code
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %ax
-	cmp $2, %al
+	popw %ax
+	cmpb $2, %al
 	je bt_mem_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bt_mem_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -7872,92 +7873,92 @@ bt_instruction:
 	jmp bt_mem_imm_32bit
       bt_mem_imm_16bit:
 	call operand_16bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       bt_mem_imm_32bit:
 	call operand_32bit_prefix
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       bt_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	je bt_reg_imm
 	cmpb $0x11, (%esi)
 	jne bt_reg_reg
-	cmpb $'(, 2(%esi)
+	cmpb $0x28, 2(%esi)
 	je bt_reg_imm
       bt_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %al
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $2, %al
+	movb postbyte_register, %bl
+	shlb $3, %al
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $2, %al
 	je bt_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bt_reg_reg_32bit
 	jmp invalid_operand_size
       bt_reg_reg_16bit:
 	call operand_16bit_prefix
-	mov extended_code, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %ah
+	movb $0xf, %al
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       bt_reg_reg_32bit:
 	call operand_32bit_prefix
-	mov extended_code, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %ah
+	movb $0xf, %al
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
       bt_reg_imm:
-	xor %al, %al
-	xchg operand_size, %al
-	push %ax
-	lodsb %ds:(%esi), %al
+	xorb %al, %al
+	xchgb operand_size, %al
+	pushw %ax
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz bt_reg_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       bt_reg_imm_size_ok:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %ax
-	cmp $2, %al
+	popw %ax
+	cmpb $2, %al
 	je bt_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bt_reg_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -7970,43 +7971,43 @@ bt_instruction:
       bt_reg_imm_32bit:
 	call operand_32bit_prefix
       bt_reg_imm_store:
-	.byte 0x66, 0xb8  #WORKAROUNDW mov $0xba0f, %ax
-	.word 0xba0f
-	stosw %ax, %es:(%edi)
-	mov $192, %al
-	or postbyte_register, %al
-	mov extended_code, %ah
-	sub $0x83, %ah
-	or %ah, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	.byte 0x66, 0xb8  /*WORKAROUNDW mov $0xba0f, %ax */
+	.value 0xba0f
+	stosw
+	movb $192, %al
+	orb postbyte_register, %al
+	movb extended_code, %ah
+	subb $0x83, %ah
+	orb %ah, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
 bs_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
 	movb $0xf, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x10, %al
+	lodsb
+	cmpb $0x10, %al
 	je bs_reg_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_argument
 	call get_address
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je bs_reg_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bs_reg_mem_32bit
 	jmp invalid_operand_size
       bs_reg_mem_16bit:
@@ -8018,16 +8019,16 @@ bs_instruction:
 	call store_instruction
 	jmp instruction_assembled
       bs_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $2, %al
+	movb postbyte_register, %bl
+	shlb $3, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $2, %al
 	je bs_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je bs_reg_reg_32bit
 	jmp invalid_operand_size
       bs_reg_reg_16bit:
@@ -8036,31 +8037,31 @@ bs_instruction:
       bs_reg_reg_32bit:
 	call operand_32bit_prefix
       bs_reg_reg_store:
-	mov extended_code, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %ah
+	movb $0xf, %al
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
 imul_instruction:
 	movb $0xf6, base_code
 	movb $5, postbyte_register
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je imul_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       imul_mem:
 	call get_address
-	mov operand_size, %al
-	cmp $1, %al
+	movb operand_size, %al
+	cmpb $1, %al
 	je imul_mem_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je imul_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je imul_mem_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
 	cmpb $0, current_pass
 	jne operand_size_not_specified
@@ -8080,67 +8081,67 @@ imul_instruction:
 	call store_instruction
 	jmp instruction_assembled
       imul_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
 	cmpb $44, (%esi)
 	je imul_reg_
-	mov postbyte_register, %bl
-	shl $3, %bl
-	or %al, %bl
-	or $192, %bl
-	cmp $1, %ah
+	movb postbyte_register, %bl
+	shlb $3, %bl
+	orb %al, %bl
+	orb $192, %bl
+	cmpb $1, %ah
 	je imul_reg_8bit
-	cmp $2, %ah
+	cmpb $2, %ah
 	je imul_reg_16bit
-	cmp $4, %ah
+	cmpb $4, %ah
 	je imul_reg_32bit
 	jmp invalid_operand_size
       imul_reg_8bit:
-	mov %bl, %ah
-	mov $0xf6, %al
-	stosw %ax, %es:(%edi)
+	movb %bl, %ah
+	movb $0xf6, %al
+	stosw
 	jmp instruction_assembled
       imul_reg_16bit:
 	call operand_16bit_prefix
-	mov %bl, %ah
-	mov $0xf7, %al
-	stosw %ax, %es:(%edi)
+	movb %bl, %ah
+	movb $0xf7, %al
+	stosw
 	jmp instruction_assembled
       imul_reg_32bit:
 	call operand_32bit_prefix
-	mov %bl, %ah
-	mov $0xf7, %al
-	stosw %ax, %es:(%edi)
+	movb %bl, %ah
+	movb $0xf7, %al
+	stosw
 	jmp instruction_assembled
       imul_reg_:
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
 	inc %esi
-	cmpb $'(, (%esi)
+	cmpb $0x28, (%esi)
 	je imul_reg_imm
 	cmpb $0x11, (%esi)
 	jne imul_reg__
-	cmpb $'(, 2(%esi)
+	cmpb $0x28, 2(%esi)
 	je imul_reg_imm
       imul_reg__:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je imul_reg_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	je imul_reg_mem
 	jne invalid_operand
       imul_reg_mem:
 	call get_address
 	push %edx
-	push %bx
-	push %cx
+	pushw %bx
+	pushw %cx
 	cmpb $44, (%esi)
 	je imul_reg_mem_imm
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je imul_reg_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je imul_reg_mem_32bit
 	jmp invalid_operand_size
       imul_reg_mem_16bit:
@@ -8149,8 +8150,8 @@ imul_instruction:
       imul_reg_mem_32bit:
 	call operand_32bit_prefix
       imul_reg_mem_store:
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	movb $0xf, base_code
 	movb $0xaf, extended_code
@@ -8158,33 +8159,33 @@ imul_instruction:
 	jmp instruction_assembled
       imul_reg_mem_imm:
 	inc %esi
-	xor %cl, %cl
-	xchg operand_size, %cl
-	lodsb %ds:(%esi), %al
+	xorb %cl, %cl
+	xchgb operand_size, %cl
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov operand_size, %al
+	movb operand_size, %al
 	movb %cl, operand_size
-	cmp $1, %al
+	cmpb $1, %al
 	je imul_reg_mem_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je imul_reg_mem_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je imul_reg_mem_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
-	cmp $2, %cl
+	cmpb $2, %cl
 	je imul_reg_mem_imm_16bit
-	cmp $4, %cl
+	cmpb $4, %cl
 	je imul_reg_mem_imm_32bit
 	jmp invalid_operand_size
       imul_reg_mem_imm_8bit:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	movb $0x6b, base_code
 	cmpb $2, operand_size
@@ -8195,35 +8196,35 @@ imul_instruction:
       imul_reg_mem_16bit_imm_8bit:
 	call operand_16bit_prefix
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       imul_reg_mem_32bit_imm_8bit:
 	call operand_32bit_prefix
 	call store_instruction
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       imul_reg_mem_imm_16bit:
 	call get_word_value
 	movw %ax, value
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	movb $0x69, base_code
 	cmpb $2, operand_size
 	jne invalid_operand_size
 	call operand_16bit_prefix
 	call store_instruction
-	mov value, %ax
+	movw value, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       imul_reg_mem_imm_32bit:
 	call get_dword_value
 	movl %eax, value
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
 	movb $0x69, base_code
 	cmpb $4, operand_size
@@ -8232,24 +8233,24 @@ imul_instruction:
 	call store_instruction
 	mov value, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       imul_reg_imm:
-	mov postbyte_register, %dl
-	mov %dl, %bl
+	movb postbyte_register, %dl
+	movb %dl, %bl
 	dec %esi
 	jmp imul_reg_reg_imm
       imul_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	mov %al, %dl
+	movb postbyte_register, %bl
+	movb %al, %dl
 	cmpb $44, (%esi)
 	je imul_reg_reg_imm
-	mov %ah, %al
-	cmp $2, %al
+	movb %ah, %al
+	cmpb $2, %al
 	je imul_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je imul_reg_reg_32bit
 	jmp invalid_operand_size
       imul_reg_reg_16bit:
@@ -8258,46 +8259,46 @@ imul_instruction:
       imul_reg_reg_32bit:
 	call operand_32bit_prefix
       imul_reg_reg_store:
-	.byte 0x66, 0xb8  #WORKAROUNDW mov $0xaf0f, %ax
-	.word 0xaf0f
-	stosw %ax, %es:(%edi)
-	mov %dl, %al
-	shl $3, %bl
-	or %bl, %al
-	or $192, %al
-	stosb %al, %es:(%edi)
+	.byte 0x66, 0xb8  /*WORKAROUNDW mov $0xaf0f, %ax */
+	.value 0xaf0f
+	stosw
+	movb %dl, %al
+	shlb $3, %bl
+	orb %bl, %al
+	orb $192, %al
+	stosb
 	jmp instruction_assembled
       imul_reg_reg_imm:
 	inc %esi
-	xor %cl, %cl
-	xchg operand_size, %cl
-	lodsb %ds:(%esi), %al
+	xorb %cl, %cl
+	xchgb operand_size, %cl
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov operand_size, %al
+	movb operand_size, %al
 	movb %cl, operand_size
-	cmp $1, %al
+	cmpb $1, %al
 	je imul_reg_reg_imm_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je imul_reg_reg_imm_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je imul_reg_reg_imm_32bit
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand_size
-	cmp $2, %cl
+	cmpb $2, %cl
 	je imul_reg_reg_imm_16bit
-	cmp $4, %cl
+	cmpb $4, %cl
 	je imul_reg_reg_imm_32bit
 	jmp invalid_operand_size
       imul_reg_reg_imm_8bit:
-	push %bx
-	push %dx
+	pushw %bx
+	pushw %dx
 	call get_byte_value
-	pop %dx
-	pop %bx
+	popw %dx
+	popw %bx
       imul_reg_reg_imm_8bit_store:
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
 	cmpb $2, operand_size
 	je imul_reg_reg_16bit_imm_8bit
@@ -8306,289 +8307,289 @@ imul_instruction:
 	jmp invalid_operand_size
       imul_reg_reg_16bit_imm_8bit:
 	call operand_16bit_prefix
-	mov $0x6b, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	shl $3, %bl
-	or %bl, %al
-	or $192, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb $0x6b, %al
+	stosb
+	movb %dl, %al
+	shlb $3, %bl
+	orb %bl, %al
+	orb $192, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       imul_reg_reg_32bit_imm_8bit:
 	call operand_32bit_prefix
-	mov $0x6b, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	shl $3, %bl
-	or %bl, %al
-	or $192, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb $0x6b, %al
+	stosb
+	movb %dl, %al
+	shlb $3, %bl
+	orb %bl, %al
+	orb $192, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       imul_reg_reg_imm_16bit:
-	push %bx
-	push %dx
+	pushw %bx
+	pushw %dx
 	call get_word_value
-	pop %dx
-	pop %bx
+	popw %dx
+	popw %bx
 	cmpb $0, value_type
 	jne imul_reg_reg_imm_16bit_forced
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $-0x80, %ax
-	.word -0x80
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $-0x80, %ax */
+	.value -0x80
 	jl imul_reg_reg_imm_16bit_forced
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $0x80, %ax
-	.word 0x80
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $0x80, %ax */
+	.value 0x80
 	jl imul_reg_reg_imm_8bit_store
       imul_reg_reg_imm_16bit_forced:
 	movw %ax, value
 	call operand_16bit_prefix
-	mov $0x69, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	shl $3, %bl
-	or %bl, %al
-	or $192, %al
-	stosb %al, %es:(%edi)
-	mov value, %ax
+	movb $0x69, %al
+	stosb
+	movb %dl, %al
+	shlb $3, %bl
+	orb %bl, %al
+	orb $192, %al
+	stosb
+	movw value, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       imul_reg_reg_imm_32bit:
-	push %bx
-	push %dx
+	pushw %bx
+	pushw %dx
 	call get_dword_value
-	pop %dx
-	pop %bx
+	popw %dx
+	popw %bx
 	cmpb $0, value_type
 	jne imul_reg_reg_imm_32bit_forced
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $-0x80, %ax
-	.word -0x80
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $-0x80, %ax */
+	.value -0x80
 	jl imul_reg_reg_imm_32bit_forced
-	.byte 0x66, 0x3d  #WORKAROUNDW cmp $0x80, %ax
-	.word 0x80
+	.byte 0x66, 0x3d  /*WORKAROUNDW cmp $0x80, %ax */
+	.value 0x80
 	jl imul_reg_reg_imm_8bit_store
       imul_reg_reg_imm_32bit_forced:
 	movl %eax, value
 	call operand_32bit_prefix
-	mov $0x69, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	shl $3, %bl
-	or %bl, %al
-	or $192, %al
-	stosb %al, %es:(%edi)
+	movb $0x69, %al
+	stosb
+	movb %dl, %al
+	shlb $3, %bl
+	orb %bl, %al
+	orb $192, %al
+	stosb
 	mov value, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
 in_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	mov %ah, %al
-	push %ax
+	movb %ah, %al
+	pushw %ax
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je in_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je in_reg
 	jmp invalid_operand
       in_reg:
-	lodsb %ds:(%esi), %al
-	cmp $0x22, %al
+	lodsb
+	cmpb $0x22, %al
 	jne invalid_operand
-	pop %ax
-	cmp $1, %al
+	popw %ax
+	cmpb $1, %al
 	je in_al_dx
-	cmp $2, %al
+	cmpb $2, %al
 	je in_ax_dx
-	cmp $4, %al
+	cmpb $4, %al
 	je in_eax_dx
 	jmp invalid_operand_size
       in_al_dx:
-	mov $0xec, %al
-	stosb %al, %es:(%edi)
+	movb $0xec, %al
+	stosb
 	jmp instruction_assembled
       in_ax_dx:
 	call operand_16bit_prefix
-	mov $0xed, %al
-	stosb %al, %es:(%edi)
+	movb $0xed, %al
+	stosb
 	jmp instruction_assembled
       in_eax_dx:
 	call operand_32bit_prefix
-	mov $0xed, %al
-	stosb %al, %es:(%edi)
+	movb $0xed, %al
+	stosb
 	jmp instruction_assembled
       in_imm:
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz in_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       in_imm_size_ok:
 	call get_byte_value
-	mov %al, %dl
-	pop %ax
-	cmp $1, %al
+	movb %al, %dl
+	popw %ax
+	cmpb $1, %al
 	je in_al_imm
-	cmp $2, %al
+	cmpb $2, %al
 	je in_ax_imm
-	cmp $4, %al
+	cmpb $4, %al
 	je in_eax_imm
 	jmp invalid_operand_size
       in_al_imm:
-	mov $0xe4, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb $0xe4, %al
+	stosb
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       in_ax_imm:
 	call operand_16bit_prefix
-	mov $0xe5, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb $0xe5, %al
+	stosb
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
       in_eax_imm:
 	call operand_32bit_prefix
-	mov $0xe5, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	movb $0xe5, %al
+	stosb
+	movb %dl, %al
+	stosb
 	jmp instruction_assembled
 out_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je out_imm
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x22, %al
+	lodsb
+	cmpb $0x22, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je out_dx_al
-	cmp $2, %al
+	cmpb $2, %al
 	je out_dx_ax
-	cmp $4, %al
+	cmpb $4, %al
 	je out_dx_eax
 	jmp invalid_operand_size
       out_dx_al:
-	mov $0xee, %al
-	stosb %al, %es:(%edi)
+	movb $0xee, %al
+	stosb
 	jmp instruction_assembled
       out_dx_ax:
 	call operand_16bit_prefix
-	mov $0xef, %al
-	stosb %al, %es:(%edi)
+	movb $0xef, %al
+	stosb
 	jmp instruction_assembled
       out_dx_eax:
 	call operand_32bit_prefix
-	mov $0xef, %al
-	stosb %al, %es:(%edi)
+	movb $0xef, %al
+	stosb
 	jmp instruction_assembled
       out_imm:
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz out_imm_size_ok
-	cmp $1, %al
+	cmpb $1, %al
 	jne invalid_operand_size
       out_imm_size_ok:
 	call get_byte_value
-	.byte 0xa2  #WORKAROUNDL movb %al, value
+	.byte 0xa2  /*WORKAROUNDL movb %al, value */
 	.long value
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
 	movb $0, operand_size
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	or %al, %al
+	orb %al, %al
 	jnz invalid_operand
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je out_imm_al
-	cmp $2, %al
+	cmpb $2, %al
 	je out_imm_ax
-	cmp $4, %al
+	cmpb $4, %al
 	je out_imm_eax
 	jmp invalid_operand_size
       out_imm_al:
-	mov $0xe6, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb $0xe6, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       out_imm_ax:
 	call operand_16bit_prefix
-	mov $0xe7, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb $0xe7, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
       out_imm_eax:
 	call operand_32bit_prefix
-	mov $0xe7, %al
-	stosb %al, %es:(%edi)
-	mov value, %al
-	stosb %al, %es:(%edi)
+	movb $0xe7, %al
+	stosb
+	movb value, %al
+	stosb
 	jmp instruction_assembled
 lar_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
 	movb $0xf, base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je lar_reg_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	mov operand_size, %al
-	cmp $2, %al
+	movb operand_size, %al
+	cmpb $2, %al
 	je lar_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je lar_32bit
 	jmp invalid_operand_size
       lar_16bit:
@@ -8600,16 +8601,16 @@ lar_instruction:
 	call store_instruction
 	jmp instruction_assembled
       lar_reg_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %bl
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $2, %al
+	movb postbyte_register, %bl
+	shlb $3, %bl
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $2, %al
 	je lar_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je lar_reg_reg_32bit
 	jmp invalid_operand_size
       lar_reg_reg_32bit:
@@ -8618,57 +8619,57 @@ lar_instruction:
       lar_reg_reg_16bit:
 	call operand_16bit_prefix
       lar_reg_reg_store:
-	mov $0xf, %al
-	mov extended_code, %ah
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xf, %al
+	movb extended_code, %ah
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
 invlpg_instruction:
 	movb $0xf, base_code
 	movb $1, extended_code
 	movb $7, postbyte_register
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	call store_instruction
 	jmp instruction_assembled
 basic_486_instruction:
 	movb $0xf, base_code
-	.byte 0xa2  #WORKAROUNDL movb %al, extended_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, extended_code */
 	.long extended_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je basic_486_reg
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	push %edx
-	push %bx
-	push %cx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	pushw %cx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	pop %cx
-	pop %bx
+	popw %cx
+	popw %bx
 	pop %edx
-	mov %ah, %al
-	cmp $1, %al
+	movb %ah, %al
+	cmpb $1, %al
 	je basic_486_mem_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_486_mem_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_486_mem_reg_32bit
 	jmp invalid_operand_size
       basic_486_mem_reg_8bit:
@@ -8685,29 +8686,29 @@ basic_486_instruction:
 	call store_instruction
 	jmp instruction_assembled
       basic_486_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	.byte 0xa2  #WORKAROUNDL movb %al, postbyte_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, postbyte_register */
 	.long postbyte_register
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov postbyte_register, %bl
-	shl $3, %al
-	or %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $1, %al
+	movb postbyte_register, %bl
+	shlb $3, %al
+	orb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $1, %al
 	je basic_486_reg_reg_8bit
-	cmp $2, %al
+	cmpb $2, %al
 	je basic_486_reg_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je basic_486_reg_reg_32bit
 	jmp invalid_operand_size
       basic_486_reg_reg_32bit:
@@ -8718,38 +8719,38 @@ basic_486_instruction:
 	call operand_16bit_prefix
 	incb extended_code
       basic_486_reg_reg_8bit:
-	mov $0xf, %al
-	mov extended_code, %ah
-	stosw %ax, %es:(%edi)
-	mov %bl, %al
-	stosb %al, %es:(%edi)
+	movb $0xf, %al
+	movb extended_code, %ah
+	stosw
+	movb %bl, %al
+	stosb
 	jmp instruction_assembled
 bswap_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov %al, %ah
-	add $0xc8, %ah
-	cmp $4, %ah
+	movb %al, %ah
+	addb $0xc8, %ah
+	cmpb $4, %ah
 	jne invalid_operand_size
 	call operand_32bit_prefix
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
+	movb $0xf, %al
+	stosw
 	jmp instruction_assembled
 conditional_jump:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_jump_operator
 	cmpb $2, jump_type
 	je invalid_operand
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $1, value_type
@@ -8759,14 +8760,14 @@ conditional_jump:
 	sub $2, %eax
 	cmpl $0, org_sib
 	jne invalid_use_of_symbol
-	mov operand_size, %bl
-	cmp $1, %bl
+	movb operand_size, %bl
+	cmpb $1, %bl
 	je conditional_jump_8bit
-	cmp $2, %bl
+	cmpb $2, %bl
 	je conditional_jump_16bit
-	cmp $4, %bl
+	cmpb $4, %bl
 	je conditional_jump_32bit
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_operand_size
 	cmp $0x80, %eax
 	jb conditional_jump_8bit
@@ -8781,12 +8782,12 @@ conditional_jump:
 	call operand_32bit_prefix
 	sub %edi, %edx
 	add %ecx, %edx
-	mov base_code, %ah
-	add $0x10, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
+	movb base_code, %ah
+	addb $0x10, %ah
+	movb $0xf, %al
+	stosw
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       conditional_jump_16bit:
 	sub $2, %eax
@@ -8795,12 +8796,12 @@ conditional_jump:
 	call operand_16bit_prefix
 	sub %edi, %edx
 	add %ecx, %edx
-	mov base_code, %ah
-	add $0x10, %ah
-	mov $0xf, %al
-	stosw %ax, %es:(%edi)
+	movb base_code, %ah
+	addb $0x10, %ah
+	movb $0xf, %al
+	stosw
 	mov %edx, %eax
-	stosw %ax, %es:(%edi)
+	stosw
 	cmp $0x10000, %eax
 	jge jump_out_of_range
 	cmp $-0x10000, %eax
@@ -8808,9 +8809,9 @@ conditional_jump:
 	jmp instruction_assembled
       conditional_jump_8bit:
 	mov %eax, %edx
-	mov %al, %ah
-	mov base_code, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb base_code, %al
+	stosw
 	cmp $0x80, %edx
 	jge jump_out_of_range
 	cmp $-0x80, %edx
@@ -8824,25 +8825,25 @@ conditional_jump:
 	movl $relative_jump_out_of_range, error
 	jmp instruction_assembled
 loop_instruction_16bit:
-	mov %al, %cl
+	movb %al, %cl
 	call address_16bit_prefix
-	mov %cl, %al
+	movb %cl, %al
 	jmp loop_instruction
 loop_instruction_32bit:
-	mov %al, %cl
+	movb %al, %cl
 	call address_32bit_prefix
-	mov %cl, %al
+	movb %cl, %al
 loop_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_jump_operator
 	cmpb $2, jump_type
 	je invalid_operand
 	call get_size_operator
-	cmp $'(, %al
+	cmpb $0x28, %al
 	jne invalid_operand
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	cmpb $1, value_type
@@ -8851,18 +8852,18 @@ loop_instruction:
 	add org_start, %eax
 	cmpl $0, org_sib
 	jne invalid_use_of_symbol
-	mov operand_size, %bl
-	cmp $1, %bl
+	movb operand_size, %bl
+	cmpb $1, %bl
 	je loop_8bit
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_operand_size
       loop_8bit:
 	sub $2, %eax
 	mov %eax, %edx
-	mov base_code, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	stosb
 	mov %edx, %eax
-	stosb %al, %es:(%edi)
+	stosb
 	cmp $0x80, %eax
 	jge jump_out_of_range
 	cmp $-0x80, %eax
@@ -8878,27 +8879,27 @@ jmp_instruction:
 	movb $0xe9, base_code
 	movb $0xea, extended_code
       process_jmp:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_jump_operator
 	call get_size_operator
-	cmp $0x10, %al
+	cmpb $0x10, %al
 	je jmp_reg
-	cmp $'(, %al
+	cmpb $0x28, %al
 	je jmp_imm
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
       jmp_mem:
 	call get_address
 	movb $0xff, base_code
 	mov %eax, %edx
-	mov operand_size, %al
-	or %al, %al
+	movb operand_size, %al
+	orb %al, %al
 	jz jmp_mem_size_not_specified
-	cmp $2, %al
+	cmpb $2, %al
 	je jmp_mem_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je jmp_mem_32bit
-	cmp $6, %al
+	cmpb $6, %al
 	je jmp_mem_48bit
 	jmp invalid_operand_size
       jmp_mem_size_not_specified:
@@ -8947,14 +8948,14 @@ jmp_instruction:
 	call store_instruction
 	jmp instruction_assembled
       jmp_reg:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call convert_register
-	mov %al, %bl
-	or $192, %bl
-	mov %ah, %al
-	cmp $2, %al
+	movb %al, %bl
+	orb $192, %bl
+	movb %ah, %al
+	cmpb $2, %al
 	je jmp_reg_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	je jmp_reg_32bit
 	jmp invalid_operand_size
       jmp_reg_32bit:
@@ -8966,41 +8967,41 @@ jmp_instruction:
 	je jmp_reg_far32bit
       jmp_reg_near32bit:
 	call operand_32bit_prefix
-	mov postbyte_register, %al
-	shl $3, %al
-	or %al, %bl
-	mov %bl, %ah
-	mov $0xff, %al
-	stosw %ax, %es:(%edi)
+	movb postbyte_register, %al
+	shlb $3, %al
+	orb %al, %bl
+	movb %bl, %ah
+	movb $0xff, %al
+	stosw
 	jmp instruction_assembled
       jmp_reg_far32bit:
 	call operand_32bit_prefix
-	mov postbyte_register, %al
-	inc %al
-	shl $3, %al
-	or %al, %bl
-	mov %bl, %ah
-	mov $0xff, %al
-	stosw %ax, %es:(%edi)
+	movb postbyte_register, %al
+	incb %al
+	shlb $3, %al
+	orb %al, %bl
+	movb %bl, %ah
+	movb $0xff, %al
+	stosw
 	jmp instruction_assembled
       jmp_reg_16bit:
 	cmpb $2, jump_type
 	je invalid_operand_size
 	call operand_16bit_prefix
-	mov postbyte_register, %al
-	shl $3, %al
-	or %al, %bl
-	mov %bl, %ah
-	mov $0xff, %al
-	stosw %ax, %es:(%edi)
+	movb postbyte_register, %al
+	shlb $3, %al
+	orb %al, %bl
+	movb %bl, %ah
+	movb $0xff, %al
+	stosw
 	jmp instruction_assembled
       jmp_imm:
 	push %esi
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	pop %ebx
-	cmpb $':, (%esi)
+	cmpb $0x3a, (%esi)
 	je jmp_far
 	cmpb $1, value_type
 	je invalid_use_of_symbol
@@ -9011,14 +9012,14 @@ jmp_instruction:
 	sub $2, %eax
 	cmpl $0, org_sib
 	jne invalid_use_of_symbol
-	mov operand_size, %bl
-	cmp $1, %bl
+	movb operand_size, %bl
+	cmpb $1, %bl
 	je jmp_8bit
-	cmp $2, %bl
+	cmpb $2, %bl
 	je jmp_16bit
-	cmp $4, %bl
+	cmpb $4, %bl
 	je jmp_32bit
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_operand_size
 	cmpb $0xe9, base_code
 	jne jmp_no8bit
@@ -9036,10 +9037,10 @@ jmp_instruction:
 	call operand_16bit_prefix
 	sub %edi, %edx
 	add %ecx, %edx
-	mov base_code, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	stosb
 	mov %edx, %eax
-	stosw %ax, %es:(%edi)
+	stosw
 	cmp $0x10000, %eax
 	jge jump_out_of_range
 	cmp $-0x10000, %eax
@@ -9052,18 +9053,18 @@ jmp_instruction:
 	call operand_32bit_prefix
 	sub %edi, %edx
 	add %ecx, %edx
-	mov base_code, %al
-	stosb %al, %es:(%edi)
+	movb base_code, %al
+	stosb
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	jmp instruction_assembled
       jmp_8bit:
 	cmpb $0xe9, base_code
 	jne invalid_operand_size
 	mov %eax, %edx
-	mov %al, %ah
-	mov $0xeb, %al
-	stosw %ax, %es:(%edi)
+	movb %al, %ah
+	movb $0xeb, %al
+	stosw
 	cmp $0x80, %edx
 	jge jump_out_of_range
 	cmp $-0x80, %edx
@@ -9074,77 +9075,77 @@ jmp_instruction:
 	je invalid_operand
 	mov %ebx, %esi
 	call get_word_value
-	mov %ax, %dx
-	mov operand_size, %bl
-	cmp $4, %bl
+	movw %ax, %dx
+	movb operand_size, %bl
+	cmpb $4, %bl
 	je jmp_far_16bit
-	cmp $6, %bl
+	cmpb $6, %bl
 	je jmp_far_32bit
-	or %bl, %bl
+	orb %bl, %bl
 	jnz invalid_operand_size
 	cmpb $32, code_type
 	je jmp_far_32bit
       jmp_far_16bit:
 	inc %esi
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov value_type, %al
-	push %ax
-	cmpb $'., (%esi)
+	movb value_type, %al
+	pushw %ax
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_word_value
 	mov %eax, %ebx
 	call operand_16bit_prefix
-	mov extended_code, %al
-	stosb %al, %es:(%edi)
-	mov %bx, %ax
+	movb extended_code, %al
+	stosb
+	movw %bx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
-	pop %ax
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	stosw
+	popw %ax
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
-	mov %dx, %ax
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
       jmp_far_32bit:
 	inc %esi
-	lodsb %ds:(%esi), %al
-	cmp $'(, %al
+	lodsb
+	cmpb $0x28, %al
 	jne invalid_operand
-	mov value_type, %al
-	push %ax
-	cmpb $'., (%esi)
+	movb value_type, %al
+	pushw %ax
+	cmpb $0x2e, (%esi)
 	je invalid_value
 	call get_dword_value
 	mov %eax, %ebx
 	call operand_32bit_prefix
-	mov extended_code, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %al
+	stosb
 	mov %ebx, %eax
 	call mark_relocation
-	stosl %eax, %es:(%edi)
-	pop %ax
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	stosl
+	popw %ax
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
-	mov %dx, %ax
+	movw %dx, %ax
 	call mark_relocation
-	stosw %ax, %es:(%edi)
+	stosw
 	jmp instruction_assembled
 ins_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	cmp $0x27, %bh
+	cmpb $0x27, %bh
 	je ins_16bit
-	cmp $0x47, %bh
+	cmpb $0x47, %bh
 	jne invalid_address
 	call address_32bit_prefix
 	jmp ins_store
@@ -9153,19 +9154,19 @@ ins_instruction:
       ins_store:
 	cmpb $1, segment_register
 	ja invalid_address
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x10, %al
+	lodsb
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x22, %al
+	lodsb
+	cmpb $0x22, %al
 	jne invalid_operand
-	mov $0x6c, %al
+	movb $0x6c, %al
 	cmpb $1, operand_size
 	je simple_instruction
-	inc %al
+	incb %al
 	cmpb $2, operand_size
 	je simple_instruction_16bit
 	cmpb $4, operand_size
@@ -9174,27 +9175,27 @@ ins_instruction:
 	je operand_size_not_specified
 	jmp invalid_operand_size
 outs_instruction:
-	lodsb %ds:(%esi), %al
-	cmp $0x10, %al
+	lodsb
+	cmpb $0x10, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $0x22, %al
+	lodsb
+	cmpb $0x22, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	cmp $0x26, %bh
+	cmpb $0x26, %bh
 	je outs_16bit
-	cmp $0x46, %bh
+	cmpb $0x46, %bh
 	jne invalid_address
 	call address_32bit_prefix
 	jmp outs_store
@@ -9205,10 +9206,10 @@ outs_instruction:
 	je outs_segment_ok
 	call store_segment_prefix
       outs_segment_ok:
-	mov $0x6e, %al
+	movb $0x6e, %al
 	cmpb $1, operand_size
 	je simple_instruction
-	inc %al
+	incb %al
 	cmpb $2, operand_size
 	je simple_instruction_16bit
 	cmpb $4, operand_size
@@ -9217,46 +9218,46 @@ outs_instruction:
 	je operand_size_not_specified
 	jmp invalid_operand_size
 movs_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
 	cmpb $1, segment_register
 	ja invalid_address
-	push %bx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	pushw %bx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
-	pop %dx
+	popw %dx
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	mov %dh, %al
-	mov %bh, %ah
-	shr $4, %al
-	shr $4, %ah
-	cmp %ah, %al
+	movb %dh, %al
+	movb %bh, %ah
+	shrb $4, %al
+	shrb $4, %ah
+	cmpb %ah, %al
 	jne address_sizes_do_not_agree
-	and $7, %bh
-	and $7, %dh
-	cmp $6, %bh
+	andb $7, %bh
+	andb $7, %dh
+	cmpb $6, %bh
 	jne invalid_address
-	cmp $7, %dh
+	cmpb $7, %dh
 	jne invalid_address
-	cmp $2, %al
+	cmpb $2, %al
 	je movs_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	jne invalid_address
 	call address_32bit_prefix
 	jmp movs_store
@@ -9267,31 +9268,31 @@ movs_instruction:
 	je movs_segment_ok
 	call store_segment_prefix
       movs_segment_ok:
-	mov $0xa4, %al
-	mov operand_size, %bl
-	cmp $1, %bl
+	movb $0xa4, %al
+	movb operand_size, %bl
+	cmpb $1, %bl
 	je simple_instruction
-	inc %al
-	cmp $2, %bl
+	incb %al
+	cmpb $2, %bl
 	je simple_instruction_16bit
-	cmp $4, %bl
+	cmpb $4, %bl
 	je simple_instruction_32bit
-	or %bl, %bl
+	orb %bl, %bl
 	jz operand_size_not_specified
 	jmp invalid_operand_size
 lods_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	cmp $0x26, %bh
+	cmpb $0x26, %bh
 	je lods_16bit
-	cmp $0x46, %bh
+	cmpb $0x46, %bh
 	jne invalid_address
 	call address_32bit_prefix
 	jmp lods_store
@@ -9302,10 +9303,10 @@ lods_instruction:
 	je lods_segment_ok
 	call store_segment_prefix
       lods_segment_ok:
-	mov $0xac, %al
+	movb $0xac, %al
 	cmpb $1, operand_size
 	je simple_instruction
-	inc %al
+	incb %al
 	cmpb $2, operand_size
 	je simple_instruction_16bit
 	cmpb $4, operand_size
@@ -9314,20 +9315,20 @@ lods_instruction:
 	je operand_size_not_specified
 	jmp invalid_operand_size
 stos_instruction:
-	.byte 0xa2  #WORKAROUNDL movb %al, base_code
+	.byte 0xa2  /*WORKAROUNDL movb %al, base_code */
 	.long base_code
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	cmp $0x27, %bh
+	cmpb $0x27, %bh
 	je stos_16bit
-	cmp $0x47, %bh
+	cmpb $0x47, %bh
 	jne invalid_address
 	call address_32bit_prefix
 	jmp stos_store
@@ -9336,10 +9337,10 @@ stos_instruction:
       stos_store:
 	cmpb $1, segment_register
 	ja invalid_address
-	mov base_code, %al
+	movb base_code, %al
 	cmpb $1, operand_size
 	je simple_instruction
-	inc %al
+	incb %al
 	cmpb $2, operand_size
 	je simple_instruction_16bit
 	cmpb $4, operand_size
@@ -9348,51 +9349,51 @@ stos_instruction:
 	je operand_size_not_specified
 	jmp invalid_operand_size
 cmps_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	mov segment_register, %al
-	push %ax
-	push %bx
-	lodsb %ds:(%esi), %al
-	cmp $44, %al
+	movb segment_register, %al
+	pushw %ax
+	pushw %bx
+	lodsb
+	cmpb $44, %al
 	jne invalid_operand
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	pop %dx
-	pop %ax
+	popw %dx
+	popw %ax
 	cmpb $1, segment_register
 	ja invalid_address
-	.byte 0xa2  #WORKAROUNDL movb %al, segment_register
+	.byte 0xa2  /*WORKAROUNDL movb %al, segment_register */
 	.long segment_register
-	mov %dh, %al
-	mov %bh, %ah
-	shr $4, %al
-	shr $4, %ah
-	cmp %ah, %al
+	movb %dh, %al
+	movb %bh, %ah
+	shrb $4, %al
+	shrb $4, %ah
+	cmpb %ah, %al
 	jne address_sizes_do_not_agree
-	and $7, %bh
-	and $7, %dh
-	cmp $7, %bh
+	andb $7, %bh
+	andb $7, %dh
+	cmpb $7, %bh
 	jne invalid_address
-	cmp $6, %dh
+	cmpb $6, %dh
 	jne invalid_address
-	cmp $2, %al
+	cmpb $2, %al
 	je cmps_16bit
-	cmp $4, %al
+	cmpb $4, %al
 	jne invalid_address
 	call address_32bit_prefix
 	jmp cmps_store
@@ -9403,31 +9404,31 @@ cmps_instruction:
 	je cmps_segment_ok
 	call store_segment_prefix
       cmps_segment_ok:
-	mov $0xa6, %al
-	mov operand_size, %bl
-	cmp $1, %bl
+	movb $0xa6, %al
+	movb operand_size, %bl
+	cmpb $1, %bl
 	je simple_instruction
-	inc %al
-	cmp $2, %bl
+	incb %al
+	cmpb $2, %bl
 	je simple_instruction_16bit
-	cmp $4, %bl
+	cmpb $4, %bl
 	je simple_instruction_32bit
-	or %bl, %bl
+	orb %bl, %bl
 	jz operand_size_not_specified
 	jmp invalid_operand_size
 xlat_instruction:
-	lodsb %ds:(%esi), %al
+	lodsb
 	call get_size_operator
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne invalid_operand
 	call get_address
 	or %eax, %eax
 	jnz invalid_address
-	or %ch, %bl
+	orb %ch, %bl
 	jnz invalid_address
-	cmp $0x23, %bh
+	cmpb $0x23, %bh
 	je xlat_16bit
-	cmp $0x43, %bh
+	cmpb $0x43, %bh
 	jne invalid_address
 	call address_32bit_prefix
 	jmp xlat_store
@@ -9435,28 +9436,28 @@ xlat_instruction:
 	call address_16bit_prefix
       xlat_store:
 	call store_segment_prefix_if_necessary
-	mov $0xd7, %al
+	movb $0xd7, %al
 	cmpb $1, operand_size
 	jbe simple_instruction
 	jmp invalid_operand_size
 cmpsd_instruction:
-	mov $0xa7, %al
-	mov (%esi), %ah
-	or %ah, %ah
+	movb $0xa7, %al
+	movb (%esi), %ah
+	orb %ah, %ah
 	jmp simple_instruction_32bit
 movsd_instruction:
-	mov $0xa5, %al
-	mov (%esi), %ah
-	or %ah, %ah
+	movb $0xa5, %al
+	movb (%esi), %ah
+	orb %ah, %ah
 	jmp simple_instruction_32bit
 convert_register:
-	mov %al, %ah
-	shr $4, %ah
-	and $7, %al
-	cmp $4, %ah
+	movb %al, %ah
+	shrb $4, %ah
+	andb $7, %al
+	cmpb $4, %ah
 	ja invalid_operand
       match_register_size:
-	cmp operand_size, %ah
+	cmpb operand_size, %ah
 	je register_size_ok
 	cmpb $0, operand_size
 	jne operand_sizes_do_not_match
@@ -9464,13 +9465,13 @@ convert_register:
       register_size_ok:
 	ret
 get_size_operator:
-	xor %ah, %ah
-	cmp $0x11, %al
+	xorb %ah, %ah
+	cmpb $0x11, %al
 	jne operand_size_ok
-	lodsw %ds:(%esi), %ax
-	xchg %ah, %al
+	lodsw
+	xchgb %ah, %al
 	movb $1, forced_size
-	cmp operand_size, %ah
+	cmpb operand_size, %ah
 	je forced_ok
 	cmpb $0, operand_size
 	jne operand_sizes_do_not_match
@@ -9478,152 +9479,152 @@ get_size_operator:
       forced_ok:
 	ret
       operand_size_ok:
-	cmp $'[, %al
+	cmpb $0x5b, %al
 	jne forced_ok
 	movb $0, forced_size
 	ret
 get_jump_operator:
 	movb $0, jump_type
-	cmp $0x12, %al
+	cmpb $0x12, %al
 	jne jump_operator_ok
-	lodsw %ds:(%esi), %ax
-	.byte 0xa2  #WORKAROUNDL movb %al, jump_type
+	lodsw
+	.byte 0xa2  /*WORKAROUNDL movb %al, jump_type */
 	.long jump_type
-	mov %ah, %al
+	movb %ah, %al
       jump_operator_ok:
 	ret
 operand_16bit_prefix:
 	cmpb $16, code_type
 	je size_prefix_ok
-	mov $0x66, %al
-	stosb %al, %es:(%edi)
+	movb $0x66, %al
+	stosb
 	ret
 operand_32bit_prefix:
 	cmpb $32, code_type
 	je size_prefix_ok
-	mov $0x66, %al
-	stosb %al, %es:(%edi)
+	movb $0x66, %al
+	stosb
       size_prefix_ok:
 	ret
 store_segment_prefix_if_necessary:
-	mov segment_register, %al
-	or %al, %al
+	movb segment_register, %al
+	orb %al, %al
 	jz segment_prefix_ok
-	cmp $3, %al
+	cmpb $3, %al
 	je ss_prefix
-	cmp $4, %al
+	cmpb $4, %al
 	ja segment_prefix_386
 	jb segment_prefix
-	cmp $0x25, %bh
+	cmpb $0x25, %bh
 	je segment_prefix
-	cmp $0x45, %bh
+	cmpb $0x45, %bh
 	je segment_prefix
-	cmp $0x44, %bh
+	cmpb $0x44, %bh
 	je segment_prefix
 	ret
       ss_prefix:
-	cmp $0x25, %bh
+	cmpb $0x25, %bh
 	je segment_prefix_ok
-	cmp $0x45, %bh
+	cmpb $0x45, %bh
 	je segment_prefix_ok
-	cmp $0x44, %bh
+	cmpb $0x44, %bh
 	je segment_prefix_ok
 	jmp segment_prefix
 store_segment_prefix:
-	mov segment_register, %al
-	or %al, %al
+	movb segment_register, %al
+	orb %al, %al
 	jz segment_prefix_ok
-	cmp $5, %al
+	cmpb $5, %al
 	jae segment_prefix_386
       segment_prefix:
-	dec %al
-	shl $3, %al
-	add $0x26, %al
-	stosb %al, %es:(%edi)
+	decb %al
+	shlb $3, %al
+	addb $0x26, %al
+	stosb
 	jmp segment_prefix_ok
       segment_prefix_386:
-	add $0x64-5, %al
-	stosb %al, %es:(%edi)
+	addb $0x64-5, %al
+	stosb
       segment_prefix_ok:
 	ret
 store_instruction:
 	call store_segment_prefix_if_necessary
       store_instruction_main:
-	or %bx, %bx
+	orw %bx, %bx
 	jz address_immediate
-	mov %bl, %al
-	or %bh, %al
-	and $240, %al
-	cmp $0x40, %al
+	movb %bl, %al
+	orb %bh, %al
+	andb $240, %al
+	cmpb $0x40, %al
 	je postbyte_32bit
 	call address_16bit_prefix
 	call store_instruction_code
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2326, %bx
-	.word 0x2326
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2326, %bx */
+	.value 0x2326
 	je address_bx_si
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2623, %bx
-	.word 0x2623
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2623, %bx */
+	.value 0x2623
 	je address_bx_si
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2327, %bx
-	.word 0x2327
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2327, %bx */
+	.value 0x2327
 	je address_bx_di
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2723, %bx
-	.word 0x2723
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2723, %bx */
+	.value 0x2723
 	je address_bx_di
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2526, %bx
-	.word 0x2526
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2526, %bx */
+	.value 0x2526
 	je address_bp_si
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2625, %bx
-	.word 0x2625
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2625, %bx */
+	.value 0x2625
 	je address_bp_si
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2527, %bx
-	.word 0x2527
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2527, %bx */
+	.value 0x2527
 	je address_bp_di
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2725, %bx
-	.word 0x2725
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2725, %bx */
+	.value 0x2725
 	je address_bp_di
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2600, %bx
-	.word 0x2600
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2600, %bx */
+	.value 0x2600
 	je address_si
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2700, %bx
-	.word 0x2700
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2700, %bx */
+	.value 0x2700
 	je address_di
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2300, %bx
-	.word 0x2300
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2300, %bx */
+	.value 0x2300
 	je address_bx
-	.byte 0x66, 0x81, 0xfb  #WORKAROUNDW cmp $0x2500, %bx
-	.word 0x2500
+	.byte 0x66, 0x81, 0xfb  /*WORKAROUNDW cmp $0x2500, %bx */
+	.value 0x2500
 	je address_bp
 	jmp invalid_address
       address_bx_si:
-	xor %al, %al
+	xorb %al, %al
 	jmp postbyte_16bit
       address_bx_di:
-	mov $1, %al
+	movb $1, %al
 	jmp postbyte_16bit
       address_bp_si:
-	mov $2, %al
+	movb $2, %al
 	jmp postbyte_16bit
       address_bp_di:
-	mov $3, %al
+	movb $3, %al
 	jmp postbyte_16bit
       address_si:
-	mov $4, %al
+	movb $4, %al
 	jmp postbyte_16bit
       address_di:
-	mov $5, %al
+	movb $5, %al
 	jmp postbyte_16bit
       address_bx:
-	mov $7, %al
+	movb $7, %al
 	jmp postbyte_16bit
       address_bp:
-	mov $6, %al
+	movb $6, %al
       postbyte_16bit:
-	cmp $1, %ch
+	cmpb $1, %ch
 	je address_8bit_value
-	cmp $2, %ch
+	cmpb $2, %ch
 	je address_16bit_value
-	or %ch, %ch
+	orb %ch, %ch
 	jnz address_sizes_do_not_agree
 	or %edx, %edx
 	jz address
@@ -9632,77 +9633,77 @@ store_instruction:
 	cmp $-0x80, %edx
 	jae address_8bit_value
       address_16bit_value:
-	or $128, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
+	orb $128, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
 	mov %edx, %eax
-	stosw %ax, %es:(%edi)
+	stosw
 	cmp $0x10000, %edx
 	jge value_out_of_range
 	cmp $-0x8000, %edx
 	jl value_out_of_range
 	ret
       address_8bit_value:
-	or $64, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	orb $64, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
+	movb %dl, %al
+	stosb
 	cmp $0x80, %edx
 	jge value_out_of_range
 	cmp $-0x80, %edx
 	jl value_out_of_range
 	ret
       address:
-	cmp $6, %al
+	cmpb $6, %al
 	je address_8bit_value
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
 	ret
       postbyte_32bit:
 	call address_32bit_prefix
 	call store_instruction_code
-	cmp $0x44, %bl
+	cmpb $0x44, %bl
 	je invalid_address
-	or %cl, %cl
+	orb %cl, %cl
 	jz only_base_register
       base_and_index:
-	mov $4, %al
-	xor %ah, %ah
-	cmp $1, %cl
+	movb $4, %al
+	xorb %ah, %ah
+	cmpb $1, %cl
 	je scale_ok
-	cmp $2, %cl
+	cmpb $2, %cl
 	je scale_1
-	cmp $4, %cl
+	cmpb $4, %cl
 	je scale_2
-	or $192, %ah
+	orb $192, %ah
 	jmp scale_ok
       scale_2:
-	or $128, %ah
+	orb $128, %ah
 	jmp scale_ok
       scale_1:
-	or $64, %ah
+	orb $64, %ah
       scale_ok:
-	or %bh, %bh
+	orb %bh, %bh
 	jz only_index_register
-	and $7, %bl
-	shl $3, %bl
-	or %bl, %ah
-	and $7, %bh
-	or %bh, %ah
-	cmp $1, %ch
+	andb $7, %bl
+	shlb $3, %bl
+	orb %bl, %ah
+	andb $7, %bh
+	orb %bh, %ah
+	cmpb $1, %ch
 	je sib_address_8bit_value
-	test $4, %ch
+	testb $4, %ch
 	jnz sib_address_32bit_value
-	cmp $2, %ch
+	cmpb $2, %ch
 	je address_sizes_do_not_agree
-	cmp $5, %bh
+	cmpb $5, %bh
 	je address_value
 	or %edx, %edx
 	jz sib_address
@@ -9712,59 +9713,59 @@ store_instruction:
 	cmp $-0x80, %edx
 	jae sib_address_8bit_value
       sib_address_32bit_value:
-	or $128, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosw %ax, %es:(%edi)
+	orb $128, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosw
 	jmp store_address_32bit_value
       sib_address_8bit_value:
-	or $64, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosw %ax, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	orb $64, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosw
+	movb %dl, %al
+	stosb
 	cmp $0x80, %edx
 	jge value_out_of_range
 	cmp $-0x80, %edx
 	jl value_out_of_range
 	ret
       sib_address:
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosw %ax, %es:(%edi)
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosw
 	ret
       only_index_register:
-	or $5, %ah
-	and $7, %bl
-	shl $3, %bl
-	or %bl, %ah
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosw %ax, %es:(%edi)
-	test $4, %ch
+	orb $5, %ah
+	andb $7, %bl
+	shlb $3, %bl
+	orb %bl, %ah
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosw
+	testb $4, %ch
 	jnz store_address_32bit_value
-	or %ch, %ch
+	orb %ch, %ch
 	jnz invalid_address_size
 	jmp store_address_32bit_value
       zero_index_register:
-	mov $4, %bl
-	mov $1, %cl
+	movb $4, %bl
+	movb $1, %cl
 	jmp base_and_index
       only_base_register:
-	mov %bh, %al
-	and $7, %al
-	cmp $4, %al
+	movb %bh, %al
+	andb $7, %al
+	cmpb $4, %al
 	je zero_index_register
-	cmp $1, %ch
+	cmpb $1, %ch
 	je simple_address_8bit_value
-	test $4, %ch
+	testb $4, %ch
 	jnz simple_address_32bit_value
-	cmp $2, %ch
+	cmpb $2, %ch
 	je address_sizes_do_not_agree
 	or %edx, %edx
 	jz simple_address
@@ -9773,62 +9774,62 @@ store_instruction:
 	cmp $-0x80, %edx
 	jae simple_address_8bit_value
       simple_address_32bit_value:
-	or $128, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
+	orb $128, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
 	jmp store_address_32bit_value
       simple_address_8bit_value:
-	or $64, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
-	mov %dl, %al
-	stosb %al, %es:(%edi)
+	orb $64, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
+	movb %dl, %al
+	stosb
 	cmp $0x80, %edx
 	jge value_out_of_range
 	cmp $-0x80, %edx
 	jl value_out_of_range
 	ret
       simple_address:
-	cmp $5, %al
+	cmpb $5, %al
 	je simple_address_8bit_value
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
 	ret
       address_immediate:
-	test $4, %ch
+	testb $4, %ch
 	jnz address_immediate_32bit
-	cmp $2, %ch
+	cmpb $2, %ch
 	je address_immediate_16bit
-	or %ch, %ch
+	orb %ch, %ch
 	jnz invalid_address_size
 	cmpb $16, code_type
 	je addressing_16bit
       address_immediate_32bit:
 	call address_32bit_prefix
 	call store_instruction_code
-	mov $5, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
+	movb $5, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
       store_address_32bit_value:
-	test $0x80, %ch
+	testb $0x80, %ch
 	jz address_relocation_ok
 	pushw value_type
 	movb $2, value_type
 	call mark_relocation
-	pop %ax
-	.byte 0xa2  #WORKAROUNDL movb %al, value_type
+	popw %ax
+	.byte 0xa2  /*WORKAROUNDL movb %al, value_type */
 	.long value_type
       address_relocation_ok:
 	mov %edx, %eax
-	stosl %eax, %es:(%edi)
+	stosl
 	ret
       addressing_16bit:
 	cmp $0x10000, %edx
@@ -9839,58 +9840,58 @@ store_instruction:
       address_immediate_16bit:
 	call address_16bit_prefix
 	call store_instruction_code
-	mov $6, %al
-	mov postbyte_register, %cl
-	shl $3, %cl
-	or %cl, %al
-	stosb %al, %es:(%edi)
+	movb $6, %al
+	movb postbyte_register, %cl
+	shlb $3, %cl
+	orb %cl, %al
+	stosb
 	mov %edx, %eax
-	stosw %ax, %es:(%edi)
+	stosw
 	cmp $0x10000, %edx
 	jge value_out_of_range
 	cmp $-0x8000, %edx
 	jl value_out_of_range
 	ret
       store_instruction_code:
-	mov base_code, %al
-	stosb %al, %es:(%edi)
-	cmp $0xf, %al
+	movb base_code, %al
+	stosb
+	cmpb $0xf, %al
 	jne instruction_code_ok
       store_extended_code:
-	mov extended_code, %al
-	stosb %al, %es:(%edi)
+	movb extended_code, %al
+	stosb
       instruction_code_ok:
 	ret
       address_16bit_prefix:
 	cmpb $16, code_type
 	je instruction_prefix_ok
-	mov $0x67, %al
-	stosb %al, %es:(%edi)
+	movb $0x67, %al
+	stosb
 	ret
       address_32bit_prefix:
 	cmpb $32, code_type
 	je instruction_prefix_ok
-	mov $0x67, %al
-	stosb %al, %es:(%edi)
+	movb $0x67, %al
+	stosb
       instruction_prefix_ok:
 	ret
 
-# %include '../formats.inc'
+/* %include '../formats.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 format_directive:
 	cmp code_start, %edi
 	jne unexpected_instruction
 	cmpb $0, output_format
 	jne unexpected_instruction
-	lodsb %ds:(%esi), %al
-	cmp $0x18, %al
+	lodsb
+	cmpb $0x18, %al
 	jne invalid_argument
-	lodsb %ds:(%esi), %al
-	.byte 0xa2  #WORKAROUNDL movb %al, output_format
+	lodsb
+	.byte 0xa2  /*WORKAROUNDL movb %al, output_format */
 	.long output_format
 	jmp instruction_assembled
 entry_directive:
@@ -9908,11 +9909,11 @@ heap_directive:
 mark_relocation:
 	ret
 
-# %include '../tables.inc'
+/* %include '../tables.inc' */
 
-#  flat assembler source
-#  Copyright (c) 1999-2001, Tomasz Grysztar
-#  All rights reserved.
+/*  flat assembler source */
+/*  Copyright (c) 1999-2001, Tomasz Grysztar */
+/*  All rights reserved. */
 
 get_operator:
 	push %esi
@@ -9921,35 +9922,35 @@ get_operator:
 	cmpb $0x1a, (%esi)
 	jne operator_start
 	inc %esi
-	lodsb %ds:(%esi), %al
+	lodsb
 	movzbl %al, %ebp
       operator_start:
 	mov %esi, %edx
       check_operator:
 	mov %edx, %esi
 	movzbl (%edi), %ecx
-	jecxz no_operator
+	jcxz no_operator
 	inc %edi
 	mov %edi, %ebx
 	add %ecx, %ebx
 	cmp %ebp, %ecx
 	jne next_operator
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	je operator_found
       next_operator:
 	mov %ebx, %edi
 	inc %edi
 	jmp check_operator
       no_operator:
-	xor %al, %al
+	xorb %al, %al
 	pop %ebp
 	pop %esi
 	ret
       operator_found:
 	pop %ebp
 	pop %eax
-	mov (%edi), %al
+	movb (%edi), %al
 	ret
 
 get_symbol:
@@ -9958,20 +9959,20 @@ get_symbol:
       scan_symbols:
 	mov %edx, %esi
 	movzbl (%edi), %eax
-	or %al, %al
+	orb %al, %al
 	jz no_symbol
 	mov %ebp, %ecx
 	inc %edi
 	mov %edi, %ebx
 	add %eax, %ebx
-	mov (%esi), %ah
-	cmp (%edi), %ah
+	movb (%esi), %ah
+	cmpb (%edi), %ah
 	jb no_symbol
 	ja next_symbol
-	cmp %al, %cl
+	cmpb %al, %cl
 	jne next_symbol
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	jb no_symbol
 	je symbol_ok
       next_symbol:
@@ -9984,7 +9985,7 @@ get_symbol:
 	stc
 	ret
       symbol_ok:
-	mov (%ebx), %ax
+	movw (%ebx), %ax
 	clc
 	ret
 
@@ -9993,20 +9994,20 @@ get_instruction:
 	mov %ecx, %ebp
 	cmp $11, %ecx
 	ja no_instruction
-	sub $2, %cl
+	subb $2, %cl
 	jc no_instruction
 	movzwl instructions(,%ecx,2), %edi
 	add $instructions, %edi
       scan_instructions:
 	mov %edx, %esi
-	mov (%edi), %al
-	or %al, %al
+	movb (%edi), %al
+	orb %al, %al
 	jz no_instruction
 	mov %ebp, %ecx
 	mov %edi, %ebx
 	add %ecx, %ebx
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	jb no_instruction
 	je instruction_ok
       next_instruction:
@@ -10019,17 +10020,17 @@ get_instruction:
 	stc
 	ret
       instruction_ok:
-	mov (%ebx), %al
-	mov 1(%ebx), %bx
+	movb (%ebx), %al
+	movw 1(%ebx), %bx
 	clc
 	ret
 
 get_label_id:
 	cmp $0x100, %ecx
 	jae name_too_long
-	cmpb $'., (%esi)
+	cmpb $0x2e, (%esi)
 	jne standard_label
-	cmpb $'., 1(%esi)
+	cmpb $0x2e, 1(%esi)
 	je standard_label
 	cmpl $0, current_locals_prefix
 	je standard_label
@@ -10037,26 +10038,26 @@ get_label_id:
 	push %ecx
 	push %esi
 	mov additional_memory, %edi
-	xor %al, %al
-	stosb %al, %es:(%edi)
+	xorb %al, %al
+	stosb
 	mov current_locals_prefix, %esi
 	mov %edi, %ebx
-	lodsb %ds:(%esi), %al
+	lodsb
 	movzbl %al, %ecx
 	lea (%edi,%ecx,1), %ebp
 	cmp additional_memory_end, %ebp
 	jae out_of_memory
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	pop %esi
 	pop %ecx
-	add %cl, %al
+	addb %cl, %al
 	jc name_too_long
 	lea (%edi,%ecx,1), %ebp
 	cmp additional_memory_end, %ebp
 	jae out_of_memory
 	rep
-	movsb %ds:(%esi), %es:(%edi)
+	movsb
 	movl %edi, additional_memory
 	pop %edi
 	push %esi
@@ -10068,10 +10069,10 @@ get_label_id:
       standard_label:
 	cmp $1, %ecx
 	jne find_label
-	lodsb %ds:(%esi), %al
-	cmp $'$, %al
+	lodsb
+	cmpb $0x24, %al
 	je get_current_offset_id
-	cmp $'%, %al
+	cmpb $0x25, %al
 	je get_counter_id
 	dec %esi
 	jmp find_label
@@ -10088,8 +10089,8 @@ get_label_id:
       hash_label:
 	movzbl (%esi,%ebx,1), %eax
 	add %eax, %ebp
-	inc %bl
-	cmp %cl, %bl
+	incb %bl
+	cmpb %cl, %bl
 	jb hash_label
 	shl $24, %ebx
 	or %ebx, %ebp
@@ -10107,8 +10108,8 @@ get_label_id:
 	cmp (%eax), %ebp
 	jne next_label
 	mov 4(%eax), %edi
-	repe
-	cmpsb %es:(%edi), %ds:(%esi)
+	repz
+	cmpsb
 	je label_found
       next_label:
 	add $16, %eax
@@ -10121,15 +10122,15 @@ get_label_id:
 	pop %esi
 	cmpb $0, -1(%esi)
 	je label_name_ok
-	mov (%esi), %al
-	cmp $0x30, %al
+	movb (%esi), %al
+	cmpb $0x30, %al
 	jb name_first_char_ok
-	cmp $0x39, %al
+	cmpb $0x39, %al
 	jbe invalid_name
       name_first_char_ok:
 	cmp $1, %ecx
 	jne check_for_reserved_word
-	cmp $'$, %al
+	cmpb $0x24, %al
 	je reserved_word_used_as_symbol
       check_for_reserved_word:
 	call get_instruction
@@ -10162,7 +10163,7 @@ CASE_SENSITIVE = 1
 symbol_characters:
 .byte 25
  .byte 9, 0xa, 0xd, 0x1a, 0x20
- .ascii "+-/*:=|&~()[]<>{},;\\"
+ .byte 0x2b, 0x2d, 0x2f, 0x2a, 0x3a, 0x3d, 0x7c, 0x26, 0x7e, 0x28, 0x29, 0x5b, 0x5d, 0x3c, 0x3e, 0x7b, 0x7d, 0x2c, 0x3b, 0x5c
 
 
 
@@ -10183,1310 +10184,1273 @@ symbol_characters:
 
 operators:
  .byte 1
- .ascii "+"
+ .byte 0x2b
  .byte 0x80
  .byte 1
- .ascii "-"
+ .byte 0x2d
  .byte 0x81
  .byte 1
- .ascii "*"
+ .byte 0x2a
  .byte 0x90
  .byte 1
- .ascii "/"
+ .byte 0x2f
  .byte 0x91
  .byte 3
- .ascii "mod"
+ .byte 0x6d, 0x6f, 0x64
  .byte 0xa0
  .byte 3
- .ascii "and"
+ .byte 0x61, 0x6e, 0x64
  .byte 0xb0
  .byte 2
- .ascii "or"
+ .byte 0x6f, 0x72
  .byte 0xb1
  .byte 3
- .ascii "xor"
+ .byte 0x78, 0x6f, 0x72
  .byte 0xb2
  .byte 3
- .ascii "shl"
+ .byte 0x73, 0x68, 0x6c
  .byte 0xc0
  .byte 3
- .ascii "shr"
+ .byte 0x73, 0x68, 0x72
  .byte 0xc1
  .byte 0
 
 single_operand_operators:
  .byte 3
- .ascii "not"
+ .byte 0x6e, 0x6f, 0x74
  .byte 0xd0
  .byte 3
- .ascii "rva"
+ .byte 0x72, 0x76, 0x61
  .byte 0xe0
  .byte 0
 
 directive_operators:
  .byte 2
- .ascii "at"
+ .byte 0x61, 0x74
  .byte 0x80
  .byte 2
- .ascii "eq"
+ .byte 0x65, 0x71
  .byte 0x81
  .byte 4
- .ascii "from"
+ .byte 0x66, 0x72, 0x6f, 0x6d
  .byte 0x82
  .byte 2
- .ascii "in"
+ .byte 0x69, 0x6e
  .byte 0x83
  .byte 2
- .ascii "on"
+ .byte 0x6f, 0x6e
  .byte 0x84
  .byte 0
 
 address_registers:
  .byte 2
- .ascii "bp"
+ .byte 0x62, 0x70
  .byte 0, 0x25
  .byte 2
- .ascii "bx"
+ .byte 0x62, 0x78
  .byte 0, 0x23
  .byte 2
- .ascii "di"
+ .byte 0x64, 0x69
  .byte 0, 0x27
  .byte 3
- .ascii "eax"
+ .byte 0x65, 0x61, 0x78
  .byte 0, 0x40
  .byte 3
- .ascii "ebp"
+ .byte 0x65, 0x62, 0x70
  .byte 0, 0x45
  .byte 3
- .ascii "ebx"
+ .byte 0x65, 0x62, 0x78
  .byte 0, 0x43
  .byte 3
- .ascii "ecx"
+ .byte 0x65, 0x63, 0x78
  .byte 0, 0x41
  .byte 3
- .ascii "edi"
+ .byte 0x65, 0x64, 0x69
  .byte 0, 0x47
  .byte 3
- .ascii "edx"
+ .byte 0x65, 0x64, 0x78
  .byte 0, 0x42
  .byte 3
- .ascii "esi"
+ .byte 0x65, 0x73, 0x69
  .byte 0, 0x46
  .byte 3
- .ascii "esp"
+ .byte 0x65, 0x73, 0x70
  .byte 0, 0x44
  .byte 2
- .ascii "si"
+ .byte 0x73, 0x69
  .byte 0, 0x26
  .byte 0
 
 address_sizes:
  .byte 4
- .ascii "byte"
+ .byte 0x62, 0x79, 0x74, 0x65
  .byte 0, 1
  .byte 5
- .ascii "dword"
+ .byte 0x64, 0x77, 0x6f, 0x72, 0x64
  .byte 0, 4
  .byte 4
- .ascii "word"
+ .byte 0x77, 0x6f, 0x72, 0x64
  .byte 0, 2
  .byte 0
 
 symbols:
  .byte 2
- .ascii "ah"
+ .byte 0x61, 0x68
  .byte 0x10, 0x14
  .byte 2
- .ascii "al"
+ .byte 0x61, 0x6c
  .byte 0x10, 0x10
  .byte 2
- .ascii "ax"
+ .byte 0x61, 0x78
  .byte 0x10, 0x20
  .byte 2
- .ascii "bh"
+ .byte 0x62, 0x68
  .byte 0x10, 0x17
  .byte 2
- .ascii "bl"
+ .byte 0x62, 0x6c
  .byte 0x10, 0x13
  .byte 2
- .ascii "bp"
+ .byte 0x62, 0x70
  .byte 0x10, 0x25
  .byte 2
- .ascii "bx"
+ .byte 0x62, 0x78
  .byte 0x10, 0x23
  .byte 4
- .ascii "byte"
+ .byte 0x62, 0x79, 0x74, 0x65
  .byte 0x11, 1
  .byte 2
- .ascii "ch"
+ .byte 0x63, 0x68
  .byte 0x10, 0x15
  .byte 2
- .ascii "cl"
+ .byte 0x63, 0x6c
  .byte 0x10, 0x11
  .byte 3
- .ascii "cr0"
+ .byte 0x63, 0x72, 0x30
  .byte 0x10, 0x50
  .byte 3
- .ascii "cr2"
+ .byte 0x63, 0x72, 0x32
  .byte 0x10, 0x52
  .byte 3
- .ascii "cr3"
+ .byte 0x63, 0x72, 0x33
  .byte 0x10, 0x53
  .byte 3
- .ascii "cr4"
+ .byte 0x63, 0x72, 0x34
  .byte 0x10, 0x54
  .byte 2
- .ascii "cs"
+ .byte 0x63, 0x73
  .byte 0x10, 0x62
  .byte 2
- .ascii "cx"
+ .byte 0x63, 0x78
  .byte 0x10, 0x21
  .byte 2
- .ascii "dh"
+ .byte 0x64, 0x68
  .byte 0x10, 0x16
  .byte 2
- .ascii "di"
+ .byte 0x64, 0x69
  .byte 0x10, 0x27
  .byte 2
- .ascii "dl"
+ .byte 0x64, 0x6c
  .byte 0x10, 0x12
  .byte 6
- .ascii "dqword"
+ .byte 0x64, 0x71, 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 16
  .byte 3
- .ascii "dr0"
+ .byte 0x64, 0x72, 0x30
  .byte 0x10, 0x70
  .byte 3
- .ascii "dr1"
+ .byte 0x64, 0x72, 0x31
  .byte 0x10, 0x71
  .byte 3
- .ascii "dr2"
+ .byte 0x64, 0x72, 0x32
  .byte 0x10, 0x72
  .byte 3
- .ascii "dr3"
+ .byte 0x64, 0x72, 0x33
  .byte 0x10, 0x73
  .byte 3
- .ascii "dr5"
+ .byte 0x64, 0x72, 0x35
  .byte 0x10, 0x75
  .byte 3
- .ascii "dr6"
+ .byte 0x64, 0x72, 0x36
  .byte 0x10, 0x76
  .byte 3
- .ascii "dr7"
+ .byte 0x64, 0x72, 0x37
  .byte 0x10, 0x77
  .byte 2
- .ascii "ds"
+ .byte 0x64, 0x73
  .byte 0x10, 0x64
  .byte 5
- .ascii "dword"
+ .byte 0x64, 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 4
  .byte 2
- .ascii "dx"
+ .byte 0x64, 0x78
  .byte 0x10, 0x22
  .byte 3
- .ascii "eax"
+ .byte 0x65, 0x61, 0x78
  .byte 0x10, 0x40
  .byte 3
- .ascii "ebp"
+ .byte 0x65, 0x62, 0x70
  .byte 0x10, 0x45
  .byte 3
- .ascii "ebx"
+ .byte 0x65, 0x62, 0x78
  .byte 0x10, 0x43
  .byte 3
- .ascii "ecx"
+ .byte 0x65, 0x63, 0x78
  .byte 0x10, 0x41
  .byte 3
- .ascii "edi"
+ .byte 0x65, 0x64, 0x69
  .byte 0x10, 0x47
  .byte 3
- .ascii "edx"
+ .byte 0x65, 0x64, 0x78
  .byte 0x10, 0x42
  .byte 2
- .ascii "es"
+ .byte 0x65, 0x73
  .byte 0x10, 0x61
  .byte 3
- .ascii "esi"
+ .byte 0x65, 0x73, 0x69
  .byte 0x10, 0x46
  .byte 3
- .ascii "esp"
+ .byte 0x65, 0x73, 0x70
  .byte 0x10, 0x44
  .byte 3
- .ascii "far"
+ .byte 0x66, 0x61, 0x72
  .byte 0x12, 2
  .byte 2
- .ascii "fs"
+ .byte 0x66, 0x73
  .byte 0x10, 0x65
  .byte 5
- .ascii "fword"
+ .byte 0x66, 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 6
  .byte 2
- .ascii "gs"
+ .byte 0x67, 0x73
  .byte 0x10, 0x66
  .byte 3
- .ascii "mm0"
+ .byte 0x6d, 0x6d, 0x30
  .byte 0x10, 0x80
  .byte 3
- .ascii "mm1"
+ .byte 0x6d, 0x6d, 0x31
  .byte 0x10, 0x81
  .byte 3
- .ascii "mm2"
+ .byte 0x6d, 0x6d, 0x32
  .byte 0x10, 0x82
  .byte 3
- .ascii "mm3"
+ .byte 0x6d, 0x6d, 0x33
  .byte 0x10, 0x83
  .byte 3
- .ascii "mm4"
+ .byte 0x6d, 0x6d, 0x34
  .byte 0x10, 0x84
  .byte 3
- .ascii "mm5"
+ .byte 0x6d, 0x6d, 0x35
  .byte 0x10, 0x85
  .byte 3
- .ascii "mm6"
+ .byte 0x6d, 0x6d, 0x36
  .byte 0x10, 0x86
  .byte 3
- .ascii "mm7"
+ .byte 0x6d, 0x6d, 0x37
  .byte 0x10, 0x87
  .byte 4
- .ascii "near"
+ .byte 0x6e, 0x65, 0x61, 0x72
  .byte 0x12, 1
  .byte 5
- .ascii "pword"
+ .byte 0x70, 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 6
  .byte 5
- .ascii "qword"
+ .byte 0x71, 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 8
  .byte 2
- .ascii "si"
+ .byte 0x73, 0x69
  .byte 0x10, 0x26
  .byte 2
- .ascii "sp"
+ .byte 0x73, 0x70
  .byte 0x10, 0x24
  .byte 2
- .ascii "ss"
+ .byte 0x73, 0x73
  .byte 0x10, 0x63
  .byte 2
- .ascii "st"
+ .byte 0x73, 0x74
  .byte 0x10, 0xa0
  .byte 3
- .ascii "st0"
+ .byte 0x73, 0x74, 0x30
  .byte 0x10, 0xa0
  .byte 3
- .ascii "st1"
+ .byte 0x73, 0x74, 0x31
  .byte 0x10, 0xa1
  .byte 3
- .ascii "st2"
+ .byte 0x73, 0x74, 0x32
  .byte 0x10, 0xa2
  .byte 3
- .ascii "st3"
+ .byte 0x73, 0x74, 0x33
  .byte 0x10, 0xa3
  .byte 3
- .ascii "st4"
+ .byte 0x73, 0x74, 0x34
  .byte 0x10, 0xa4
  .byte 3
- .ascii "st5"
+ .byte 0x73, 0x74, 0x35
  .byte 0x10, 0xa5
  .byte 3
- .ascii "st6"
+ .byte 0x73, 0x74, 0x36
  .byte 0x10, 0xa6
  .byte 3
- .ascii "st7"
+ .byte 0x73, 0x74, 0x37
  .byte 0x10, 0xa7
  .byte 5
- .ascii "tword"
+ .byte 0x74, 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 0xa
  .byte 5
- .ascii "use16"
+ .byte 0x75, 0x73, 0x65, 0x31, 0x36
  .byte 0x13, 0x10
  .byte 5
- .ascii "use32"
+ .byte 0x75, 0x73, 0x65, 0x33, 0x32
  .byte 0x13, 0x20
  .byte 4
- .ascii "word"
+ .byte 0x77, 0x6f, 0x72, 0x64
  .byte 0x11, 2
  .byte 4
- .ascii "xmm0"
+ .byte 0x78, 0x6d, 0x6d, 0x30
  .byte 0x10, 0x90
  .byte 4
- .ascii "xmm1"
+ .byte 0x78, 0x6d, 0x6d, 0x31
  .byte 0x10, 0x91
  .byte 4
- .ascii "xmm2"
+ .byte 0x78, 0x6d, 0x6d, 0x32
  .byte 0x10, 0x92
  .byte 4
- .ascii "xmm3"
+ .byte 0x78, 0x6d, 0x6d, 0x33
  .byte 0x10, 0x93
  .byte 4
- .ascii "xmm4"
+ .byte 0x78, 0x6d, 0x6d, 0x34
  .byte 0x10, 0x94
  .byte 4
- .ascii "xmm5"
+ .byte 0x78, 0x6d, 0x6d, 0x35
  .byte 0x10, 0x95
  .byte 4
- .ascii "xmm6"
+ .byte 0x78, 0x6d, 0x6d, 0x36
  .byte 0x10, 0x96
  .byte 4
- .ascii "xmm7"
+ .byte 0x78, 0x6d, 0x6d, 0x37
  .byte 0x10, 0x97
  .byte 0
 
 formatter_symbols:
- .if !CASE_SENSITIVE
+ /*.if !CASE_SENSITIVE*/
 
+/**/
+ /*.byte 6*/
+ /*.ascii "binary"*/
+ /*.byte 0x18, 1*/
+ /*.byte 4*/
+ /*.ascii "code"*/
+ /*.byte 0x19, 5*/
+ /*.byte 7*/
+ /*.ascii "console"*/
+ /*.byte 0x1b, 3*/
+ /*.byte 4*/
+ /*.ascii "data"*/
+ /*.byte 0x19, 6*/
+ /*.byte 11*/
+ /*.ascii "discardable"*/
+ /*.byte 0x19, 25*/
+ /*.byte 3*/
+ /*.ascii "dll"*/
+ /*.byte 0x1b, 0x80*/
+ /*.byte 10*/
+ /*.ascii "executable"*/
+ /*.byte 0x19, 29*/
+ /*.byte 6*/
+ /*.ascii "export"*/
+ /*.byte 0x1a, 0*/
+ /*.byte 6*/
+ /*.ascii "fixups"*/
+ /*.byte 0x1a, 5*/
+ /*.byte 3*/
+ /*.ascii "gui"*/
+ /*.byte 0x1b, 2*/
+ /*.byte 4*/
+ /*.ascii "i386"*/
+ /*.byte 0x1b, 0x43*/
+ /*.byte 4*/
+ /*.ascii "i486"*/
+ /*.byte 0x1b, 0x44*/
+ /*.byte 4*/
+ /*.ascii "i586"*/
+ /*.byte 0x1b, 0x45*/
+ /*.byte 6*/
+ /*.ascii "import"*/
+ /*.byte 0x1a, 1*/
+ /*.byte 2*/
+ /*.ascii "mz"*/
+ /*.byte 0x18, 2*/
+ /*.byte 6*/
+ /*.ascii "native"*/
+ /*.byte 0x1b, 1*/
+ /*.byte 2*/
+ /*.ascii "pe"*/
+ /*.byte 0x18, 3*/
+ /*.byte 8*/
+ /*.ascii "readable"*/
+ /*.byte 0x19, 30*/
+ /*.byte 8*/
+ /*.ascii "resource"*/
+ /*.byte 0x1a, 2*/
+ /*.byte 9*/
+ /*.ascii "shareable"*/
+ /*.byte 0x19, 28*/
+ /*.byte 5*/
+ /*.ascii "udata"*/
+ /*.byte 0x19, 7*/
+ /*.byte 9*/
+ /*.ascii "writeable"*/
+ /*.byte 0x19, 31*/
+ /*.else*/
+ .byte 3
+ .byte 0x44, 0x4c, 0x4c
+ .byte 0x1b, 0x80
+ .byte 3
+ .byte 0x47, 0x55, 0x49
+ .byte 0x1b, 2
+ .byte 2
+ .byte 0x4d, 0x5a
+ .byte 0x18, 2
+ .byte 2
+ .byte 0x50, 0x45
+ .byte 0x18, 3
  .byte 6
- .ascii "binary"
+ .byte 0x62, 0x69, 0x6e, 0x61, 0x72, 0x79
  .byte 0x18, 1
  .byte 4
- .ascii "code"
+ .byte 0x63, 0x6f, 0x64, 0x65
  .byte 0x19, 5
  .byte 7
- .ascii "console"
+ .byte 0x63, 0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65
  .byte 0x1b, 3
  .byte 4
- .ascii "data"
+ .byte 0x64, 0x61, 0x74, 0x61
  .byte 0x19, 6
  .byte 11
- .ascii "discardable"
- .byte 0x19, 25
- .byte 3
- .ascii "dll"
- .byte 0x1b, 0x80
- .byte 10
- .ascii "executable"
- .byte 0x19, 29
- .byte 6
- .ascii "export"
- .byte 0x1a, 0
- .byte 6
- .ascii "fixups"
- .byte 0x1a, 5
- .byte 3
- .ascii "gui"
- .byte 0x1b, 2
- .byte 4
- .ascii "i386"
- .byte 0x1b, 0x43
- .byte 4
- .ascii "i486"
- .byte 0x1b, 0x44
- .byte 4
- .ascii "i586"
- .byte 0x1b, 0x45
- .byte 6
- .ascii "import"
- .byte 0x1a, 1
- .byte 2
- .ascii "mz"
- .byte 0x18, 2
- .byte 6
- .ascii "native"
- .byte 0x1b, 1
- .byte 2
- .ascii "pe"
- .byte 0x18, 3
- .byte 8
- .ascii "readable"
- .byte 0x19, 30
- .byte 8
- .ascii "resource"
- .byte 0x1a, 2
- .byte 9
- .ascii "shareable"
- .byte 0x19, 28
- .byte 5
- .ascii "udata"
- .byte 0x19, 7
- .byte 9
- .ascii "writeable"
- .byte 0x19, 31
- .else
- .byte 3
- .ascii "DLL"
- .byte 0x1b, 0x80
- .byte 3
- .ascii "GUI"
- .byte 0x1b, 2
- .byte 2
- .ascii "MZ"
- .byte 0x18, 2
- .byte 2
- .ascii "PE"
- .byte 0x18, 3
- .byte 6
- .ascii "binary"
- .byte 0x18, 1
- .byte 4
- .ascii "code"
- .byte 0x19, 5
- .byte 7
- .ascii "console"
- .byte 0x1b, 3
- .byte 4
- .ascii "data"
- .byte 0x19, 6
- .byte 11
- .ascii "discardable"
+ .byte 0x64, 0x69, 0x73, 0x63, 0x61, 0x72, 0x64, 0x61, 0x62, 0x6c, 0x65
  .byte 0x19, 25
  .byte 10
- .ascii "executable"
+ .byte 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x61, 0x62, 0x6c, 0x65
  .byte 0x19, 29
  .byte 6
- .ascii "export"
+ .byte 0x65, 0x78, 0x70, 0x6f, 0x72, 0x74
  .byte 0x1a, 0
  .byte 6
- .ascii "fixups"
+ .byte 0x66, 0x69, 0x78, 0x75, 0x70, 0x73
  .byte 0x1a, 5
  .byte 4
- .ascii "i386"
+ .byte 0x69, 0x33, 0x38, 0x36
  .byte 0x1b, 0x43
  .byte 4
- .ascii "i486"
+ .byte 0x69, 0x34, 0x38, 0x36
  .byte 0x1b, 0x44
  .byte 4
- .ascii "i586"
+ .byte 0x69, 0x35, 0x38, 0x36
  .byte 0x1b, 0x45
  .byte 6
- .ascii "import"
+ .byte 0x69, 0x6d, 0x70, 0x6f, 0x72, 0x74
  .byte 0x1a, 1
  .byte 6
- .ascii "native"
+ .byte 0x6e, 0x61, 0x74, 0x69, 0x76, 0x65
  .byte 0x1b, 1
  .byte 8
- .ascii "readable"
+ .byte 0x72, 0x65, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65
  .byte 0x19, 30
  .byte 8
- .ascii "resource"
+ .byte 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65
  .byte 0x1a, 2
  .byte 9
- .ascii "shareable"
+ .byte 0x73, 0x68, 0x61, 0x72, 0x65, 0x61, 0x62, 0x6c, 0x65
  .byte 0x19, 28
  .byte 5
- .ascii "udata"
+ .byte 0x75, 0x64, 0x61, 0x74, 0x61
  .byte 0x19, 7
  .byte 9
- .ascii "writeable"
+ .byte 0x77, 0x72, 0x69, 0x74, 0x65, 0x61, 0x62, 0x6c, 0x65
  .byte 0x19, 31
- .endif
+ /*.endif*/
  .byte 0
 
 preprocessor_directives:
  .byte 7
- .ascii "include"
- .word include_file-preprocessor
+ .byte 0x69, 0x6e, 0x63, 0x6c, 0x75, 0x64, 0x65
+ .value include_file-preprocessor
  .byte 5
- .ascii "macro"
- .word define_macro-preprocessor
+ .byte 0x6d, 0x61, 0x63, 0x72, 0x6f
+ .value define_macro-preprocessor
  .byte 5
- .ascii "purge"
- .word purge_macro-preprocessor
+ .byte 0x70, 0x75, 0x72, 0x67, 0x65
+ .value purge_macro-preprocessor
  .byte 5
- .ascii "struc"
- .word define_struc-preprocessor
+ .byte 0x73, 0x74, 0x72, 0x75, 0x63
+ .value define_struc-preprocessor
  .byte 0
 
 macro_directives:
  .byte 6
- .ascii "common"
- .word common_block-preprocessor
+ .byte 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e
+ .value common_block-preprocessor
  .byte 7
- .ascii "forward"
- .word forward_block-preprocessor
+ .byte 0x66, 0x6f, 0x72, 0x77, 0x61, 0x72, 0x64
+ .value forward_block-preprocessor
  .byte 5
- .ascii "local"
- .word local_symbols-preprocessor
+ .byte 0x6c, 0x6f, 0x63, 0x61, 0x6c
+ .value local_symbols-preprocessor
  .byte 7
- .ascii "reverse"
- .word reverse_block-preprocessor
+ .byte 0x72, 0x65, 0x76, 0x65, 0x72, 0x73, 0x65
+ .value reverse_block-preprocessor
  .byte 0
 
 data_handlers:
- .word data_bytes-assembler
- .word data_file-assembler
- .word reserve_bytes-assembler
- .word data_words-assembler
- .word data_unicode-assembler
- .word reserve_words-assembler
- .word data_dwords-assembler
- .word reserve_dwords-assembler
- .word data_pwords-assembler
- .word reserve_pwords-assembler
- .word data_qwords-assembler
- .word reserve_qwords-assembler
- .word data_twords-assembler
- .word reserve_twords-assembler
+ .value --data_bytes___assembler
+ .value --data_file___assembler
+ .value --reserve_bytes___assembler
+ .value --data_words___assembler
+ .value --data_unicode___assembler
+ .value --reserve_words___assembler
+ .value --data_dwords___assembler
+ .value --reserve_dwords___assembler
+ .value --data_pwords___assembler
+ .value --reserve_pwords___assembler
+ .value --data_qwords___assembler
+ .value --reserve_qwords___assembler
+ .value --data_twords___assembler
+ .value --reserve_twords___assembler
 
 data_directives:
  .byte 2
- .ascii "db"
+ .byte 0x64, 0x62
  .byte 1, 0
  .byte 2
- .ascii "dd"
+ .byte 0x64, 0x64
  .byte 4, 6
  .byte 2
- .ascii "dp"
+ .byte 0x64, 0x70
  .byte 6, 8
  .byte 2
- .ascii "dq"
+ .byte 0x64, 0x71
  .byte 8, 10
  .byte 2
- .ascii "dt"
+ .byte 0x64, 0x74
  .byte 10, 12
  .byte 2
- .ascii "du"
+ .byte 0x64, 0x75
  .byte 2, 4
  .byte 2
- .ascii "dw"
+ .byte 0x64, 0x77
  .byte 2, 3
  .byte 4
- .ascii "file"
+ .byte 0x66, 0x69, 0x6c, 0x65
  .byte 1, 1
  .byte 2
- .ascii "rb"
+ .byte 0x72, 0x62
  .byte 1, 2
  .byte 2
- .ascii "rd"
+ .byte 0x72, 0x64
  .byte 4, 7
  .byte 2
- .ascii "rp"
+ .byte 0x72, 0x70
  .byte 6, 9
  .byte 2
- .ascii "rq"
+ .byte 0x72, 0x71
  .byte 8, 11
  .byte 2
- .ascii "rt"
+ .byte 0x72, 0x74
  .byte 10, 13
  .byte 2
- .ascii "rw"
+ .byte 0x72, 0x77
  .byte 2, 5
  .byte 0
 
 instructions:
- .word instructions_2-instructions
- .word instructions_3-instructions
- .word instructions_4-instructions
- .word instructions_5-instructions
- .word instructions_6-instructions
- .word instructions_7-instructions
- .word instructions_8-instructions
- .word instructions_9-instructions
- .word instructions_10-instructions
- .word instructions_11-instructions
+ .value --instructions_2___instructions
+ .value --instructions_3___instructions
+ .value --instructions_4___instructions
+ .value --instructions_5___instructions
+ .value --instructions_6___instructions
+ .value --instructions_7___instructions
+ .value --instructions_8___instructions
+ .value --instructions_9___instructions
+ .value --instructions_10___instructions
+ .value --instructions_11___instructions
 
-##%macro dbw 3
-  ##db %1, %2
-  ##dw %3
-##%endm
+/*%macro dbw 3 */
+/*db %1, %2 */
+/*dw %3 */
+/*%endm */
 
 
 instructions_2:
- .ascii "bt"
+ .byte 0x62, 0x74
  .byte 4
- .word bt_instruction-assembler
- .ascii "if"
- .byte 0
- .word if_directive-assembler
- .ascii "in"
- .byte 0
- .word in_instruction-assembler
- .ascii "ja"
+ .value --bt_instruction___assembler
+ .string "if"
+ .value --if_directive___assembler
+ .string "in"
+ .value --in_instruction___assembler
+ .byte 0x6a, 0x61
  .byte 0x77
- .word conditional_jump-assembler
- .ascii "jb"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x62
  .byte 0x72
- .word conditional_jump-assembler
- .ascii "jc"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x63
  .byte 0x72
- .word conditional_jump-assembler
- .ascii "je"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x65
  .byte 0x74
- .word conditional_jump-assembler
- .ascii "jg"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x67
  .byte 0x7f
- .word conditional_jump-assembler
- .ascii "jl"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6c
  .byte 0x7c
- .word conditional_jump-assembler
- .ascii "jo"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6f
  .byte 0x70
- .word conditional_jump-assembler
- .ascii "jp"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x70
  .byte 0x7a
- .word conditional_jump-assembler
- .ascii "js"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x73
  .byte 0x78
- .word conditional_jump-assembler
- .ascii "jz"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x7a
  .byte 0x74
- .word conditional_jump-assembler
- .ascii "or"
+ .value --conditional_jump___assembler
+ .byte 0x6f, 0x72
  .byte 0x8
- .word basic_instruction-assembler
+ .value --basic_instruction___assembler
  .byte 0
 instructions_3:
- .ascii "aaa"
+ .byte 0x61, 0x61, 0x61
  .byte 0x37
- .word simple_instruction-assembler
- .ascii "aad"
+ .value --simple_instruction___assembler
+ .byte 0x61, 0x61, 0x64
  .byte 0xd5
- .word aa_instruction-assembler
- .ascii "aam"
+ .value --aa_instruction___assembler
+ .byte 0x61, 0x61, 0x6d
  .byte 0xd4
- .word aa_instruction-assembler
- .ascii "aas"
+ .value --aa_instruction___assembler
+ .byte 0x61, 0x61, 0x73
  .byte 0x3f
- .word simple_instruction-assembler
- .ascii "adc"
+ .value --simple_instruction___assembler
+ .byte 0x61, 0x64, 0x63
  .byte 0x10
- .word basic_instruction-assembler
- .ascii "add"
+ .value --basic_instruction___assembler
+ .byte 0x61, 0x64, 0x64
  .byte 0x0
- .word basic_instruction-assembler
- .ascii "and"
+ .value --basic_instruction___assembler
+ .byte 0x61, 0x6e, 0x64
  .byte 0x20
- .word basic_instruction-assembler
- .ascii "bsf"
+ .value --basic_instruction___assembler
+ .byte 0x62, 0x73, 0x66
  .byte 0xbc
- .word bs_instruction-assembler
- .ascii "bsr"
+ .value --bs_instruction___assembler
+ .byte 0x62, 0x73, 0x72
  .byte 0xbd
- .word bs_instruction-assembler
- .ascii "btc"
+ .value --bs_instruction___assembler
+ .byte 0x62, 0x74, 0x63
  .byte 7
- .word bt_instruction-assembler
- .ascii "btr"
+ .value --bt_instruction___assembler
+ .byte 0x62, 0x74, 0x72
  .byte 6
- .word bt_instruction-assembler
- .ascii "bts"
+ .value --bt_instruction___assembler
+ .byte 0x62, 0x74, 0x73
  .byte 5
- .word bt_instruction-assembler
- .ascii "cbw"
+ .value --bt_instruction___assembler
+ .byte 0x63, 0x62, 0x77
  .byte 0x98
- .word simple_instruction_16bit-assembler
- .ascii "cdq"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x63, 0x64, 0x71
  .byte 0x99
- .word simple_instruction_32bit-assembler
- .ascii "clc"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x63, 0x6c, 0x63
  .byte 0xf8
- .word simple_instruction-assembler
- .ascii "cld"
+ .value --simple_instruction___assembler
+ .byte 0x63, 0x6c, 0x64
  .byte 0xfc
- .word simple_instruction-assembler
- .ascii "cli"
+ .value --simple_instruction___assembler
+ .byte 0x63, 0x6c, 0x69
  .byte 0xfa
- .word simple_instruction-assembler
- .ascii "cmc"
+ .value --simple_instruction___assembler
+ .byte 0x63, 0x6d, 0x63
  .byte 0xf5
- .word simple_instruction-assembler
- .ascii "cmp"
+ .value --simple_instruction___assembler
+ .byte 0x63, 0x6d, 0x70
  .byte 0x38
- .word basic_instruction-assembler
- .ascii "cwd"
+ .value --basic_instruction___assembler
+ .byte 0x63, 0x77, 0x64
  .byte 0x99
- .word simple_instruction_16bit-assembler
- .ascii "daa"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x64, 0x61, 0x61
  .byte 0x27
- .word simple_instruction-assembler
- .ascii "das"
+ .value --simple_instruction___assembler
+ .byte 0x64, 0x61, 0x73
  .byte 0x2f
- .word simple_instruction-assembler
- .ascii "dec"
+ .value --simple_instruction___assembler
+ .byte 0x64, 0x65, 0x63
  .byte 1
- .word inc_instruction-assembler
- .ascii "div"
+ .value --inc_instruction___assembler
+ .byte 0x64, 0x69, 0x76
  .byte 6
- .word single_operand_instruction-assembler
- .ascii "end"
- .byte 0
- .word end_directive-assembler
- .ascii "hlt"
+ .value --single_operand_instruction___assembler
+ .string "end"
+ .value --end_directive___assembler
+ .byte 0x68, 0x6c, 0x74
  .byte 0xf4
- .word simple_instruction-assembler
- .ascii "inc"
- .byte 0
- .word inc_instruction-assembler
- .ascii "ins"
- .byte 0
- .word ins_instruction-assembler
- .ascii "int"
+ .value --simple_instruction___assembler
+ .string "inc"
+ .value --inc_instruction___assembler
+ .string "ins"
+ .value --ins_instruction___assembler
+ .byte 0x69, 0x6e, 0x74
  .byte 0xcd
- .word int_instruction-assembler
- .ascii "jae"
+ .value --int_instruction___assembler
+ .byte 0x6a, 0x61, 0x65
  .byte 0x73
- .word conditional_jump-assembler
- .ascii "jbe"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x62, 0x65
  .byte 0x76
- .word conditional_jump-assembler
- .ascii "jge"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x67, 0x65
  .byte 0x7d
- .word conditional_jump-assembler
- .ascii "jle"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6c, 0x65
  .byte 0x7e
- .word conditional_jump-assembler
- .ascii "jmp"
- .byte 0
- .word jmp_instruction-assembler
- .ascii "jna"
+ .value --conditional_jump___assembler
+ .string "jmp"
+ .value --jmp_instruction___assembler
+ .byte 0x6a, 0x6e, 0x61
  .byte 0x76
- .word conditional_jump-assembler
- .ascii "jnb"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x62
  .byte 0x73
- .word conditional_jump-assembler
- .ascii "jnc"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x63
  .byte 0x73
- .word conditional_jump-assembler
- .ascii "jne"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x65
  .byte 0x75
- .word conditional_jump-assembler
- .ascii "jng"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x67
  .byte 0x7e
- .word conditional_jump-assembler
- .ascii "jnl"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x6c
  .byte 0x7d
- .word conditional_jump-assembler
- .ascii "jno"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x6f
  .byte 0x71
- .word conditional_jump-assembler
- .ascii "jnp"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x70
  .byte 0x7b
- .word conditional_jump-assembler
- .ascii "jns"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x73
  .byte 0x79
- .word conditional_jump-assembler
- .ascii "jnz"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x7a
  .byte 0x75
- .word conditional_jump-assembler
- .ascii "jpe"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x70, 0x65
  .byte 0x7a
- .word conditional_jump-assembler
- .ascii "jpo"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x70, 0x6f
  .byte 0x7b
- .word conditional_jump-assembler
- .ascii "lar"
+ .value --conditional_jump___assembler
+ .byte 0x6c, 0x61, 0x72
  .byte 2
- .word lar_instruction-assembler
- .ascii "lds"
+ .value --lar_instruction___assembler
+ .byte 0x6c, 0x64, 0x73
  .byte 3
- .word ls_instruction-assembler
- .ascii "lea"
- .byte 0
- .word lea_instruction-assembler
- .ascii "les"
- .byte 0
- .word ls_instruction-assembler
- .ascii "lfs"
+ .value --ls_instruction___assembler
+ .string "lea"
+ .value --lea_instruction___assembler
+ .string "les"
+ .value --ls_instruction___assembler
+ .byte 0x6c, 0x66, 0x73
  .byte 4
- .word ls_instruction-assembler
- .ascii "lgs"
+ .value --ls_instruction___assembler
+ .byte 0x6c, 0x67, 0x73
  .byte 5
- .word ls_instruction-assembler
- .ascii "lsl"
+ .value --ls_instruction___assembler
+ .byte 0x6c, 0x73, 0x6c
  .byte 3
- .word lar_instruction-assembler
- .ascii "lss"
+ .value --lar_instruction___assembler
+ .byte 0x6c, 0x73, 0x73
  .byte 2
- .word ls_instruction-assembler
- .ascii "mov"
- .byte 0
- .word mov_instruction-assembler
- .ascii "mul"
+ .value --ls_instruction___assembler
+ .string "mov"
+ .value --mov_instruction___assembler
+ .byte 0x6d, 0x75, 0x6c
  .byte 4
- .word single_operand_instruction-assembler
- .ascii "neg"
+ .value --single_operand_instruction___assembler
+ .byte 0x6e, 0x65, 0x67
  .byte 3
- .word single_operand_instruction-assembler
- .ascii "nop"
+ .value --single_operand_instruction___assembler
+ .byte 0x6e, 0x6f, 0x70
  .byte 0x90
- .word simple_instruction-assembler
- .ascii "not"
+ .value --simple_instruction___assembler
+ .byte 0x6e, 0x6f, 0x74
  .byte 2
- .word single_operand_instruction-assembler
- .ascii "org"
- .byte 0
- .word org_directive-assembler
- .ascii "out"
- .byte 0
- .word out_instruction-assembler
- .ascii "pop"
- .byte 0
- .word pop_instruction-assembler
- .ascii "rcl"
+ .value --single_operand_instruction___assembler
+ .string "org"
+ .value --org_directive___assembler
+ .string "out"
+ .value --out_instruction___assembler
+ .string "pop"
+ .value --pop_instruction___assembler
+ .byte 0x72, 0x63, 0x6c
  .byte 2
- .word sh_instruction-assembler
- .ascii "rcr"
+ .value --sh_instruction___assembler
+ .byte 0x72, 0x63, 0x72
  .byte 3
- .word sh_instruction-assembler
- .ascii "rep"
+ .value --sh_instruction___assembler
+ .byte 0x72, 0x65, 0x70
  .byte 0xf3
- .word prefix_instruction-assembler
- .ascii "ret"
+ .value --prefix_instruction___assembler
+ .byte 0x72, 0x65, 0x74
  .byte 0xc2
- .word ret_instruction-assembler
- .ascii "rol"
- .byte 0
- .word sh_instruction-assembler
- .ascii "ror"
+ .value --ret_instruction___assembler
+ .string "rol"
+ .value --sh_instruction___assembler
+ .byte 0x72, 0x6f, 0x72
  .byte 1
- .word sh_instruction-assembler
- .ascii "rsm"
+ .value --sh_instruction___assembler
+ .byte 0x72, 0x73, 0x6d
  .byte 0xaa
- .word simple_extended_instruction-assembler
- .ascii "sal"
+ .value --simple_extended_instruction___assembler
+ .byte 0x73, 0x61, 0x6c
  .byte 6
- .word sh_instruction-assembler
- .ascii "sar"
+ .value --sh_instruction___assembler
+ .byte 0x73, 0x61, 0x72
  .byte 7
- .word sh_instruction-assembler
- .ascii "sbb"
+ .value --sh_instruction___assembler
+ .byte 0x73, 0x62, 0x62
  .byte 0x18
- .word basic_instruction-assembler
- .ascii "shl"
+ .value --basic_instruction___assembler
+ .byte 0x73, 0x68, 0x6c
  .byte 4
- .word sh_instruction-assembler
- .ascii "shr"
+ .value --sh_instruction___assembler
+ .byte 0x73, 0x68, 0x72
  .byte 5
- .word sh_instruction-assembler
- .ascii "stc"
+ .value --sh_instruction___assembler
+ .byte 0x73, 0x74, 0x63
  .byte 0xf9
- .word simple_instruction-assembler
- .ascii "std"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x74, 0x64
  .byte 0xfd
- .word simple_instruction-assembler
- .ascii "sti"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x74, 0x69
  .byte 0xfb
- .word simple_instruction-assembler
- .ascii "sub"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x75, 0x62
  .byte 0x28
- .word basic_instruction-assembler
- .ascii "ud2"
+ .value --basic_instruction___assembler
+ .byte 0x75, 0x64, 0x32
  .byte 0xb
- .word simple_extended_instruction-assembler
- .ascii "xor"
+ .value --simple_extended_instruction___assembler
+ .byte 0x78, 0x6f, 0x72
  .byte 0x30
- .word basic_instruction-assembler
+ .value --basic_instruction___assembler
  .byte 0
 instructions_4:
- .ascii "arpl"
- .byte 0
- .word arpl_instruction-assembler
- .ascii "call"
- .byte 0
- .word call_instruction-assembler
- .ascii "clts"
+ .string "arpl"
+ .value --arpl_instruction___assembler
+ .string "call"
+ .value --call_instruction___assembler
+ .byte 0x63, 0x6c, 0x74, 0x73
  .byte 6
- .word simple_extended_instruction-assembler
- .ascii "cmps"
- .byte 0
- .word cmps_instruction-assembler
- .ascii "cwde"
+ .value --simple_extended_instruction___assembler
+ .string "cmps"
+ .value --cmps_instruction___assembler
+ .byte 0x63, 0x77, 0x64, 0x65
  .byte 0x98
- .word simple_instruction_32bit-assembler
- .ascii "else"
- .byte 0
- .word else_directive-assembler
- .ascii "heap"
- .byte 0
- .word heap_directive-assembler
- .ascii "idiv"
+ .value --simple_instruction_32bit___assembler
+ .string "else"
+ .value --else_directive___assembler
+ .string "heap"
+ .value --heap_directive___assembler
+ .byte 0x69, 0x64, 0x69, 0x76
  .byte 7
- .word single_operand_instruction-assembler
- .ascii "imul"
- .byte 0
- .word imul_instruction-assembler
- .ascii "int3"
+ .value --single_operand_instruction___assembler
+ .string "imul"
+ .value --imul_instruction___assembler
+ .byte 0x69, 0x6e, 0x74, 0x33
  .byte 0xcc
- .word simple_instruction-assembler
- .ascii "into"
+ .value --simple_instruction___assembler
+ .byte 0x69, 0x6e, 0x74, 0x6f
  .byte 0xce
- .word simple_instruction-assembler
- .ascii "invd"
+ .value --simple_instruction___assembler
+ .byte 0x69, 0x6e, 0x76, 0x64
  .byte 8
- .word simple_extended_instruction-assembler
- .ascii "iret"
+ .value --simple_extended_instruction___assembler
+ .byte 0x69, 0x72, 0x65, 0x74
  .byte 0xcf
- .word simple_instruction-assembler
- .ascii "jcxz"
+ .value --simple_instruction___assembler
+ .byte 0x6a, 0x63, 0x78, 0x7a
  .byte 0xe3
- .word loop_instruction_16bit-assembler
- .ascii "jnae"
+ .value --loop_instruction_16bit___assembler
+ .byte 0x6a, 0x6e, 0x61, 0x65
  .byte 0x72
- .word conditional_jump-assembler
- .ascii "jnbe"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x62, 0x65
  .byte 0x77
- .word conditional_jump-assembler
- .ascii "jnge"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x67, 0x65
  .byte 0x7c
- .word conditional_jump-assembler
- .ascii "jnle"
+ .value --conditional_jump___assembler
+ .byte 0x6a, 0x6e, 0x6c, 0x65
  .byte 0x7f
- .word conditional_jump-assembler
- .ascii "lahf"
+ .value --conditional_jump___assembler
+ .byte 0x6c, 0x61, 0x68, 0x66
  .byte 0x9f
- .word simple_instruction-assembler
- .ascii "load"
- .byte 0
- .word load_directive-assembler
- .ascii "lock"
+ .value --simple_instruction___assembler
+ .string "load"
+ .value --load_directive___assembler
+ .byte 0x6c, 0x6f, 0x63, 0x6b
  .byte 0xf0
- .word prefix_instruction-assembler
- .ascii "lods"
- .byte 0
- .word lods_instruction-assembler
- .ascii "loop"
+ .value --prefix_instruction___assembler
+ .string "lods"
+ .value --lods_instruction___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70
  .byte 0xe2
- .word loop_instruction-assembler
- .ascii "movs"
- .byte 0
- .word movs_instruction-assembler
- .ascii "outs"
- .byte 0
- .word outs_instruction-assembler
- .ascii "popa"
+ .value --loop_instruction___assembler
+ .string "movs"
+ .value --movs_instruction___assembler
+ .string "outs"
+ .value --outs_instruction___assembler
+ .byte 0x70, 0x6f, 0x70, 0x61
  .byte 0x61
- .word simple_instruction-assembler
- .ascii "popf"
+ .value --simple_instruction___assembler
+ .byte 0x70, 0x6f, 0x70, 0x66
  .byte 0x9d
- .word simple_instruction-assembler
- .ascii "push"
- .byte 0
- .word push_instruction-assembler
- .ascii "repe"
+ .value --simple_instruction___assembler
+ .string "push"
+ .value --push_instruction___assembler
+ .byte 0x72, 0x65, 0x70, 0x65
  .byte 0xf3
- .word prefix_instruction-assembler
- .ascii "repz"
+ .value --prefix_instruction___assembler
+ .byte 0x72, 0x65, 0x70, 0x7a
  .byte 0xf3
- .word prefix_instruction-assembler
- .ascii "retd"
+ .value --prefix_instruction___assembler
+ .byte 0x72, 0x65, 0x74, 0x64
  .byte 0xc2
- .word ret_instruction_32bit-assembler
- .ascii "retf"
+ .value --ret_instruction_32bit___assembler
+ .byte 0x72, 0x65, 0x74, 0x66
  .byte 0xca
- .word ret_instruction-assembler
- .ascii "retn"
+ .value --ret_instruction___assembler
+ .byte 0x72, 0x65, 0x74, 0x6e
  .byte 0xc2
- .word ret_instruction-assembler
- .ascii "retw"
+ .value --ret_instruction___assembler
+ .byte 0x72, 0x65, 0x74, 0x77
  .byte 0xc2
- .word ret_instruction_16bit-assembler
- .ascii "sahf"
+ .value --ret_instruction_16bit___assembler
+ .byte 0x73, 0x61, 0x68, 0x66
  .byte 0x9e
- .word simple_instruction-assembler
- .ascii "scas"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x63, 0x61, 0x73
  .byte 0xae
- .word stos_instruction-assembler
- .ascii "seta"
+ .value --stos_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x61
  .byte 0x97
- .word set_instruction-assembler
- .ascii "setb"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x62
  .byte 0x92
- .word set_instruction-assembler
- .ascii "setc"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x63
  .byte 0x92
- .word set_instruction-assembler
- .ascii "sete"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x65
  .byte 0x94
- .word set_instruction-assembler
- .ascii "setg"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x67
  .byte 0x9f
- .word set_instruction-assembler
- .ascii "setl"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6c
  .byte 0x9c
- .word set_instruction-assembler
- .ascii "seto"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6f
  .byte 0x90
- .word set_instruction-assembler
- .ascii "setp"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x70
  .byte 0x9a
- .word set_instruction-assembler
- .ascii "sets"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x73
  .byte 0x98
- .word set_instruction-assembler
- .ascii "setz"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x7a
  .byte 0x94
- .word set_instruction-assembler
- .ascii "shld"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x68, 0x6c, 0x64
  .byte 0xa4
- .word shd_instruction-assembler
- .ascii "shrd"
+ .value --shd_instruction___assembler
+ .byte 0x73, 0x68, 0x72, 0x64
  .byte 0xac
- .word shd_instruction-assembler
- .ascii "stos"
+ .value --shd_instruction___assembler
+ .byte 0x73, 0x74, 0x6f, 0x73
  .byte 0xaa
- .word stos_instruction-assembler
- .ascii "test"
- .byte 0
- .word test_instruction-assembler
- .ascii "wait"
+ .value --stos_instruction___assembler
+ .string "test"
+ .value --test_instruction___assembler
+ .byte 0x77, 0x61, 0x69, 0x74
  .byte 0x9b
- .word simple_instruction-assembler
- .ascii "xadd"
+ .value --simple_instruction___assembler
+ .byte 0x78, 0x61, 0x64, 0x64
  .byte 0xc0
- .word basic_486_instruction-assembler
- .ascii "xchg"
- .byte 0
- .word xchg_instruction-assembler
- .ascii "xlat"
+ .value --basic_486_instruction___assembler
+ .string "xchg"
+ .value --xchg_instruction___assembler
+ .byte 0x78, 0x6c, 0x61, 0x74
  .byte 0xd7
- .word xlat_instruction-assembler
+ .value --xlat_instruction___assembler
  .byte 0
 instructions_5:
- .ascii "bound"
- .byte 0
- .word bound_instruction-assembler
- .ascii "bswap"
- .byte 0
- .word bswap_instruction-assembler
- .ascii "cmpsb"
+ .string "bound"
+ .value --bound_instruction___assembler
+ .string "bswap"
+ .value --bswap_instruction___assembler
+ .byte 0x63, 0x6d, 0x70, 0x73, 0x62
  .byte 0xa6
- .word simple_instruction-assembler
- .ascii "cmpsd"
- .byte 0
- .word cmpsd_instruction-assembler
- .ascii "cmpsw"
+ .value --simple_instruction___assembler
+ .string "cmpsd"
+ .value --cmpsd_instruction___assembler
+ .byte 0x63, 0x6d, 0x70, 0x73, 0x77
  .byte 0xa7
- .word simple_instruction_16bit-assembler
- .ascii "cpuid"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x63, 0x70, 0x75, 0x69, 0x64
  .byte 0xa2
- .word simple_extended_instruction-assembler
- .ascii "enter"
- .byte 0
- .word enter_instruction-assembler
- .ascii "entry"
- .byte 0
- .word entry_directive-assembler
- .ascii "fwait"
+ .value --simple_extended_instruction___assembler
+ .string "enter"
+ .value --enter_instruction___assembler
+ .string "entry"
+ .value --entry_directive___assembler
+ .byte 0x66, 0x77, 0x61, 0x69, 0x74
  .byte 0x9b
- .word simple_instruction-assembler
- .ascii "iretd"
+ .value --simple_instruction___assembler
+ .byte 0x69, 0x72, 0x65, 0x74, 0x64
  .byte 0xcf
- .word simple_instruction_32bit-assembler
- .ascii "iretw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x69, 0x72, 0x65, 0x74, 0x77
  .byte 0xcf
- .word simple_instruction_16bit-assembler
- .ascii "jecxz"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x6a, 0x65, 0x63, 0x78, 0x7a
  .byte 0xe3
- .word loop_instruction_32bit-assembler
- .ascii "label"
- .byte 0
- .word label_directive-assembler
- .ascii "leave"
+ .value --loop_instruction_32bit___assembler
+ .string "label"
+ .value --label_directive___assembler
+ .byte 0x6c, 0x65, 0x61, 0x76, 0x65
  .byte 0xc9
- .word simple_instruction-assembler
- .ascii "lodsb"
+ .value --simple_instruction___assembler
+ .byte 0x6c, 0x6f, 0x64, 0x73, 0x62
  .byte 0xac
- .word simple_instruction-assembler
- .ascii "lodsd"
+ .value --simple_instruction___assembler
+ .byte 0x6c, 0x6f, 0x64, 0x73, 0x64
  .byte 0xad
- .word simple_instruction_32bit-assembler
- .ascii "lodsw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x6c, 0x6f, 0x64, 0x73, 0x77
  .byte 0xad
- .word simple_instruction_16bit-assembler
- .ascii "loopd"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x64
  .byte 0xe2
- .word loop_instruction_32bit-assembler
- .ascii "loope"
+ .value --loop_instruction_32bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x65
  .byte 0xe1
- .word loop_instruction-assembler
- .ascii "loopw"
+ .value --loop_instruction___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x77
  .byte 0xe2
- .word loop_instruction_16bit-assembler
- .ascii "loopz"
+ .value --loop_instruction_16bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x7a
  .byte 0xe1
- .word loop_instruction-assembler
- .ascii "movsb"
+ .value --loop_instruction___assembler
+ .byte 0x6d, 0x6f, 0x76, 0x73, 0x62
  .byte 0xa4
- .word simple_instruction-assembler
- .ascii "movsd"
- .byte 0
- .word movsd_instruction-assembler
- .ascii "movsw"
+ .value --simple_instruction___assembler
+ .string "movsd"
+ .value --movsd_instruction___assembler
+ .byte 0x6d, 0x6f, 0x76, 0x73, 0x77
  .byte 0xa5
- .word simple_instruction_16bit-assembler
- .ascii "movsx"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x6d, 0x6f, 0x76, 0x73, 0x78
  .byte 0xbe
- .word movx_instruction-assembler
- .ascii "movzx"
+ .value --movx_instruction___assembler
+ .byte 0x6d, 0x6f, 0x76, 0x7a, 0x78
  .byte 0xb6
- .word movx_instruction-assembler
- .ascii "popad"
+ .value --movx_instruction___assembler
+ .byte 0x70, 0x6f, 0x70, 0x61, 0x64
  .byte 0x61
- .word simple_instruction_32bit-assembler
- .ascii "popaw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x70, 0x6f, 0x70, 0x61, 0x77
  .byte 0x61
- .word simple_instruction_16bit-assembler
- .ascii "popfd"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x70, 0x6f, 0x70, 0x66, 0x64
  .byte 0x9d
- .word simple_instruction_32bit-assembler
- .ascii "popfw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x70, 0x6f, 0x70, 0x66, 0x77
  .byte 0x9d
- .word simple_instruction_16bit-assembler
- .ascii "pusha"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x70, 0x75, 0x73, 0x68, 0x61
  .byte 0x60
- .word simple_instruction-assembler
- .ascii "pushf"
+ .value --simple_instruction___assembler
+ .byte 0x70, 0x75, 0x73, 0x68, 0x66
  .byte 0x9c
- .word simple_instruction-assembler
- .ascii "repne"
+ .value --simple_instruction___assembler
+ .byte 0x72, 0x65, 0x70, 0x6e, 0x65
  .byte 0xf2
- .word prefix_instruction-assembler
- .ascii "repnz"
+ .value --prefix_instruction___assembler
+ .byte 0x72, 0x65, 0x70, 0x6e, 0x7a
  .byte 0xf2
- .word prefix_instruction-assembler
- .ascii "retfd"
+ .value --prefix_instruction___assembler
+ .byte 0x72, 0x65, 0x74, 0x66, 0x64
  .byte 0xca
- .word ret_instruction_32bit-assembler
- .ascii "retfw"
+ .value --ret_instruction_32bit___assembler
+ .byte 0x72, 0x65, 0x74, 0x66, 0x77
  .byte 0xca
- .word ret_instruction_16bit-assembler
- .ascii "retnd"
+ .value --ret_instruction_16bit___assembler
+ .byte 0x72, 0x65, 0x74, 0x6e, 0x64
  .byte 0xc2
- .word ret_instruction_32bit-assembler
- .ascii "retnw"
+ .value --ret_instruction_32bit___assembler
+ .byte 0x72, 0x65, 0x74, 0x6e, 0x77
  .byte 0xc2
- .word ret_instruction_16bit-assembler
- .ascii "scasb"
+ .value --ret_instruction_16bit___assembler
+ .byte 0x73, 0x63, 0x61, 0x73, 0x62
  .byte 0xae
- .word simple_instruction-assembler
- .ascii "scasd"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x63, 0x61, 0x73, 0x64
  .byte 0xaf
- .word simple_instruction_32bit-assembler
- .ascii "scasw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x73, 0x63, 0x61, 0x73, 0x77
  .byte 0xaf
- .word simple_instruction_16bit-assembler
- .ascii "setae"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x73, 0x65, 0x74, 0x61, 0x65
  .byte 0x93
- .word set_instruction-assembler
- .ascii "setbe"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x62, 0x65
  .byte 0x96
- .word set_instruction-assembler
- .ascii "setge"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x67, 0x65
  .byte 0x9d
- .word set_instruction-assembler
- .ascii "setle"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6c, 0x65
  .byte 0x9e
- .word set_instruction-assembler
- .ascii "setna"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x61
  .byte 0x96
- .word set_instruction-assembler
- .ascii "setnb"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x62
  .byte 0x93
- .word set_instruction-assembler
- .ascii "setnc"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x63
  .byte 0x93
- .word set_instruction-assembler
- .ascii "setne"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x65
  .byte 0x95
- .word set_instruction-assembler
- .ascii "setng"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x67
  .byte 0x9e
- .word set_instruction-assembler
- .ascii "setnl"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x6c
  .byte 0x9d
- .word set_instruction-assembler
- .ascii "setno"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x6f
  .byte 0x91
- .word set_instruction-assembler
- .ascii "setnp"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x70
  .byte 0x9b
- .word set_instruction-assembler
- .ascii "setns"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x73
  .byte 0x99
- .word set_instruction-assembler
- .ascii "setnz"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x7a
  .byte 0x95
- .word set_instruction-assembler
- .ascii "setpe"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x70, 0x65
  .byte 0x9a
- .word set_instruction-assembler
- .ascii "setpo"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x70, 0x6f
  .byte 0x9b
- .word set_instruction-assembler
- .ascii "stack"
- .byte 0
- .word stack_directive-assembler
- .ascii "stosb"
+ .value --set_instruction___assembler
+ .string "stack"
+ .value --stack_directive___assembler
+ .byte 0x73, 0x74, 0x6f, 0x73, 0x62
  .byte 0xaa
- .word simple_instruction-assembler
- .ascii "stosd"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x74, 0x6f, 0x73, 0x64
  .byte 0xab
- .word simple_instruction_32bit-assembler
- .ascii "stosw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x73, 0x74, 0x6f, 0x73, 0x77
  .byte 0xab
- .word simple_instruction_16bit-assembler
- .ascii "times"
- .byte 0
- .word times_directive-assembler
- .ascii "xlatb"
+ .value --simple_instruction_16bit___assembler
+ .string "times"
+ .value --times_directive___assembler
+ .byte 0x78, 0x6c, 0x61, 0x74, 0x62
  .byte 0xd7
- .word simple_instruction-assembler
+ .value --simple_instruction___assembler
  .byte 0
 instructions_6:
- .ascii "format"
- .byte 0
- .word format_directive-assembler
- .ascii "looped"
+ .string "format"
+ .value --format_directive___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x65, 0x64
  .byte 0xe1
- .word loop_instruction_32bit-assembler
- .ascii "loopew"
+ .value --loop_instruction_32bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x65, 0x77
  .byte 0xe1
- .word loop_instruction_16bit-assembler
- .ascii "loopne"
+ .value --loop_instruction_16bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x6e, 0x65
  .byte 0xe0
- .word loop_instruction-assembler
- .ascii "loopnz"
+ .value --loop_instruction___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x6e, 0x7a
  .byte 0xe0
- .word loop_instruction-assembler
- .ascii "loopzd"
+ .value --loop_instruction___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x7a, 0x64
  .byte 0xe1
- .word loop_instruction_32bit-assembler
- .ascii "loopzw"
+ .value --loop_instruction_32bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x7a, 0x77
  .byte 0xe1
- .word loop_instruction_16bit-assembler
- .ascii "pushad"
+ .value --loop_instruction_16bit___assembler
+ .byte 0x70, 0x75, 0x73, 0x68, 0x61, 0x64
  .byte 0x60
- .word simple_instruction_32bit-assembler
- .ascii "pushaw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x70, 0x75, 0x73, 0x68, 0x61, 0x77
  .byte 0x60
- .word simple_instruction_16bit-assembler
- .ascii "pushfd"
+ .value --simple_instruction_16bit___assembler
+ .byte 0x70, 0x75, 0x73, 0x68, 0x66, 0x64
  .byte 0x9c
- .word simple_instruction_32bit-assembler
- .ascii "pushfw"
+ .value --simple_instruction_32bit___assembler
+ .byte 0x70, 0x75, 0x73, 0x68, 0x66, 0x77
  .byte 0x9c
- .word simple_instruction_16bit-assembler
- .ascii "repeat"
- .byte 0
- .word repeat_directive-assembler
- .ascii "setalc"
+ .value --simple_instruction_16bit___assembler
+ .string "repeat"
+ .value --repeat_directive___assembler
+ .byte 0x73, 0x65, 0x74, 0x61, 0x6c, 0x63
  .byte 0xd6
- .word simple_instruction-assembler
- .ascii "setnae"
+ .value --simple_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x61, 0x65
  .byte 0x92
- .word set_instruction-assembler
- .ascii "setnbe"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x62, 0x65
  .byte 0x97
- .word set_instruction-assembler
- .ascii "setnge"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x67, 0x65
  .byte 0x9c
- .word set_instruction-assembler
- .ascii "setnle"
+ .value --set_instruction___assembler
+ .byte 0x73, 0x65, 0x74, 0x6e, 0x6c, 0x65
  .byte 0x9f
- .word set_instruction-assembler
+ .value --set_instruction___assembler
  .byte 0
 instructions_7:
- .ascii "loopned"
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x6e, 0x65, 0x64
  .byte 0xe0
- .word loop_instruction_32bit-assembler
- .ascii "loopnew"
+ .value --loop_instruction_32bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x6e, 0x65, 0x77
  .byte 0xe0
- .word loop_instruction_16bit-assembler
- .ascii "loopnzd"
+ .value --loop_instruction_16bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x6e, 0x7a, 0x64
  .byte 0xe0
- .word loop_instruction_32bit-assembler
- .ascii "loopnzw"
+ .value --loop_instruction_32bit___assembler
+ .byte 0x6c, 0x6f, 0x6f, 0x70, 0x6e, 0x7a, 0x77
  .byte 0xe0
- .word loop_instruction_16bit-assembler
- .ascii "virtual"
- .byte 0
- .word virtual_directive-assembler
+ .value --loop_instruction_16bit___assembler
+ .string "virtual"
+ .value --virtual_directive___assembler
  .byte 0
 instructions_8:
  .byte 0
@@ -11497,197 +11461,281 @@ instructions_10:
 instructions_11:
  .byte 0
 
-# %include done
+/* %include done */
 
 _copyright:
-.ascii "Copyright (c) 1999-2002, Tomasz Grysztar"
-.byte 0
+.string "Copyright (c) 1999-2002, Tomasz Grysztar"
 
 _logo:
-.ascii "flat assembler  version "
-.ascii "1.30-bootstrap"
+.byte 0x66, 0x6c, 0x61, 0x74, 0x20, 0x61, 0x73, 0x73, 0x65, 0x6d, 0x62, 0x6c, 0x65, 0x72, 0x20, 0x20, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x20
+.byte 0x31, 0x2e, 0x33, 0x30, 0x2d, 0x62, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72, 0x61, 0x70
 .byte 0xa
 .byte 0
 
 
 
 _usage:
-.ascii "usage: fasm source output"
+.byte 0x75, 0x73, 0x61, 0x67, 0x65, 0x3a, 0x20, 0x66, 0x61, 0x73, 0x6d, 0x20, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x20, 0x6f, 0x75, 0x74, 0x70, 0x75, 0x74
 .byte 0xa, 0
 
 _passes_suffix:
-.ascii " passes, "
-.byte 0
+.string " passes, "
 _seconds_suffix:
-.ascii " seconds, "
-.byte 0
+.string " seconds, "
 _bytes_suffix:
-.ascii " bytes."
+.byte 0x20, 0x62, 0x79, 0x74, 0x65, 0x73, 0x2e
 .byte 0xa, 0
 
 _counter:
 .byte 4
-.ascii "0000"
+.byte 0x30, 0x30, 0x30, 0x30
 
 prebss:
 .align 4
-# bss_align = 0
-.bss  #  We could use `absolute $' here instead, but that's broken (breaks address calculation in program_end-bss+prebss-file_header) in NASM 0.95--0.97.
+/* bss_align = 0 */
+.bss  /*  We could use `absolute $' here instead, but that's broken (breaks address calculation in program_end-bss+prebss-file_header) in NASM 0.95--0.97. */
 bss:
-# .fill bss_align, 1, 0  #  Uninitialized data follows.
+/* .fill bss_align, 1, 0  #  Uninitialized data follows. */
 
 memory_start:
-.fill 4, 1, 0
+. = . + [4]
 memory_end:
-.fill 4, 1, 0
+. = . + [4]
 additional_memory:
-.fill 4, 1, 0
+. = . + [4]
 additional_memory_end:
-.fill 4, 1, 0
+. = . + [4]
 input_file:
-.fill 4, 1, 0
+. = . + [4]
 output_file:
-.fill 4, 1, 0
+. = . + [4]
 source_start:
-.fill 4, 1, 0
+. = . + [4]
 code_start:
-.fill 4, 1, 0
+. = . + [4]
 code_size:
-.fill 4, 1, 0
+. = . + [4]
 real_code_size:
-.fill 4, 1, 0
+. = . + [4]
 start_time:
-.fill 4, 1, 0
+. = . + [4]
 written_size:
-.fill 4, 1, 0
+. = . + [4]
 
 current_line:
-.fill 4, 1, 0
+. = . + [4]
 macros_list:
-.fill 4, 1, 0
+. = . + [4]
 macro_constants:
-.fill 4, 1, 0
+. = . + [4]
 macro_block:
-.fill 4, 1, 0
+. = . + [4]
 macro_block_line_number:
-.fill 4, 1, 0
+. = . + [4]
 struc_name:
-.fill 4, 1, 0
+. = . + [4]
 current_locals_prefix:
-.fill 4, 1, 0
+. = . + [4]
 labels_list:
-.fill 4, 1, 0
+. = . + [4]
 label_hash:
-.fill 4, 1, 0
+. = . + [4]
 org_start:
-.fill 4, 1, 0
+. = . + [4]
 org_sib:
-.fill 4, 1, 0
+. = . + [4]
 undefined_data_start:
-.fill 4, 1, 0
+. = . + [4]
 undefined_data_end:
-.fill 4, 1, 0
+. = . + [4]
 counter:
-.fill 4, 1, 0
+. = . + [4]
 counter_limit:
-.fill 4, 1, 0
+. = . + [4]
 error_line:
-.fill 4, 1, 0
+. = . + [4]
 error:
-.fill 4, 1, 0
+. = . + [4]
 display_buffer:
-.fill 4, 1, 0
+. = . + [4]
 structures_buffer:
-.fill 4, 1, 0
+. = . + [4]
 number_start:
-.fill 4, 1, 0
+. = . + [4]
 current_offset:
-.fill 4, 1, 0
+. = . + [4]
 value:
-.fill 8, 1, 0
+. = . + [8]
 fp_value:
-.fill 8, 1, 0
+. = . + [8]
 format_flags:
-.fill 4, 1, 0
+. = . + [4]
 number_of_relocations:
-.fill 4, 1, 0
+. = . + [4]
 number_of_sections:
-.fill 4, 1, 0
+. = . + [4]
 stub_size:
-.fill 4, 1, 0
+. = . + [4]
 header_data:
-.fill 4, 1, 0
+. = . + [4]
 sections_data:
-.fill 4, 1, 0
+. = . + [4]
 current_section:
-.fill 4, 1, 0
+. = . + [4]
 machine:
-.fill 2, 1, 0
+. = . + [2]
 subsystem:
-.fill 2, 1, 0
+. = . + [2]
 subsystem_version:
-.fill 4, 1, 0
+. = . + [4]
 
 macro_status:
-.fill 1, 1, 0
+. = . + [1]
 parenthesis_stack:
-.fill 1, 1, 0
+. = . + [1]
 output_format:
-.fill 1, 1, 0
+. = . + [1]
 code_type:
-.fill 1, 1, 0
+. = . + [1]
 current_pass:
-.fill 1, 1, 0
+. = . + [1]
 next_pass_needed:
-.fill 1, 1, 0
+. = . + [1]
 reloc_labels:
-.fill 1, 1, 0
+. = . + [1]
 times_working:
-.fill 1, 1, 0
+. = . + [1]
 virtual_data:
-.fill 1, 1, 0
+. = . + [1]
 fp_sign:
-.fill 1, 1, 0
+. = . + [1]
 fp_format:
-.fill 1, 1, 0  #  TODO(pts): Remove unused variables.
+. = . + [1]  /*  TODO(pts): Remove unused variables. */
 value_size:
-.fill 1, 1, 0
+. = . + [1]
 forced_size:
-.fill 1, 1, 0
+. = . + [1]
 value_type:
-.fill 1, 1, 0
+. = . + [1]
 address_size:
-.fill 1, 1, 0
+. = . + [1]
 compare_type:
-.fill 1, 1, 0
+. = . + [1]
 base_code:
-.fill 1, 1, 0
+. = . + [1]
 extended_code:
-.fill 1, 1, 0
+. = . + [1]
 postbyte_register:
-.fill 1, 1, 0
+. = . + [1]
 segment_register:
-.fill 1, 1, 0
+. = . + [1]
 operand_size:
-.fill 1, 1, 0
+. = . + [1]
 imm_sized:
-.fill 1, 1, 0
+. = . + [1]
 jump_type:
-.fill 1, 1, 0
+. = . + [1]
 mmx_size:
-.fill 1, 1, 0
+. = . + [1]
 mmx_prefix:
-.fill 1, 1, 0
+. = . + [1]
 nextbyte:
-.fill 1, 1, 0
+. = . + [1]
 
 characters:
-.fill 0x100, 1, 0
+. = . + [0x100]
 converted:
-.fill 0x100, 1, 0
+. = . + [0x100]
 available_memory:
-.fill 4, 1, 0
+. = . + [4]
 
 program_end:
 
-#  __END__
+/*  __END__ */
+aa_instruction___assembler = aa_instruction-assembler
+arpl_instruction___assembler = arpl_instruction-assembler
+basic_486_instruction___assembler = basic_486_instruction-assembler
+basic_instruction___assembler = basic_instruction-assembler
+bound_instruction___assembler = bound_instruction-assembler
+bs_instruction___assembler = bs_instruction-assembler
+bswap_instruction___assembler = bswap_instruction-assembler
+bt_instruction___assembler = bt_instruction-assembler
+call_instruction___assembler = call_instruction-assembler
+cmps_instruction___assembler = cmps_instruction-assembler
+cmpsd_instruction___assembler = cmpsd_instruction-assembler
+conditional_jump___assembler = conditional_jump-assembler
+data_bytes___assembler = data_bytes-assembler
+data_dwords___assembler = data_dwords-assembler
+data_file___assembler = data_file-assembler
+data_pwords___assembler = data_pwords-assembler
+data_qwords___assembler = data_qwords-assembler
+data_twords___assembler = data_twords-assembler
+data_unicode___assembler = data_unicode-assembler
+data_words___assembler = data_words-assembler
+else_directive___assembler = else_directive-assembler
+end_directive___assembler = end_directive-assembler
+enter_instruction___assembler = enter_instruction-assembler
+entry_directive___assembler = entry_directive-assembler
+format_directive___assembler = format_directive-assembler
+heap_directive___assembler = heap_directive-assembler
+if_directive___assembler = if_directive-assembler
+imul_instruction___assembler = imul_instruction-assembler
+in_instruction___assembler = in_instruction-assembler
+inc_instruction___assembler = inc_instruction-assembler
+ins_instruction___assembler = ins_instruction-assembler
+instructions_10___instructions = instructions_10-instructions
+instructions_11___instructions = instructions_11-instructions
+instructions_2___instructions = instructions_2-instructions
+instructions_3___instructions = instructions_3-instructions
+instructions_4___instructions = instructions_4-instructions
+instructions_5___instructions = instructions_5-instructions
+instructions_6___instructions = instructions_6-instructions
+instructions_7___instructions = instructions_7-instructions
+instructions_8___instructions = instructions_8-instructions
+instructions_9___instructions = instructions_9-instructions
+int_instruction___assembler = int_instruction-assembler
+jmp_instruction___assembler = jmp_instruction-assembler
+label_directive___assembler = label_directive-assembler
+lar_instruction___assembler = lar_instruction-assembler
+lea_instruction___assembler = lea_instruction-assembler
+load_directive___assembler = load_directive-assembler
+lods_instruction___assembler = lods_instruction-assembler
+loop_instruction___assembler = loop_instruction-assembler
+loop_instruction_16bit___assembler = loop_instruction_16bit-assembler
+loop_instruction_32bit___assembler = loop_instruction_32bit-assembler
+ls_instruction___assembler = ls_instruction-assembler
+mov_instruction___assembler = mov_instruction-assembler
+movs_instruction___assembler = movs_instruction-assembler
+movsd_instruction___assembler = movsd_instruction-assembler
+movx_instruction___assembler = movx_instruction-assembler
+org_directive___assembler = org_directive-assembler
+out_instruction___assembler = out_instruction-assembler
+outs_instruction___assembler = outs_instruction-assembler
+pop_instruction___assembler = pop_instruction-assembler
+prefix_instruction___assembler = prefix_instruction-assembler
+push_instruction___assembler = push_instruction-assembler
+repeat_directive___assembler = repeat_directive-assembler
+reserve_bytes___assembler = reserve_bytes-assembler
+reserve_dwords___assembler = reserve_dwords-assembler
+reserve_pwords___assembler = reserve_pwords-assembler
+reserve_qwords___assembler = reserve_qwords-assembler
+reserve_twords___assembler = reserve_twords-assembler
+reserve_words___assembler = reserve_words-assembler
+ret_instruction___assembler = ret_instruction-assembler
+ret_instruction_16bit___assembler = ret_instruction_16bit-assembler
+ret_instruction_32bit___assembler = ret_instruction_32bit-assembler
+set_instruction___assembler = set_instruction-assembler
+sh_instruction___assembler = sh_instruction-assembler
+shd_instruction___assembler = shd_instruction-assembler
+simple_extended_instruction___assembler = simple_extended_instruction-assembler
+simple_instruction___assembler = simple_instruction-assembler
+simple_instruction_16bit___assembler = simple_instruction_16bit-assembler
+simple_instruction_32bit___assembler = simple_instruction_32bit-assembler
+single_operand_instruction___assembler = single_operand_instruction-assembler
+stack_directive___assembler = stack_directive-assembler
+stos_instruction___assembler = stos_instruction-assembler
+test_instruction___assembler = test_instruction-assembler
+times_directive___assembler = times_directive-assembler
+virtual_directive___assembler = virtual_directive-assembler
+xchg_instruction___assembler = xchg_instruction-assembler
+xlat_instruction___assembler = xlat_instruction-assembler

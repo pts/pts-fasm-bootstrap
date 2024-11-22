@@ -1,12 +1,12 @@
 # pts-fasm-bootstrap: bootstrap the fasm assembler on Linux i386
 
-pts-fast-boostrap bootstraps the fasm assembler on Linux i386, i.e. it
+pts-fasm-boostrap bootstraps the fasm assembler on Linux i386, i.e. it
 reproduces the `fasm` Linux i386 executable program bit-by-bit identical to
 the official distribution from its sources (and also from the sources of
 earlier fasm versions), but without having access to executable programs of
 earlier fasm versions.
 
-pts-fast-bootstrap was inspired by [bootstrapping FASM by rugxulo,
+pts-fasm-bootstrap was inspired by [bootstrapping FASM by rugxulo,
 2018-02-20](https://board.flatassembler.net/topic.php?t=20431).
 
 How to run:
@@ -103,6 +103,24 @@ The bootstrap assembler has multiple (equivalent) implementations:
   version seems to be broken. The custom linker is also included, and it's a
   Perl script. A Linux i386 executable of the Perl interpreter is also
   included.
+* The AT&T Unix System V Release 3 (SVR3) assembler (see [Linux i386
+  port](https://github.com/pts/pts-svr3as-linux)) + link3coff.pl (custom
+  linker), use it with `./bootstrap_fasm.sh --svr3=...`. All 3 versions
+  (1987-10-28, 1988-05-27, 1989-10-03) work. The custom linker is also
+  included, and it's a Perl script. A Linux i386 executable of the Perl
+  interpreter is also included.
+* The SunOS 4.0.1 assembler (see [Linux i386
+  port](https://github.com/pts/pts-svr3as-linux)) + link3coff.pl (custom
+  linker), use it with `./bootstrap_fasm.sh --svr3=...`. The version
+  released on 1988-11-16 works. The custom linker is also
+  included, and it's a Perl script. A Linux i386 executable of the Perl
+  interpreter is also included.
+* The AT&T Unix System V Release 4 (SVR4) assembler, built from source
+  (released on 1993-01-16)
+  port](https://github.com/pts/pts-svr3as-linux)) + GNU ld(1), use it with
+  `./bootstrap_fasm.sh --svr4=...`. This assembler has more code generation
+  bugs than its predecessor, the SVR3 assembler. These bugs have been worked
+  around for the purposes of pts-fasm-bootstrap.
 
 It is a future plan to have the bootstrap assembler implemented in additional
 programming languages, targeting Linux i386:

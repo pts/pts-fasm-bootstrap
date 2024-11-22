@@ -175,8 +175,19 @@ case "$1" in  # Any of these below will work.
     ;;
    *) "$LDPROG" -m elf_i386 -N -s -o fbsasm fbsasm.o ;;  # -N to make .text read-write-execute.
   esac
-  rm -f fbsasm.o
-  ;;
+  rm -f fbsasm.o ;;
+ svr3* | --svr3*)  # Also includes toolset/bin/sunos4as-1988-11-16
+  ASPROG="${1#*=}"
+  test "$ASPROG" = "$1" && ASPROG=toolset/bin/svr3as-1987-10-28
+  "$ASPROG" -dt -dg -dv fbsasms.s
+  tools/miniperl-5.004.04 -x tools/link3coff.pl --elf fbsasms.o fbsasm 0x700000
+  rm -f fbsasms.o ;;
+ svr4* | --svr4*)  # Also includes toolset/bin/sunos4as-1988-11-16
+  ASPROG="${1#*=}"
+  test "$ASPROG" = "$1" && ASPROG=toolset/bin/svr4as-1993-01-16
+  "$ASPROG" fbsasms.s
+  tools/ld-2.22 -m elf_i386 -N -s -o fbsasm fbsasms.o  # -N to make .text read-write-execute.
+  rm -f fbsasms.o ;;
  tasm* | --tasm*)  # Example: --tasm=tasm/tasm41.exe . Example: --tasm=tasm/tasm32ps
   tasm="${1#--}"
   if test "${tasm#tasm=}" = "$tasm"; then
