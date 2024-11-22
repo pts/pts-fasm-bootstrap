@@ -146,6 +146,7 @@ case "$1" in  # Any of these below will work.
   # --as=tools/gaswin32coff-2.23.52
   # --as=toolset/bin/gaself32-2.7
   # --as=toolset/bin/gaself32-2.9.5.0.37
+  # --as=toolset/bin/gascoff32-2.9.5.0.37
   # --as=toolset/bin/gasgo32coff-2.9.5.0.37
   # --as=toolset/bin/gaswin32coff-2.9.5.0.37
   # --as=toolset/bin/gaself32-2.22
