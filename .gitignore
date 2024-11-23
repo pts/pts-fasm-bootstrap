@@ -11,3 +11,7 @@
 /ld
 /debian-2.1-slink/
 /debian-2.2-potato/
+/SOURCE
+/fasm.fasm
+/fasm.nasm
+/fasm[012]
