@@ -20,16 +20,22 @@ unzip -qo ../orig/fasm137.zip SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRE
     if (m@^include\s+\x27(.*?)\x27@) {  # Process `include` directive.
       $_ = uc($1);
       s@^..[/\\]@SOURCE/@ or s@^@SOURCE/LINUX/@;
+      my $fn = $_;
       die "fatal: open: $_" if !open(F, "< $_");
       $_ = join("", <F>);
       die if !close(F);
       s@[\r\n]+\Z(?!\n)@@;
       s@\r?\n@\r\n@g;  # fasm-1.20 segfaults unless source line ending is CRLF (\r\n).
       s@^(\w+[ \t]*=[ \t]*0\w*)([ \t]*\r?$)@${1}o$2@mg;  # Fix octal constants in system.inc. This affects the `create:` function.
-      # In system.inc, try to use at least 2.5 MiB of memory. 1 MiB is not
-      # enough. 2 MiB is enough for compiling 1.43. 2.5 MiB is enough for
-      # compilig fasm 1.73.32.
-      s@^([ \t]*allocate_memory:)@\tmov dword [buffer+14h],0x280000  ; PATCH\r\n$1@m;
+      if ($fn eq "SOURCE/LINUX/SYSTEM.INC") {
+        # In system.inc, try to use at least 2.5 MiB of memory. 1 MiB is not
+        # enough. 2 MiB is enough for compiling 1.43. 2.5 MiB is enough for
+        # compilig fasm 1.73.32.
+        my $heap_size = 0x280000;
+        die "fatal: missing alloc call\n" if !s@^[ \t]*mov[ \t]+ebx[ \t]*,[ \t]*buffer[ \t]*\r?\n[ \t]*mov[ \t]+eax[ \t]*,[ \t]*116[ \t]*\r?\n[ \t]*int[ \t]+0x80[ \t]*\r?\n([ \t]*allocate_memory:)@\tmov dword [buffer+14h],$heap_size  ; PATCH\r\n$1@m;
+        # This shorter patch also works, but keeps a useless system call in the program.
+        #die fatal: missing alloc call\n" if !s@^([ \t]*allocate_memory:)@\tmov dword [buffer+14h],$heap_size  ; PATCH\r\n$1@m;
+      }
       print $_, "\r\n";
     } else {
       print STDERR if m@O_RDONLY@;
@@ -38,7 +44,7 @@ unzip -qo ../orig/fasm137.zip SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRE
 
 # TODO(pts): Is it feasible to it with "$busybox" awk
 # TODO(pts): Use .bss (`absolute $') at `bss:'.
-# !! TOD(pts): Why is this Perl script slow here? Some slow regexp?
+# !! TOD(pts): Why is this Perl script slow only for fasm 1.37? Some slow regexp?
 ./miniperl -we '
     use integer;
     use strict;
@@ -102,6 +108,6 @@ chmod +x fasm0
 ./fasm0 fasm.fasm fasm1
 chmod +x fasm1
 ./fasm1 ||:
-cmp ../fasm-golden-1.37 fasm1  # !! 15 bytes of size difference. Where is it?
+cmp ../fasm-golden-1.37 fasm1
 
 : "$0" OK.
