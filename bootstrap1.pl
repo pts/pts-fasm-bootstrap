@@ -17,11 +17,7 @@ use integer;
 use strict;
 
 my $src_zip_file = "orig/fasm137.zip";
-# Works with NASM 0.97 (1997-12-06), 0.98.39 (2005-01-15), 2.10.09 (2013-07-23), 2.13.02 (2017-12-03).
-#./nasm-0.98.39 -o fasm0 fasm.nasm  # Works. 0.98.39.
-#./nasm-2.13.02 -o fasm0 fasm.nasm  # Works.
-#./nasm-2.10.09 -o fasm0 fasm.nasm  # Works.
-#./nasm-0.97 -o fasm0 fasm.nasm  # Works.
+# Works with NASM 0.95 (1997-07-27), 0.97 (1997-12-06), 0.98.39 (2005-01-15), 2.10.09 (2013-07-23), 2.13.02 (2017-12-03).
 my $nasm_cmd = "nasm";
 my $unzip_cmd = "unzip";
 { my $i = 0;
@@ -133,8 +129,9 @@ while (<FF>) {  # Convert from fasm to NASM syntax. Only works for some versions
   elsif (s@^dm (.+)@db $1, 0@) {}
   elsif (s@^push (?!e?(?:[abcd]x|e[sd]i|e[sb]p)|[cdefgs]s)(?=[a-zA-Z_]\w*\Z)@push dword @) {}  # For NASM 0.97.
   elsif (s@^((?:push|pop) (?:(?:byte|word|dword)\b\s*)?)(\S.*)@ my $in = $1; my $args = $2; $in =~ s/\s+\Z(?!\n)//; map { print FN "$in $_\n" } split(" ", $args); "" @e) { next }
-  elsif (s@^(if|else)\b@%$1@) { s@<>@!=@g }
-  elsif (s@^end if\b@%endif@) {}
+  elsif (m@^(if\b|el|end\s*if)\b@) { print STDERR "fatal: conditional assembly not supported by NASM 0.95: $_\n" }
+  #elsif (s@^(if|else)\b@%$1@) { s@<>@!=@g }
+  #elsif (s@^end if\b@%endif@) {}
   elsif (s@^((?:rep[a-z]*\s+)?)(lod|sto|mov|cmp|sca)s\s+(byte|word|dword)\b.*@ $1.$2."s".substr($3,0,1) @e) {}
   elsif (s@^jmp near\s+(e[abcd]x|e[sd]i|e[sb]p)$@jmp $1@) {}
   elsif (s@^(j(?!mp |e?cxz )[a-z]+) (?!near\s+|short\s+)@$1 near @) {}  # Force conditional jumps to be `neaar`, to avoid NASM error: short jump is out of range, without `nasm -O1`.
@@ -142,6 +139,7 @@ while (<FF>) {  # Convert from fasm to NASM syntax. Only works for some versions
   elsif (s@^use32$@bits 32@) {}  # For NASM 0.97.
   elsif (s@^loopnzd @loopnz @) {}
   elsif (s@^xlat byte\b.*@xlatb@) {}
+  elsif (s@^align (.+)$@times (\$\$-\$\)&(($1)-1) db 0@) {}  # For NASM 0.95.
   print FN "$_\n";
 }
 die if !close(FN);
