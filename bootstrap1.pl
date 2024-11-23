@@ -50,6 +50,473 @@ sub system_checked(@) {
 }
 system_checked($unzip_cmd, $src_zip_file, @src_files);
 
+if (!$have_linux_src and $src_zip_version == 20) {  # This can be removed if bootstrapping support for fasm 1.20 is not needed.
+  die if !open(FW, "> SOURCE/LINUX/FASM.ASM");
+  binmode(FW);
+  die if !print(FW <<'__ENDF__');
+; flat assembler source
+; Copyright (c) 1999-2001, Tomasz Grysztar
+; All rights reserved.
+
+	program_base = 0x700000
+
+	org	program_base
+	use32
+
+	macro	align value { rb (value-1) - ($ + value-1) mod value }
+
+file_header:
+	db	0x7F,'ELF',1,1,1,3
+	rb	file_header+0x10-$
+	dw	2,3
+	dd	1,start
+	dd	program_header-file_header,0,0
+	dw	program_header-file_header,0x20,1,0x28,0,0
+
+program_header:
+	dd	1,0,program_base,0
+	dd	bss-program_base,program_end-program_base,7,0x1000
+
+start:
+
+	mov	edx,_logo
+	call	display_string
+
+	pop	eax
+	cmp	eax,3
+	jne	information
+	pop	eax
+	pop	[input_file]
+	pop	[output_file]
+
+	call	init_memory
+
+	mov	edi,characters
+	mov	ecx,100h
+	xor	al,al
+	rep	stosb
+	mov	edi,characters
+	mov	esi,special_characters+1
+	movzx	ecx,byte [esi-1]
+	xor	ebx,ebx
+      convert_table:
+	lodsb
+	mov	bl,al
+	mov	byte [edi+ebx],0FFh
+	loop	convert_table
+
+	;call	[GetTickCount]
+	mov	eax,78
+	mov	ebx,buffer
+	xor	ecx,ecx
+	int	0x80
+	mov	eax,dword [buffer]
+	mov	ecx,1000
+	mul	ecx
+	mov	ebx,eax
+	mov	eax,dword [buffer+4]
+	div	ecx
+	add	eax,ebx
+	mov	[start_time],eax
+
+
+	call	preprocessor
+	call	parser
+	call	assembler
+	call	formatter
+
+	movzx	eax,[current_pass]
+	inc	al
+	call	display_number
+	mov	edx,_passes_suffix
+	call	display_string
+
+	;call	[GetTickCount]
+	mov	eax,78
+	mov	ebx,buffer
+	xor	ecx,ecx
+	int	0x80
+	mov	eax,dword [buffer]
+	mov	ecx,1000
+	mul	ecx
+	mov	ebx,eax
+	mov	eax,dword [buffer+4]
+	div	ecx
+	add	eax,ebx
+	sub	eax,[start_time]
+
+	xor	edx,edx
+	mov	ebx,100
+	div	ebx
+	or	eax,eax
+	jz	display_bytes_count
+	xor	edx,edx
+	mov	ebx,10
+	div	ebx
+	push	edx
+	call	display_number
+	mov	dl,'.'
+	call	display_character
+	pop	eax
+	call	display_number
+	mov	edx,_seconds_suffix
+	call	display_string
+      display_bytes_count:
+	mov	eax,[written_size]
+	call	display_number
+	mov	edx,_bytes_suffix
+	call	display_string
+	xor	al,al
+	jmp	exit_program
+
+information:
+	mov	edx,_usage
+	call	display_string
+	mov	al,1
+	jmp	exit_program
+
+include 'system.inc'
+
+include '../version.inc'
+include '../errors.inc'
+include '../expressi.inc'
+include '../preproce.inc'
+include '../parser.inc'
+include '../assemble.inc'
+include '../formats.inc'
+include '../tables.inc'
+
+_copyright db 'Copyright (c) 1999-2001, Tomasz Grysztar',0
+
+_logo db 'flat assembler  version ',VERSION,0Dh,0Ah,0
+_usage db 'usage: fasm source output',0Dh,0Ah,0
+
+_passes_suffix db ' passes, ',0
+_seconds_suffix db ' seconds, ',0
+_bytes_suffix db ' bytes.',0Dh,0Ah,0
+
+bss:
+
+align 4
+
+additional_memory dd ?
+additional_memory_end dd ?
+memory_start dd ?
+memory_end dd ?
+
+input_file dd ?
+output_file dd ?
+
+source_start dd ?
+code_start dd ?
+code_size dd ?
+real_code_size dd ?
+
+start_time dd ?
+written_size dd ?
+
+params rb 100h
+characters rb 100h
+buffer rb 100h
+
+program_end:
+
+__ENDF__
+  die if !close(FW);
+  die if !open(FW, "> SOURCE/LINUX/SYSTEM.INC");
+  binmode(FW);
+  die if !print(FW <<'__ENDF__');
+; flat assembler source
+; Copyright (c) 1999-2001, Tomasz Grysztar
+; All rights reserved.
+
+O_ACCMODE  = 00003
+O_RDONLY   = 00000
+O_WRONLY   = 00001
+O_RDWR	   = 00002
+O_CREAT    = 00100
+O_EXCL	   = 00200
+O_NOCTTY   = 00400
+O_TRUNC    = 01000
+O_APPEND   = 02000
+O_NONBLOCK = 04000
+
+S_ISUID    = 04000
+S_ISGID    = 02000
+S_ISVTX    = 01000
+S_IRUSR    = 00400
+S_IWUSR    = 00200
+S_IXUSR    = 00100
+S_IRGRP    = 00040
+S_IWGRP    = 00020
+S_IXGRP    = 00010
+S_IROTH    = 00004
+S_IWOTH    = 00002
+S_IXOTH    = 00001
+
+init_memory:
+	xor	ebx,ebx
+	mov	eax,45
+	int	0x80
+	mov	[additional_memory],eax
+	mov	ebx,buffer
+	mov	eax,116
+	int	0x80
+    allocate_memory:
+	mov	ebx,[additional_memory]
+	add	ebx,dword [buffer+14h]
+	mov	eax,45
+	int	0x80
+	mov	[memory_end],eax
+	sub	eax,[additional_memory]
+	jz	not_enough_memory
+	shr	eax,3
+	add	eax,[additional_memory]
+	mov	[additional_memory_end],eax
+	mov	[memory_start],eax
+	ret
+    not_enough_memory:
+	shr	dword [buffer+14h],1
+	cmp	dword [buffer+14h],4000h
+	jb	out_of_memory
+	jmp	allocate_memory
+
+exit_program:  ; Input: AL: exit code.
+	movzx	ebx,al
+	mov	eax,1
+	int	0x80
+
+open:  ; Input: EDX: filename.
+	push	edx esi edi ebp
+	mov	ebx,edx
+	mov	eax,5
+	mov	ecx,O_RDONLY
+	xor	edx,edx
+	int	0x80
+	pop	ebp edi esi edx
+	test	eax,eax
+	js	file_error
+	mov	ebx,eax
+	clc
+	ret
+    file_error:
+	stc
+	ret
+
+create:  ; Input: EDX: filename.
+	push	edx esi edi ebp
+	mov	ebx,edx
+	mov	eax,5
+	mov	ecx,O_CREAT+O_TRUNC+O_WRONLY
+	mov	edx,S_IRUSR+S_IWUSR+S_IRGRP
+	int	0x80
+	pop	ebp edi esi edx
+	test	eax,eax
+	js	file_error
+	mov	ebx,eax
+	clc
+	ret
+
+write:  ; Input: EBX: fd; EDX: data pointer; ECX: byte count.
+	push	edx esi edi ebp
+	mov	eax,4
+	xchg	ecx,edx
+	int	0x80
+	pop	ebp edi esi edx
+	test	eax,eax
+	js	file_error
+	clc
+	ret
+
+read:  ; Input: EBX: fd; EDX: data pointer; ECX: byte count.
+	push	ecx edx esi edi ebp
+	mov	eax,3
+	xchg	ecx,edx
+	int	0x80
+	pop	ebp edi esi edx ecx
+	test	eax,eax
+	js	file_error
+	cmp	eax,ecx
+	jne	file_error
+	clc
+	ret
+
+close:  ; Input: EBX: fd.
+	mov	eax,6
+	int	0x80
+	ret
+
+lseek:  ; Imput: EBX: fd; EDX: offset; AL: whence.
+	mov	ecx,edx
+	xor	edx,edx
+	mov	dl,al
+	mov	eax,19
+	int	0x80
+	clc
+	ret
+
+display_string:  ; Input: EDX: string data.
+	push	ebx
+	mov	edi,edx
+	or	ecx,-1
+	xor	al,al
+	repne	scasb
+	neg	ecx
+	sub	ecx,2
+	mov	eax,4
+	mov	ebx,1
+	xchg	ecx,edx
+	int	0x80
+	pop	ebx
+	ret
+
+; This is the ABI in fasm 1.30.
+;display_string_esi_not:  ; Input: ESI: string data.
+;	push	ebx
+;	mov	edi,esi
+;	mov	edx,esi
+;	or	ecx,-1
+;	xor	al,al
+;	repne	scasb
+;	neg	ecx
+;	sub	ecx,2
+;	mov	eax,4
+;	mov	ebx,1
+;	xchg	ecx,edx
+;	int	0x80
+;	pop	ebx
+;	ret
+
+display_block:  ; Input: ESI: data; ECX: byte size.
+	push	ebx
+	mov	eax,4
+	mov	ebx,1
+	mov	edx,ecx
+	mov	ecx,esi
+	int	0x80
+	pop	ebx
+	ret
+
+display_character:  ; Input: DL.
+	push	ebx
+	push	edx
+	mov	eax,4
+	mov	ebx,1
+	mov	ecx,esp  ; The DL value is at [esp] now.
+	mov	edx,ebx
+	int	0x80
+	pop	edx
+	pop	ebx
+	ret
+
+display_number:  ; Input: EAX.
+	push	ebx
+	mov	ecx,1000000000
+	xor	edx,edx
+	xor	bl,bl
+      display_loop:
+	div	ecx
+	push	edx
+	cmp	ecx,1
+	je	display_digit
+	or	bl,bl
+	jnz	display_digit
+	or	al,al
+	jz	digit_ok
+	not	bl
+      display_digit:
+	mov	dl,al
+	add	dl,30h
+	push	ebx ecx
+	call	display_character
+	pop	ecx ebx
+      digit_ok:
+	mov	eax,ecx
+	xor	edx,edx
+	mov	ecx,10
+	div	ecx
+	mov	ecx,eax
+	pop	eax
+	or	ecx,ecx
+	jnz	display_loop
+	pop	ebx
+	ret
+
+fatal_error:  ; Input: return address: error message.
+	mov	edx,error_prefix
+	call	display_string
+	pop	edx
+	call	display_string
+	mov	edx,error_suffix
+	call	display_string
+	mov	al,0FFh
+	jmp	exit_program
+
+assembler_error:  ; Input: return address: error message.
+	mov	edx,[home_line]
+	mov	ebp,[edx]
+	call	display_line_number
+	mov	edx,[current_line]
+	cmp	edx,[home_line]
+	je	line_number_ok
+	mov	ebp,[edx]
+	mov	dl,20h
+	call	display_character
+	call	display_line_number
+      line_number_ok:
+	mov	edx,line_number_end
+	call	display_string  ; !!
+	mov	edx,[home_line]
+	add	edx,5
+	call	display_string
+	mov	edx,cr_lf
+	call	display_string
+	mov	edx,error_prefix
+	call	display_string
+	pop	edx
+	call	display_string
+	mov	edx,error_suffix
+	call	display_string
+	mov	al,2
+	jmp	exit_program
+      display_line_number:
+	mov	ecx,ebp
+	shr	ecx,20
+	dec	ecx
+	mov	esi,[files_list]
+	inc	esi
+      get_error_file:
+	jecxz	error_file_found
+      skip_file_name:
+	lods	byte [esi]
+	or	al,al
+	jnz	skip_file_name
+	add	esi,5
+	loop	get_error_file
+      error_file_found:
+	mov	edx,esi
+	call	display_string
+	mov	edx,line_number_start
+	call	display_string
+	mov	eax,ebp
+	and	eax,0FFFFFh
+	call	display_number
+	mov	dl,']'
+	call	display_character
+	ret
+
+error_prefix db 'error: ',0
+error_suffix db '.'
+cr_lf db 0Dh,0Ah,0
+
+line_number_start db ' [',0
+line_number_end db ':',0Dh,0Ah,0
+
+macro dm string { db string,0 }
+__ENDF__
+  die if !close(FW);
+}
+
 die "fatal: open: SOURCE/LINUX/FASM.ASM: $!\n" if !open(FA, "< SOURCE/LINUX/FASM.ASM");
 binmode(FA);
 die if !open(FF, "> fasm.fasm");
@@ -170,7 +637,8 @@ chmod_x("fasm2");
 my $s2 = read_file("fasm2");
 die "fatal: file content mismatch: fasm1 vs fasm2\n" if $s1 ne $s2;
 my $fn3;
-if ($src_zip_base =~ m@^fasm-?1[.]?37\b@ and -f($fn3 = "fasm-golden-1.37")) {
+if (($src_zip_version == 37 and -f($fn3 = "fasm-golden-1.37")) or
+    ($src_zip_version == 20 and -f($fn3 = "fasm-golden-1.20"))) {
   print STDERR "info: comparing: fasm1 vs $fn3\n";
   my $s3 = read_file($fn3);
   die "fatal: file content mismatch: fasm1 vs $fn3\n" if $s1 ne $s3;
