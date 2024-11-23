@@ -44,7 +44,6 @@ unzip -qo ../orig/fasm137.zip SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRE
 
 # TODO(pts): Is it feasible to it with "$busybox" awk
 # TODO(pts): Use .bss (`absolute $') at `bss:'.
-# !! TOD(pts): Why is this Perl script slow only for fasm 1.37? Some slow regexp?
 ./miniperl -we '
     use integer;
     use strict;
@@ -59,8 +58,8 @@ unzip -qo ../orig/fasm137.zip SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRE
     while (<STDIN>) {  # Convert from fasm to NASM syntax.
       y@"@\x27@;
       if (m@;@) {  # Remove single-line comment.
-        if (m@\x27@) { s@^((?:[^\x27;]+|\x27[^\x27]*\x27)*);.*@$1@ }  # Complicated case.
-        else { s@\s*;.*@@ }  # Simple case.
+        if (m@\x27@) { s@^((?:[^\x27;]+|\x27[^\x27]*\x27)*)(.*)@ my $s = $1; $s =~ s/^;.*//;  $s @e }  # Complicated case: ; may be inside quotes.
+        else { s@;.*@@ }  # Simple case.
       }
       s@^\s+@@; s@\s+\Z(?!\n)@@g;
       next if !m@\S@;
