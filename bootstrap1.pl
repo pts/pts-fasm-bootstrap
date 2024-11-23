@@ -37,15 +37,20 @@ my $unzip_cmd = "unzip";
 }
 
 die "fatal: missing src .zip file: $src_zip_file\n" if !-f($src_zip_file);
-my @src_files = qw(SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRESSI.INC SOURCE/FORMATS.INC SOURCE/PARSER.INC SOURCE/PREPROCE.INC SOURCE/TABLES.INC SOURCE/VERSION.INC SOURCE/LINUX/FASM.ASM SOURCE/LINUX/SYSTEM.INC);
-unlink(@src_files);
+my $src_zip_base = $src_zip_file;
+$src_zip_base =~ s@^.*[/\\]@@;
+my $src_zip_version = $src_zip_base =~ m@^fasm-?1[.]?(\d+)\b@ ? $1 + 0 : -1;
+my $have_linux_src = $src_zip_version >= 37;
+my @src_files = qw(SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRESSI.INC SOURCE/FORMATS.INC SOURCE/PARSER.INC SOURCE/PREPROCE.INC SOURCE/TABLES.INC SOURCE/VERSION.INC);
+push @src_files, qw(SOURCE/LINUX/FASM.ASM SOURCE/LINUX/SYSTEM.INC) if $src_zip_version >= 37;  # Linux target was introduced in fasm 1.37.
+unlink(@src_files, qw(SOURCE/LINUX/FASM.ASM SOURCE/LINUX/SYSTEM.INC));
 sub system_checked(@) {
   print STDERR "info: running: @_\n";
   die "fatal: command $_[0] failed\n" if system(@_);
 }
 system_checked($unzip_cmd, $src_zip_file, @src_files);
 
-die if !open(FA, "< SOURCE/LINUX/FASM.ASM");
+die "fatal: open: SOURCE/LINUX/FASM.ASM: $!\n" if !open(FA, "< SOURCE/LINUX/FASM.ASM");
 binmode(FA);
 die if !open(FF, "> fasm.fasm");
 binmode(FF);
@@ -165,7 +170,7 @@ chmod_x("fasm2");
 my $s2 = read_file("fasm2");
 die "fatal: file content mismatch: fasm1 vs fasm2\n" if $s1 ne $s2;
 my $fn3;
-if ($src_zip_file =~ m@(?:\A|/)fasm137[.]zip$@ and -f($fn3 = "fasm-golden-1.37")) {
+if ($src_zip_base =~ m@^fasm-?1[.]?37\b@ and -f($fn3 = "fasm-golden-1.37")) {
   print STDERR "info: comparing: fasm1 vs $fn3\n";
   my $s3 = read_file($fn3);
   die "fatal: file content mismatch: fasm1 vs $fn3\n" if $s1 ne $s3;
