@@ -228,57 +228,6 @@ display_number:  ; Input: EAX.
 	pop	ebx
 	ret
 
-CASE_INSENSITIVEX = 0
-nop  ; !!
- if CASE_INSENSITIVEX<>0
- ;if FOO>0
- db 6,'binary',18h,1
- db 4,'code',19h,5
- db 7,'console',1Bh,3
- db 4,'data',19h,6
- db 11,'discardable',19h,25
- db 3,'dll',1Bh,80h
- db 10,'executable',19h,29
- db 6,'export',1Ah,0
- db 6,'fixups',1Ah,5
- db 3,'gui',1Bh,2
- db 4,'i386',1Bh,43h
- db 4,'i486',1Bh,44h
- db 4,'i586',1Bh,45h
- db 6,'import',1Ah,1
- db 2,'mz',18h,2
- db 6,'native',1Bh,1
- db 2,'pe',18h,3
- db 8,'readable',19h,30
- db 8,'resource',1Ah,2
- db 9,'shareable',19h,28
- db 5,'udata',19h,7
- db 9,'writeable',19h,31
- else
- db 3,'DLL',1Bh,80h
- db 3,'GUI',1Bh,2
- db 2,'MZ',18h,2
- db 2,'PE',18h,3
- db 6,'binary',18h,1
- db 4,'code',19h,5
- db 7,'console',1Bh,3
- db 4,'data',19h,6
- db 11,'discardable',19h,25
- db 10,'executable',19h,29
- db 6,'export',1Ah,0
- db 6,'fixups',1Ah,5
- db 4,'i386',1Bh,43h
- db 4,'i486',1Bh,44h
- db 4,'i586',1Bh,45h
- db 6,'import',1Ah,1
- db 6,'native',1Bh,1
- db 8,'readable',19h,30
- db 8,'resource',1Ah,2
- db 9,'shareable',19h,28
- db 5,'udata',19h,7
- db 9,'writeable',19h,31
- end if
-
 fatal_error:  ; Input: return address: error message.
 	mov	edx,error_prefix
 	call	display_string
