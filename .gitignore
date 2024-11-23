@@ -14,4 +14,6 @@
 /SOURCE
 /fasm.fasm
 /fasm.nasm
+/fasm[34].fasm
 /fasm[012]
+/unzip.lst
