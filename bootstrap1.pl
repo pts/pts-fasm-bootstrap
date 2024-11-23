@@ -539,7 +539,7 @@ while (<FA>) {
     $_ = read_file($fn);
     s@[\r\n]+\Z(?!\n)@@;
     s@\r?\n@\r\n@g;  # fasm-1.20 segfaults unless source line ending is CRLF (\r\n).
-    s@^(\w+[ \t]*=[ \t]*0\w*)([ \t]*\r?$)@${1}o$2@mg;  # Fix octal constants in system.inc. This affects the `create:` function.
+    s@^(\w+[ \t]*=[ \t]*0[0-7]*)([ \t]*\r?$)@${1}o$2@mg;  # Fix octal constants in system.inc. This affects the `create:` function.
     if ($fn eq "SOURCE/LINUX/SYSTEM.INC") {
       # In system.inc, try to use at least 2.5 MiB of memory. 1 MiB is not
       # enough. 2 MiB is enough for compiling 1.43. 2.5 MiB is enough for
