@@ -21,16 +21,33 @@ my $src_zip_file = "orig/fasm137.zip";
 #./nasm-0.98.39 -o fasm0 fasm.nasm  # Works. 0.98.39.
 #./nasm-2.13.02 -o fasm0 fasm.nasm  # Works.
 #./nasm-2.10.09 -o fasm0 fasm.nasm  # Works.
-#./nasm-0.97.uclibc -o fasm0 fasm.nasm  # Works.
-my $nasm_cmd = "nasm";  # !! Make it configurable.
-die "fatal: missing src .zip file: $src_zip_file" if !-f($src_zip_file);
+#./nasm-0.97 -o fasm0 fasm.nasm  # Works.
+my $nasm_cmd = "nasm";
+my $unzip_cmd = "unzip";
+{ my $i = 0;
+  while ($i < @ARGV) {
+    my $arg = $ARGV[$i++];
+    if ($arg eq "--") { last }
+    elsif ($arg eq "-" or substr($arg, 0, 1) ne "-") { --$i; last }
+    elsif ($arg =~ m@--nasm=(.*)@s) { $nasm_cmd = $1 }
+    elsif ($arg =~ m@--unzip=(.*)@s) { $unzip_cmd = $1 }
+    elsif ($arg =~ m@--srczip=(.*)@s) { $src_zip_file = $1 }
+    else { die "fatal: unknown command-line flag: $arg\n" }
+  }
+  if ($i != @ARGV) {
+    $src_zip_file = $ARGV[$i++];
+    die "fatal: too many command-line arguments\n" if $i != @ARGV;
+  }
+}
+
+die "fatal: missing src .zip file: $src_zip_file\n" if !-f($src_zip_file);
 my @src_files = qw(SOURCE/ASSEMBLE.INC SOURCE/ERRORS.INC SOURCE/EXPRESSI.INC SOURCE/FORMATS.INC SOURCE/PARSER.INC SOURCE/PREPROCE.INC SOURCE/TABLES.INC SOURCE/VERSION.INC SOURCE/LINUX/FASM.ASM SOURCE/LINUX/SYSTEM.INC);
 unlink(@src_files);
 sub system_checked(@) {
   print STDERR "info: running: @_\n";
   die "fatal: command $_[0] failed\n" if system(@_);
 }
-system_checked("unzip", $src_zip_file, @src_files);
+system_checked($unzip_cmd, $src_zip_file, @src_files);
 
 die if !open(FA, "< SOURCE/LINUX/FASM.ASM");
 binmode(FA);
