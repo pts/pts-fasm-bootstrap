@@ -33,7 +33,7 @@ There are two steps:
    converting the old fasm source to [NASM](https://nasm.us/) syntax with a
    few dozen Perl regexp substitutions, and compiling the result with NASM.
 
-2. ([bootstrap2.pl](bootstrap2.pl))
+2. ([bootstrap2.pl](bootstrap2.pl) or [bootstrap2.sh](bootstrap1.sh))
    With the fasm executable program built in step 1, compile a patched
    version of a recent fasm (1.73.32). Then with that executable program,
    recompile the recent fasm from its unpatched source.
@@ -68,6 +68,15 @@ Perl as old as 5.004_04 (released on 1997-10-15). Thus this way it is
 possible to bootstrap a recent fasm using only technology available on
 2001-11-17 (Linux i386, Perl >=5.004_04, *unzip*, NASM >=0.95 and fasm 1.20
 sources).
+
+Alternatively, shell script bootstrap2.sh can be used instead of
+bootstrap2.pl, without depending on Perl for this step, but depending on
+some Unix commands (such as *cat* and *tr*) instead. There is no alternative
+shell script replacing bootstrap1.pl, beucase *grep* and AWK wouldn't be
+powerful enough for the regexp substitutions applied there when converting
+from fasm to NASM syntax. (Python, Ruby, Java, Go, PHP PCRE, Pike PCRE, TCL,
+C PCRE and C++ RE2 would be powerful enough, but on systems where these are
+easily available, Perl is also easy to install, or installed by default.)
 
 The following source files are used:
 
