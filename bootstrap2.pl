@@ -4,7 +4,7 @@ eval 'PERL_BADLANG=x;export PERL_BADLANG;exec perl -x "$0" "$@";exit 1'
 +0 if 0;eval("\n\n\n\n".<<'__END__');die$@if$@;__END__
 
 #
-# bootstrap2.pl: Perl script to build an recent  Linux i386 fasm executable program using fasm
+# bootstrap2.pl: Perl script to build a recent Linux i386 fasm executable program using fasm
 # by pts@fazekas.hu at Sat Nov 23 14:12:29 CET 2024
 #
 # This script works with Perl 5.004.04 (1997-10-15) or later.
