@@ -18,7 +18,7 @@ use strict;
 
 my $src_zip_file = "orig/fasm137.zip";
 # Works with NASM 0.95 (1997-07-27), 0.97 (1997-12-06), 0.98.39 (2005-01-15), 2.10.09 (2013-07-23), 2.13.02 (2017-12-03), 2.16.03 (2024-04-17).
-my $nasm_cmd = "nasm";
+my $nasm_cmd = "tools/nasm-0.98.39.upx";
 my $unzip_cmd = "unzip";
 { my $i = 0;
   while ($i < @ARGV) {
