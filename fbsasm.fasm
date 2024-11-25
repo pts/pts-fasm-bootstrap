@@ -1,7 +1,7 @@
 ; by pts@fazekas.hu at Fri Mar 22 01:00:34 CET 2024
 ;
 ; This is a subset of the source code of fasm 1.30 (with some CPU instructions,
-; `format MZ' and `format PE' removed), ported to NASM syntax, for Linux i386
+; `format MZ' and `format PE' removed), for Linux i386
 ; only. It's useful for bootstrapping fasm.
 ;
 ; Compile with: fasm-0.20 fbsasm.fasm fbsasm && chmod +x fbsasm

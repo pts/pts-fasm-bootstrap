@@ -1,6 +1,6 @@
 # pts-fasm-bootstrap: bootstrap the fasm assembler on Linux i386
 
-pts-fasm-boostrap bootstraps the fasm assembler on Linux i386, i.e. it
+pts-fasm-bootstrap bootstraps the fasm assembler on Linux i386, i.e. it
 reproduces a recent `fasm` Linux i386 executable program bit-by-bit
 identical to the official distribution from its source (and also from the
 sources of earlier fasm versions), using only fasm sources (both old and
@@ -10,10 +10,10 @@ fasm versions.
 pts-fasm-bootstrap was inspired by [bootstrapping FASM by rugxulo,
 2018-02-20](https://board.flatassembler.net/topic.php?t=20431).
 
-How to run the new, simple bootstrap:
+How to run the bootstrap:
 
 * On a Linux x86 system (i386 or amd64), check out the Git repository, and
-  run `perl -x boostrap1.pl`. The output file is `fasm1'.
+  run `perl -x bootstrap1.pl`. The output file is *fasm1*.
 
 * Then run `perl -x bootstrap2.pl'. The output file is `fasm-re-1.73.32`,
   which is identical to the file `fasm-golden-1.73.32`, also identical to
@@ -24,7 +24,7 @@ How to run the new, simple bootstrap:
   it's statically linked (i.e. independent of the Linux distribution and the
   libc).
 
-## Bootstrap chain of the simple bootstrap
+## The bootstrap chain
 
 There are two steps:
 
@@ -32,11 +32,13 @@ There are two steps:
    Build an old (1.20 or 1.37) fasm executable program from its source by
    converting the old fasm source to [NASM](https://nasm.us/) syntax with a
    few dozen Perl regexp substitutions, and compiling the result with NASM.
+   The output executable program file is *fasm1*, it's called the bootstrap
+   assembler.
 
 2. ([bootstrap2.pl](bootstrap2.pl) or [bootstrap2.sh](bootstrap1.sh))
-   With the fasm executable program built in step 1, compile a patched
-   version of a recent fasm (1.73.32). Then with that executable program,
-   recompile the recent fasm from its unpatched source.
+   With the bootstrap assembler executable program built in step 1, compile
+   a patched version of a recent fasm (1.73.32). Then with that executable
+   program, recompile the recent fasm from its unpatched source.
 
 Step 1 is possible because the source of old fasm is similar enough to NASM
 syntax so that it can be converted to NASM syntax using a few dozen regexp
@@ -107,132 +109,163 @@ The detailed bootstrap chain:
 
 Alternatively, step 1 can be replaced by objtaining a fasm-compatible
 assembler (and using it in step 2). For example, *fbsasm* (see below)
-works, and it can be used by running step 2 as `perl -x boostrap2.pl
+works, and it can be used by running step 2 as `perl -x bootstrap2.pl
 --fasm=./fbsasm`. fasm executable programs (old and new) in the official
 binary release of fasm also work.
 
+All scripts in both steps (bootstrap1.pl, bootstrap2.pl, bootstrap2.sh) work
+on Debian as early as Debian 2.1 slink (released on 1999-03-09), which has
+NASM 0.96, Perl 5.004_04 and *unzip* 5.32 (part of the non-free free). With
+all these dependencies in place, fasm 1.20 (released on 2001-11-17) could
+have been bootstrapped this way at the time it was written.
+
 It would be a challenge to bootstrap a recent fasm using Perl >=5.004_04
 only. This would require implementing *unzip* and *zcat* and writing a
-specialized i386 assembler (supporting the subset of FASM syntax used in
+specialized i386 assembler (supporting the subset of fasm syntax used in
 recent fasm) in pure Perl 5.004_04. All of these are hard but doable. They
 are left as an exercise to the reader.
 
-## The old, versatile bootstrap
+## Alternative bootstrap assemblers
 
-How to run the old, versatile bootstrap:
+In step 1, bootstrap1.pl builds the bootstram assembler *fasm1*, which (in
+step 2) is able to compile a patched recent fasm (1.73.32). However, it's
+possible to replace the specific bootstrap assembler built by bootstrap1.pl
+(thus also step 1) with alternatives, which are able to do the same in step
+2. This section describes the alternative bootstrap assemblers.
 
-* On a Linux x86 system (i386 or amd64), check out the Git repository, and
-  run `./bootstrap_fasm.sh`.
+A motivation for alternative bootstrap assemblers is removing the hard
+dependency on NASM for bootstrapping fasm, and by that providing the user
+options for their convenience. Another motivation is exploring the history
+of assemblers targeting the i386 (released between 1985 and 2024), studying
+their features and differences, and checking which kind of bootstraps would
+have worked already in 2001. (bootstrap1.pl with NASM >=0.95 would have
+definitely worked, you can try it on Debian slink (released on 1999-03-03)
+or later.)
 
-* The output file is `fasm-re-1.73.32`, which is identical to the file
-  `fasm-golden-1.73.32`, also identical to the program file in the [official
-  fasm-1.73.32 package](https://flatassembler.net/fasm-1.73.32.tgz).
+More specifically, the bootstrap assembler:
 
-* The output file is executable on a Linux x86 system (i386 or amd64), and
-  it's statically linked (i.e. independent of the Linux distribution and the
-  libc).
+* has to run on Linux i386 host systems (and possibly others as well)
+* has to be able to compile a patched recent fasm (1.73.32) for Linux i386
+* alternatively, has to be able to compile a patched fasm 1.20 for Linux
+  i386 (in case compiling fasm 1.73.32 turns out to be too complicated),
+  and then that fasm 1.20 would be used as a bootstrap assembler
+* can support only a subset of the i386 instructions and fasm directives,
+  i.e. those used by the patched recent fasm
+* can be a non-optimizing assembler (i.e. producing longer machine code than
+  necessary)
+* can be slower than an assembler in everyday use
 
-## Bootstrap chain of the versatile bootstrap
+Any working version of fasm works as a bootstrap assembler, but using that
+would defeat the original purpose (i.e. compiling fasm without using a fasm
+executable program). Please note, however, that the precompiled executable
+programs of most old versions of fasm (i.e. <=1.43, and possibly even newer
+ones) have a bug on modern Linux x86 systems: they detect the available
+memory incorrectly, and they allocate too little. (2.5 MiB would have been
+enough for compiling fasm <=1.73.32).
 
-Involved fasm versions:
+To use fasm as the bootstrap assembler, run something like this: `perl -x
+bootstrap2.pl --fasm=./fasm-golden-1.73.32` .
 
-* fasm 1.20, released on 2001-11-17
-* fasm 1.73.32, released on 2023-12-04
+As part of the pts-fasm-bootstrap project, an alternative bootstrap
+assembler named *fbsasm* has been developed and released as free software
+including source code. It runs on Linux i386 (and amd64) host systems. It is
+based on the fasm 1.30 source code (with some cosmetic changes, removal of
+some CPU instructions, removal of `format MZ`, removal of `format PE`), with
+the Linux-specific I/O parts copied from the fasm 1.37 source code instead
+(because that's when Linux host support was added to fasm). Its source code
+has been converted from fasm syntax to >15 other assembler syntaxes,
+including NASM and GNU as(1).
 
-Both of these bootstrap chains are done by `./bootstrap_fasm.sh`:
+Initially *fbssm* was able to compile fasm 1.20, fasm 1.30, and fasm 1.37,
+but then it was discovered that it can also compile a lightly patched fasm
+1.73.32, so it can be used as a bootstrap assembler in pts-fasm-bootstrap.
 
-* bootstrap assembler --> patched fasm 1.73.32 --> original fasm 1.73.32
+Historically, *fbsasm* can be compiled not only with recent and up-to-date
+assemblers, but also with the oldest i386 assembers ever: MASM 5.00
+(released on 1987-07-31) and the SVR3 assembler (released on 1987-10-28).
+However, Linux i386 wasn't available as a host operating system at that time
+to run *fbsasm*. Linux 1.0 was released in 1994, and *fbsasm* runs on it, it
+can be tried using the [MCC
+1.0](https://www.ibiblio.org/pub/historic-linux/distributions/MCC-1.0/1.0/)
+Linux distribution (released on 1994-05-11, running Linux kernel 1.0.4).
 
-* bootstrap assembler --> patched fasm 1.20 --> patched fasm 1.73.32 --> original fasm 1.73.32
-
-## The bootstrap assembler used in the versatile bootstrap
-
-The bootstrap assembler is a simple, non-optimizing assembler targeting i386
-(32-bit x86 only), and supports a subset of fasm syntax, and supports only a
-subset of the i386 (32-bit x86) instructions. Its only goal is to compile
-any of fasm 1.20, fasm 1.30 or fasm 1.73.32. Currently it is able to compile
-a lightly patched source of all of them. `bootstrap_fasm.sh` does the
-necessary patching.
-
-Initially the bootstrap assembler was able to compile fasm 1.20 and fasm
-1.30, but then it was discovered that it can also compile a lightly
-patched fasm 1.73.32.
-
-The bootstrap assembler has multiple (equivalent) implementations:
+## Existing fbsasm implementations in various assembly languages
 
 * The implementation for the oldest assembler is `fbsasm.mas`, which works
   with MASM 5.00 (1987-07-31), see the details below.
 * NASM: already implemented as `fbsasm.nasm`, use it with
-  `./bootstrap_nasm.sh nasm`. It is a reimplementation of a subset of fasm
+  `./compile_fbsasm.sh nasm`. It is a reimplementation of a subset of fasm
   1.30 (for Linux i386) in NASM 0.95 (1997-07-27) or later. It has been
   tested with 0.98.39 extensively. It was created by
   concatenating source files from fasm 1.30 and fasm 1.37 (Linux-specific
   `fasm.asm` and `system.inc`), and manually converting it to NASM syntax
   (mostly doing some manual changes and then many regexp substitutions).
 * Yasm: already implemented as `fbsasm.nasm`, use it with
-  `./bootstrap_nasm.sh nasm=yasm`. The NASM source works without changes.
+  `./compile_fbsasm.sh nasm=yasm`. The NASM source works without changes.
   Versions 1.2.0 (2011-10-31) and 1.3.0 (2014-09-11) are known to work.
   Maybe older versions work as well.
 * fasm: already implemented as `fbsasm.fasm`, use it with
-  `./bootstrap_fasm.sh fasm`. It needs at least fasm 1.20 (2001-11-17)
+  `./compile_fbsasm.sh fasm`. It needs at least fasm 1.20 (2001-11-17)
   to compile.
 * GNU as(1) (+ GNU ld(1)): already implemented as `fbsasm.s`, use it with
-  `./bootstrap_fasm.sh as`. It is autogenerated by `fbsasm.nasm` using the
+  `./compile_fbsasm.sh as`. It is autogenerated by `fbsasm.nasm` using the
   bundled `nasm2as.pl` Perl script. It works with various versions of GNU
   Binutils, tested with 2.7 (released on 1996-07-15), 2.9.1 (released on
   1998-05-01, part of Debian 2.1 slink), 2.9.5, 2.22 and 2.30.
 * TASM (Turbo Assembler) + folink2 (custom linker): already implemented as
   `fbsasm.tas` (TASM ideal mode),
-  use it with `./bootstrap_fasm.sh tasm`. It works with TASM
+  use it with `./compile_fbsasm.sh tasm`. It works with TASM
   1.01 (1989), 2.0 (1990), 4.1 (1996, the latest Turbo Assembler which works
   on a DOS 8086 without a DOS extender) and 5.3 (2000-01-30, probably the
   last release of TASM). The custom linker folink2 is also included and is
   built from source by TASM.
 * LZASM (Lazy Assembler) + folink2 (custom linker): already implemented as
   `fbsasm.tas` (TASM ideal mode),
-  use it with `./bootstrap_fasm.sh lzasm`. It works with LZASM
+  use it with `./compile_fbsasm.sh lzasm`. It works with LZASM
   0.56 (2007-10-04, last release) and possibly earlier. The custom linker
   folink2 is also included and is built from source by LZASM.
 * MASM (Microsoft Macro Assembler) + WLINK: already implemented as
-  `fbsasm.was`, currently `bootstrap_fasm.sh` doesn't support it. It works
+  `fbsasm.was`, currently `compile_fbsasm.sh` doesn't support it. It works
   with MASM 5.00 (1987-07-31) or later, TASM 3.0 (1991-11-11) or later, WASM
   10.5 (1995-07-11) or later, JWasm 2.11a (2013-10-19) and maybe earlier,
   ASMC 2.34.49 (2024-030-26) and later and maybe earlier.
 * as86 (part of dev86): already implemented as
-  `fbsasm.as86`, use it with `./bootstrap_fasm.sh as86`. It works with as86
+  `fbsasm.as86`, use it with `./compile_fbsasm.sh as86`. It works with as86
   0.0.7 (1996-09-03) and possibly earlier, but not 0.0.5.
 * A386 (by Eric Isaacson): already implemented
-  as `fbsasm.8`, use it with `./bootstrap_fasm.sh a386`. It works with the
+  as `fbsasm.8`, use it with `./compile_fbsasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).
 * [vasm](http://sun.hasenbraten.de/vasm/) (by Volker Barthelmann): already
-  implemented as `fbsasm.vasm`, use it with `./bootstrap_fasm.sh vasm`. It
+  implemented as `fbsasm.vasm`, use it with `./compile_fbsasm.sh vasm`. It
   works with vasm 1.9a (2022-10-02) and possibly earlier.
 * [mw386as](https://github.com/pts/mw386as)
   (port of the Mark Williams 80386 assembler, originally 1993-08-02, part of
   Coherent) + link3coff.pl (custom linker),
-  use it with `./bootstrap_fasm.sh mw`. It works with the
+  use it with `./compile_fbsasm.sh mw`. It works with the
   1993-08-02 version rebuilt from source, but the code generated by 1992-11-11
   version seems to be broken. The custom linker is also included, and it's a
   Perl script. A Linux i386 executable of the Perl interpreter is also
   included.
 * The AT&T Unix System V Release 3 (SVR3) assembler (see [Linux i386
   port](https://github.com/pts/pts-svr3as-linux)) + link3coff.pl (custom
-  linker), use it with `./bootstrap_fasm.sh --svr3=...`. All 3 versions
+  linker), use it with `./compile_fbsasm.sh --svr3=...`. All 3 versions
   (1987-10-28, 1988-05-27, 1989-10-03) work. The custom linker is also
   included, and it's a Perl script. A Linux i386 executable of the Perl
   interpreter is also included.
 * The SunOS 4.0.1 assembler (see [Linux i386
   port](https://github.com/pts/pts-svr3as-linux)) + link3coff.pl (custom
-  linker), use it with `./bootstrap_fasm.sh --svr3=...`. The version
+  linker), use it with `./compile_fbsasm.sh --svr3=...`. The version
   released on 1988-11-16 works. The custom linker is also
   included, and it's a Perl script. A Linux i386 executable of the Perl
   interpreter is also included.
 * The AT&T Unix System V Release 4 (SVR4) assembler, built from source
   (released on 1993-01-16)
   port](https://github.com/pts/pts-svr3as-linux)) + GNU ld(1), use it with
-  `./bootstrap_fasm.sh --svr4=...`. This assembler has more code generation
+  `./compile_fbsasm.sh --svr4=...`. This assembler has more code generation
   bugs than its predecessor, the SVR3 assembler. These bugs have been worked
   around for the purposes of pts-fasm-bootstrap.
+
+# Future plans for fbsasm implementations
 
 It is a future plan to have the bootstrap assembler implemented in additional
 programming languages, targeting Linux i386:
@@ -248,7 +281,7 @@ programming languages, targeting Linux i386:
   1999-03-09), released before 2001-01-01, before fasm 1.20; how far can we
   go to the past? 1999? 1996?
 * Perl 5.004_04 (1997-10-15). A slow but simple assembler which can compile
-  fbsasm.fasm. Maybe later it will be able to compile FASM-1.73.32 and
+  fbsasm.fasm. Maybe later it will be able to compile fasm 1.73.32 and
   fbsasm.nasm.
 * [Solaris x86
   Assembler](https://docs.oracle.com/cd/E19120-01/open.solaris/817-5477/eqbui/index.html),
