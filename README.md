@@ -7,8 +7,17 @@ sources of earlier fasm versions), using only fasm sources (both old and
 recent versions), but no precompiled executable programs of earlier
 fasm versions.
 
-pts-fasm-bootstrap was inspired by [bootstrapping FASM by rugxulo,
-2018-02-20](https://board.flatassembler.net/topic.php?t=20431).
+pts-fasm-bootstrap was inspired by the fasm forum threads [bootstrapping
+FASM, by rugxulo,
+2018-02-20](https://board.flatassembler.net/topic.php?t=20431) and [The real
+way to bootstrap fasm with no prior binary, started by
+revolution](https://board.flatassembler.net/topic.php?p=227624). The second
+thread goas back as far as fasm 1.0 (released on 2000-06-19) and does the
+whole bootstrapping on 32-bit DOS (i.e. with 80386 CPU or later).
+pts-fasm-bootstrap does the bootstrapping on Linux x86 (i386 or amd64),
+building ELF-32 executable programs for Linux i386, and it starts at version
+1.20 (released on 2001-11-17). (In a future work, going back to 1.0 is
+possible.)
 
 How to run the bootstrap:
 
