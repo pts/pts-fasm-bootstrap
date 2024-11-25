@@ -157,11 +157,31 @@ More specifically, the bootstrap assembler:
 
 Any working version of fasm works as a bootstrap assembler, but using that
 would defeat the original purpose (i.e. compiling fasm without using a fasm
-executable program). Please note, however, that the precompiled executable
-programs of most old versions of fasm (i.e. <=1.43, and possibly even newer
-ones) have a bug on modern Linux x86 systems: they detect the available
+executable program).
+
+Please note, however, that the precompiled executable
+programs of most old versions of fasm (i.e. <=1.56)
+have a bug on modern Linux x86 systems: they detect the available
 memory incorrectly, and they allocate too little. (2.5 MiB would have been
-enough for compiling fasm <=1.73.32).
+enough for compiling fasm <=1.73.32). The error message looks like:
+
+```
+$ ../../fasm fasm.asm fasm9
+flat assembler  version 1.56
+error: out of memory.
+```
+
+This bug has been fixed in fasm 1.58. Earlier versions need a patch (search
+for `allocate_memory:)` in [bootstrap1.pl](bootstrap1.pl) for the patch).
+The fasm-golden-1.56 and earlier files in the pts-fasm-bootstrap repository
+are already patched. fasm-folden-1.58 and later are the original program
+files in the binary release of fasm, they work without a patch.
+
+It has been verified for the following fasm versions that the *fasm* Linux
+i386 executable program in the binary release can compile itself from source
+(`source/Linux/fasm.asm`), and the output is bitwise identical to the
+executable program file in the binary release: 1.37, 1.43, 1.56, 1.58, 1.60,
+1.62, 1.64, 1.66, 1.67.22, 1.67.27, 1.68, 1.70, 1.70.01, 1.70.02, 1.73.32.
 
 To use fasm as the bootstrap assembler, run something like this: `perl -x
 bootstrap2.pl --fasm=./fasm-golden-1.73.32` .
