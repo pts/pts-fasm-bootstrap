@@ -135,6 +135,91 @@ specialized i386 assembler (supporting the subset of fasm syntax used in
 recent fasm) in pure Perl 5.004_04. All of these are hard but doable. They
 are left as an exercise to the reader.
 
+## History of fasm
+
+This section is partially based on the [fasm page on the Dr-DOS
+Wiki](https://pmwiki.xaver.me/drdoswiki/index.php?n=Main.DevelAsm#toc12).
+
+fasm has been written by Tomasz Grysztar, with version 1.0 as the first
+public release. The first few releases are:
+
+* 2000-06-19: public release 1.0
+* 2000-07-01: public release 1.01
+* 2000-07-06: public release 1.02
+* 2000-07-19: public release 1.03
+
+These first few versions above (and a few more) ran on DOS (as *fasm.com*)
+only, requiring a 80386 CPU or later in an unusual 32-bit protected mode
+called *unreal mode*. DOSBox doesn't support unreal mode, but FREEDOS
+running in QEMU does. Win32 and Linux i386 host support was added later:
+
+* 2000-08-10: public release 1.04 introduced *format PE console*, i.e. Win32 PE console applicaton output support
+* 2002-06-12: public release 1.37 added Linux i386 host and Win32 host support, i.e. it could be compiled from source to these systems
+* 2002-11-14: public release 1.41 had *fasm* (Linux i386 executable program) precompiled (maybe earlier releases also had it)
+* 2003-01-08: public release 1.43 introduced *format ELF executable* and already used it in *source/Linux/fasm.asm*
+* 2003-10-14: public release 1.49 had *fasm.exe* precompiled for Win32 (maybe earlier releases also had it)
+
+Source code has always been part of fasm, with a BSD-like open source
+license, and it has been easy and deterministic since version 0.90 to
+recompile fasm from its source (using the executable program of the same
+version), which was also written in *fasm* syntax. For example, this is how
+to recompile the latest fasm on Linux x86 for DOS, Win32 and Linux i386:
+
+```
+$ rm -rf fasm
+$ wget -O fasm-1.73.32.tgz https://flatassembler.net/fasm-1.73.32.tgz
+$ tar xzvf fasm-1.73.32.tgz
+$ cd fasm
+$ cd source/Linux && ../../fasm fasm.asm ../../fasm2
+flat assembler  version 1.73.32  (16384 kilobytes memory)
+5 passes, 107115 bytes.
+$ chmod +x fasm2 && cmp fasm fasm2 && echo OK
+OK
+$ (cd source/DOS && ../../fasm fasm.asm ../../fasmd2.exe)
+flat assembler  version 1.73.32  (16384 kilobytes memory)
+5 passes, 108118 bytes.
+$ (cd source/Win32 && ../../fasm fasm.asm ../../fasm2.exe)
+flat assembler  version 1.73.32  (16384 kilobytes memory)
+5 passes, 117248 bytes.
+```
+The source of *fasmw.exe* is included in the
+https://flatassembler.net/fasmw17332.zip download instead, in the directory
+`SOURCE/IDE`.
+
+Predecessors of public fasm, also by Tomasz Grysztar:
+
+* ASM32: An assembler with 32-bit i386 instruction output and raw binary output
+  format. It was unpublished, not the same as [ASM32 by Intelligent
+  Firmware](https://www.intelligentfirm.com/cpl32.html)). It was written in
+  assembly language, TASM syntax. Its source and executable program files
+  have been lost.
+* MDAT was special a variant of ASM32, with only data and binary file
+  inclusion directives. Its DOS program file (*mdat.exe*, for 32-bit DOS,
+  Adam file format with DOS stub looking for *dos32.exe* does extender) and
+  source (assembly language, ASM32 syntax) has survived, it's part of
+  [glumpy.zip](https://board.flatassembler.net/download.php?id=2142), more
+  info in [this forum
+  thread](https://board.flatassembler.net/topic.php?t=4919).
+* Early versions of fasm were written in assembly language, ASM32 syntax.
+  These sources have been lost.
+* Later, but still pre-release versions of fasm have already been written in
+  assembly language, fasm syntax, for 32-bit DOS i386 host, and and they
+  could compile themselves. However, these programs needed the HDOS DOS
+  extender (also by Tomasz Grysztar), also written in assembly language,
+  fasm syntax. Two pre-release version have survived: 0.90 and 1.00.
+* 1999-05-04: unreleased version 0.90 (see
+  [source](https://github.com/tgrysztar/fasm/commit/61a1789231e7391a7cff2d6c368fcf251ef3c13e)
+  and [precompiled program in
+  hdos2.zip](https://board.flatassembler.net/download.php?id=5735), part of
+  HDOS 2.03), more info in [this forum
+  thread](https://board.flatassembler.net/topic.php?t=13794)
+* 1999-07-01: unreleased version 1.00 (see
+  [source](https://github.com/tgrysztar/fasm/commit/613ec371a5b5c5142ae4213d5209e75bb41e524c)
+  and [precompiled program in
+  hdos3.zip](https://board.flatassembler.net/download.php?id=5734), part of
+  HDOS 3.01), more info in [this forum
+  thread](https://board.flatassembler.net/topic.php?t=13794)
+
 ## Alternative bootstrap assemblers
 
 In step 1, bootstrap1.pl builds the bootstram assembler *fasm1*, which (in
