@@ -10,6 +10,12 @@
 #
 
 eval '(exit $?0)' || eval 'echo fatal: csh not supported; exec false'  # No way to write to stderr in csh(1).
+if false
+then
+echo fatal: sash not supported
+# In `sash -f', prints first `if: No such file or directory', also for `then'.
+exit 1
+fi
 
 f=food; if test "${f##*o}" != d; then echo "fatal: missing string substitution" >&2; exit 1; fi  # All pass.
 
