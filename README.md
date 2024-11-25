@@ -18,7 +18,8 @@ How to run the bootstrap:
 * Then run `perl -x bootstrap2.pl'. The output file is `fasm-re-1.73.32`,
   which is identical to the file `fasm-golden-1.73.32`, also identical to
   the program file in the [official fasm-1.73.32
-  package](https://flatassembler.net/fasm-1.73.32.tgz).
+  package](https://flatassembler.net/fasm-1.73.32.tgz)
+  (released on 2023-12-04).
 
 * The output file is executable on a Linux x86 system (i386 or amd64), and
   it's statically linked (i.e. independent of the Linux distribution and the
