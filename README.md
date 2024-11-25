@@ -108,7 +108,7 @@ The detailed bootstrap chain:
 * *fasm6* is compared to the *fasm/fasm* Linux i386 ELF-32 executable
   program in the offical fasm release (they must be bitwise identical).
 
-Alternatively, step 1 can be replaced by objtaining a fasm-compatible
+Alternatively, step 1 can be replaced by obtaining a fasm-compatible
 assembler (and using it in step 2). For example, *fbsasm* (see below)
 works, and it can be used by running step 2 as `perl -x bootstrap2.pl
 --fasm=./fbsasm`. fasm executable programs (old and new) in the official
@@ -197,9 +197,20 @@ the Linux-specific I/O parts copied from the fasm 1.37 source code instead
 has been converted from fasm syntax to >15 other assembler syntaxes,
 including NASM and GNU as(1).
 
-Initially *fbssm* was able to compile fasm 1.20, fasm 1.30, and fasm 1.37,
-but then it was discovered that it can also compile a lightly patched fasm
-1.73.32, so it can be used as a bootstrap assembler in pts-fasm-bootstrap.
+*fbsasm* was written with the goal of compiling as many of fasm 1.20, 1.30
+and 1.37 as easily possible. All of these source versions worked with a few
+lines of patches applied (to all 3) and several hundred lines of Linux i386
+host support code added to fasm 1.20 and 1.30 (based on
+`source/Linux/fasm.asm` and ``source/Linux/system.inc` in fasm 1.37). Then
+it was discovered that *fbsasm* is able to compile the latest fasm (1.73.32)
+as well, with about a few lines of patches implementing ELF-32 header
+generation using hardcoded *db*, *dw* and *dd* directives. By simply
+applying the same techniques again, it would be possible to make *fbsasm*
+compile any version of fasm between 1.20 and 1.73.32, for Linux i386 host.
+With a bit more of similar effort, all versions between 1.0 (released on
+2000-06-19) and 1.20 could be ported to Linux i386 host (i.e. sevaral
+hundred lines of support code added) and compiled with
+*fbsasm*.
 
 Historically, *fbsasm* can be compiled not only with recent and up-to-date
 assemblers, but also with the oldest i386 assembers ever: MASM 5.00
