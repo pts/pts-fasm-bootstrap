@@ -9,6 +9,8 @@
 # This script uses external commands: cat, tr, cmp, rm, mv, unzip, (--unzip=...), fasm (--fasm=...).
 #
 
+eval '(exit $?0)' || eval 'echo fatal: csh not supported; exec false'  # No way to write to stderr in csh(1).
+
 f=food; if test "${f##*o}" != d; then echo "fatal: missing string substitution" >&2; exit 1; fi  # All pass.
 
 # We detect a single-argument echo command $echo which appends a newline,
