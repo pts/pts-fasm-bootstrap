@@ -317,8 +317,12 @@ Linux distribution (released on 1994-05-11, running Linux kernel 1.0.4).
 
 ## Existing fbsasm implementations in various assembly languages
 
-* The implementation for the oldest assembler is `fbsasm.mas`, which works
-  with MASM 5.00 (1987-07-31), see the details below.
+* The implementation for the oldest assembler is [fbsasm.mas](fbsasm.mas),
+  which works with MASM 5.00 (1987-07-31). The second oldest one is the SVR3
+  assembler (1987-10-28), the fbsasm implementation is in
+  [fbsasms.s](fbsasm.s). The oldest assembler which is also free software is
+  as86 0.0.0 (1991-11-29), the fbsasm implmenetation is in
+  [fbsasm0.as86](fbsasm0.as86). See all details below.
 * NASM: already implemented as `fbsasm.nasm`, use it with
   `./compile_fbsasm.sh nasm`. It is a reimplementation of a subset of fasm
   1.30 (for Linux i386) in NASM 0.95 (1997-07-27) or later. It has been
@@ -355,9 +359,13 @@ Linux distribution (released on 1994-05-11, running Linux kernel 1.0.4).
   with MASM 5.00 (1987-07-31) or later, TASM 3.0 (1991-11-11) or later, WASM
   10.5 (1995-07-11) or later, JWasm 2.11a (2013-10-19) and maybe earlier,
   ASMC 2.34.49 (2024-030-26) and later and maybe earlier.
-* as86 (part of dev86): already implemented as
-  `fbsasm.as86`, use it with `./compile_fbsasm.sh as86`. It works with as86
-  0.0.7 (1996-09-03) and possibly earlier, but not 0.0.5.
+* as86 (part of dev86): already implemented as `fbsasm.as86` (for as86
+  >=0.0.7, 1996-09-03) and as `fbsasm0.as86` (for as86 0.0.0 .. 0.0.8), use
+  it with `./compile_fbsasm.sh as86`. It works with with the earliest as86
+  found in archives: as86
+  [0.0.0](https://mirror.math.princeton.edu/pub/oldlinux/Linux.old/bin/as86.src.tar.Z)
+  (1991-11-29). This is the first free software assembler targeting the
+  i386.
 * A386 (by Eric Isaacson): already implemented
   as `fbsasm.8`, use it with `./compile_fbsasm.sh a386`. It works with the
   A386 4.05 (2000-01-13) on a DOS 8086 (maybe needs an i386 processor).
